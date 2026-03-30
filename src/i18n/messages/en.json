@@ -1,0 +1,41 @@
+{
+  "common": {
+    "appName": "CSV",
+    "login": "Log in",
+    "logout": "Log out",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "send": "Send"
+  },
+  "landing": {
+    "headline": "Your AI Companion for the AI Era",
+    "subheadline": "CSV connects AI talent with enterprises through intelligent matching and conversational AI.",
+    "ctaTalent": "Find Opportunities",
+    "ctaEnterprise": "Find Talent"
+  },
+  "nav": {
+    "home": "Home",
+    "coach": "AI Coach",
+    "seeking": "Seeking Report",
+    "fair": "Opportunity Fair",
+    "inbox": "Inbox",
+    "dashboard": "Dashboard",
+    "jobs": "Jobs",
+    "screening": "Screen Talent",
+    "settings": "Settings"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "loginTitle": "Welcome to CSV",
+    "loginSubtitle": "Sign in to continue",
+    "loginButton": "Sign In",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "companion": {
+    "placeholder": "Ask your companion anything...",
+    "collapsed": "Click to chat →"
+  }
+}

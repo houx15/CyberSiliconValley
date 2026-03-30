@@ -1,0 +1,41 @@
+{
+  "common": {
+    "appName": "CSV",
+    "login": "登录",
+    "logout": "退出",
+    "loading": "加载中...",
+    "save": "保存",
+    "cancel": "取消",
+    "back": "返回",
+    "send": "发送"
+  },
+  "landing": {
+    "headline": "AI 时代的 AI 伙伴",
+    "subheadline": "CSV 通过智能匹配和对话式 AI，连接 AI 人才与企业。",
+    "ctaTalent": "寻找机会",
+    "ctaEnterprise": "寻找人才"
+  },
+  "nav": {
+    "home": "首页",
+    "coach": "AI 教练",
+    "seeking": "求职报告",
+    "fair": "机会集市",
+    "inbox": "收件箱",
+    "dashboard": "工作台",
+    "jobs": "职位管理",
+    "screening": "人才筛选",
+    "settings": "设置"
+  },
+  "auth": {
+    "email": "邮箱",
+    "password": "密码",
+    "loginTitle": "欢迎来到 CSV",
+    "loginSubtitle": "登录以继续",
+    "loginButton": "登录",
+    "invalidCredentials": "邮箱或密码错误"
+  },
+  "companion": {
+    "placeholder": "问你的 AI 伙伴任何问题...",
+    "collapsed": "点击开始对话 →"
+  }
+}
