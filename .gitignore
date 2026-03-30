@@ -5,6 +5,9 @@
 # Superpowers brainstorming sessions
 .superpowers/
 
+# Git worktrees
+.worktrees/
+
 # Claude Code - local settings contain personal preferences and may include tokens
 .claude/settings.local.json
 .claude/CLAUDE.local.md
