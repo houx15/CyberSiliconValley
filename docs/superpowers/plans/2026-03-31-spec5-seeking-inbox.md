@@ -79,7 +79,7 @@ csv/
 - Create: `src/lib/api/seeking.ts`
 - Create: `__tests__/lib/api/seeking.test.ts`
 
-- [ ] **Step 1: Write tests for seeking report data access**
+- [x] **Step 1: Write tests for seeking report data access**
 
 Create `__tests__/lib/api/seeking.test.ts`:
 
@@ -127,7 +127,7 @@ describe('seeking data access', () => {
 });
 ```
 
-- [ ] **Step 2: Implement seeking report data access**
+- [x] **Step 2: Implement seeking report data access**
 
 Create `src/lib/api/seeking.ts`:
 
@@ -226,7 +226,7 @@ git commit -m "feat(spec5): add seeking report data access layer"
 **Files:**
 - Create: `src/app/api/v1/seeking/route.ts`
 
-- [ ] **Step 1: Implement GET /api/v1/seeking**
+- [x] **Step 1: Implement GET /api/v1/seeking**
 
 Create `src/app/api/v1/seeking/route.ts`:
 
@@ -276,7 +276,7 @@ git commit -m "feat(spec5): add GET /api/v1/seeking route"
 - Create: `src/lib/ai/prompts/tailored-resume.ts`
 - Create: `src/lib/ai/prompts/pre-chat.ts`
 
-- [ ] **Step 1: Create match assessment prompt**
+- [x] **Step 1: Create match assessment prompt**
 
 Create `src/lib/ai/prompts/seeking-assessment.ts`:
 
@@ -335,7 +335,7 @@ Respond in the same language the talent profile is written in.`;
 }
 ```
 
-- [ ] **Step 2: Create tailored resume prompt**
+- [x] **Step 2: Create tailored resume prompt**
 
 Create `src/lib/ai/prompts/tailored-resume.ts`:
 
@@ -404,7 +404,7 @@ Seniority: ${job.structured.seniority}
 }
 ```
 
-- [ ] **Step 3: Create pre-chat summary prompt**
+- [x] **Step 3: Create pre-chat summary prompt**
 
 Create `src/lib/ai/prompts/pre-chat.ts`:
 
@@ -493,7 +493,7 @@ git commit -m "feat(spec5): add AI prompts for assessment, tailored resume, and 
 **Files:**
 - Create: `src/lib/jobs/generate-report.ts`
 
-- [ ] **Step 1: Implement the generate-report worker handler**
+- [x] **Step 1: Implement the generate-report worker handler**
 
 Create `src/lib/jobs/generate-report.ts`:
 
@@ -727,7 +727,7 @@ export async function handleGenerateReport(
 }
 ```
 
-- [ ] **Step 2: Register the worker handler in the worker entry point**
+- [x] **Step 2: Register the worker handler in the worker entry point**
 
 In `src/lib/jobs/worker.ts`, add the `generate-report` case to the existing worker switch:
 
@@ -807,7 +807,7 @@ git commit -m "feat(spec5): implement generate-report background job with daily 
 **Files:**
 - Create: `src/lib/jobs/pre-chat.ts`
 
-- [ ] **Step 1: Implement the pre-chat worker handler**
+- [x] **Step 1: Implement the pre-chat worker handler**
 
 Create `src/lib/jobs/pre-chat.ts`:
 
@@ -986,7 +986,7 @@ export async function handlePreChat(
 }
 ```
 
-- [ ] **Step 2: Register the pre-chat handler in worker.ts**
+- [x] **Step 2: Register the pre-chat handler in worker.ts**
 
 In `src/lib/jobs/worker.ts`, add:
 
@@ -1014,7 +1014,7 @@ git commit -m "feat(spec5): implement pre-chat background job"
 **Files:**
 - Create: `src/app/api/v1/resume/generate/route.ts`
 
-- [ ] **Step 1: Implement POST /api/v1/resume/generate**
+- [x] **Step 1: Implement POST /api/v1/resume/generate**
 
 Create `src/app/api/v1/resume/generate/route.ts`:
 
@@ -1165,7 +1165,7 @@ git commit -m "feat(spec5): add POST /api/v1/resume/generate endpoint"
 - Create: `src/lib/api/inbox.ts`
 - Create: `__tests__/lib/api/inbox.test.ts`
 
-- [ ] **Step 1: Write tests for inbox data access**
+- [x] **Step 1: Write tests for inbox data access**
 
 Create `__tests__/lib/api/inbox.test.ts`:
 
@@ -1197,7 +1197,7 @@ describe('inbox data access types', () => {
 });
 ```
 
-- [ ] **Step 2: Implement inbox data access**
+- [x] **Step 2: Implement inbox data access**
 
 Create `src/lib/api/inbox.ts`:
 
@@ -1305,7 +1305,7 @@ git commit -m "feat(spec5): add inbox data access layer"
 - Create: `src/app/api/v1/inbox/route.ts`
 - Create: `src/app/api/v1/inbox/[id]/route.ts`
 
-- [ ] **Step 1: Implement GET /api/v1/inbox**
+- [x] **Step 1: Implement GET /api/v1/inbox**
 
 Create `src/app/api/v1/inbox/route.ts`:
 
@@ -1353,7 +1353,7 @@ export async function GET(request: NextRequest) {
 }
 ```
 
-- [ ] **Step 2: Implement PATCH /api/v1/inbox/:id**
+- [x] **Step 2: Implement PATCH /api/v1/inbox/:id**
 
 Create `src/app/api/v1/inbox/[id]/route.ts`:
 
@@ -1404,7 +1404,7 @@ git commit -m "feat(spec5): add inbox API routes (GET + PATCH)"
 - Create: `src/components/inbox/inbox-detail.tsx`
 - Create: `src/components/inbox/inbox-badge.tsx`
 
-- [ ] **Step 1: Create InboxBadge component**
+- [x] **Step 1: Create InboxBadge component**
 
 Create `src/components/inbox/inbox-badge.tsx`:
 
@@ -1454,7 +1454,7 @@ export function InboxBadge({ className }: InboxBadgeProps) {
 }
 ```
 
-- [ ] **Step 2: Create InboxItemRow component**
+- [x] **Step 2: Create InboxItemRow component**
 
 Create `src/components/inbox/inbox-item-row.tsx`:
 
@@ -1536,7 +1536,7 @@ export function InboxItemRow({ item, isSelected, onClick }: InboxItemRowProps) {
 }
 ```
 
-- [ ] **Step 3: Create InboxDetail component**
+- [x] **Step 3: Create InboxDetail component**
 
 Create `src/components/inbox/inbox-detail.tsx`:
 
@@ -1696,7 +1696,7 @@ export function InboxDetail({ item }: InboxDetailProps) {
 }
 ```
 
-- [ ] **Step 4: Create InboxList component**
+- [x] **Step 4: Create InboxList component**
 
 Create `src/components/inbox/inbox-list.tsx`:
 
@@ -1852,7 +1852,7 @@ git commit -m "feat(spec5): add shared inbox UI components (InboxList, InboxItem
 - Create: `src/components/seeking/inbound-interest.tsx`
 - Create: `src/components/seeking/tailored-resume-dialog.tsx`
 
-- [ ] **Step 1: Create ScanSummary component**
+- [x] **Step 1: Create ScanSummary component**
 
 Create `src/components/seeking/scan-summary.tsx`:
 
@@ -1904,7 +1904,7 @@ export function ScanSummary({ data }: ScanSummaryProps) {
 }
 ```
 
-- [ ] **Step 2: Create HighMatchCard component**
+- [x] **Step 2: Create HighMatchCard component**
 
 Create `src/components/seeking/high-match-card.tsx`:
 
@@ -2070,7 +2070,7 @@ export function HighMatchCard({
 }
 ```
 
-- [ ] **Step 3: Create PreChatActivity component**
+- [x] **Step 3: Create PreChatActivity component**
 
 Create `src/components/seeking/prechat-activity.tsx`:
 
@@ -2141,7 +2141,7 @@ export function PreChatActivity({ items }: PreChatActivityProps) {
 }
 ```
 
-- [ ] **Step 4: Create InboundInterest component**
+- [x] **Step 4: Create InboundInterest component**
 
 Create `src/components/seeking/inbound-interest.tsx`:
 
@@ -2207,7 +2207,7 @@ export function InboundInterest({ items }: InboundInterestProps) {
 }
 ```
 
-- [ ] **Step 5: Create TailoredResumeDialog component**
+- [x] **Step 5: Create TailoredResumeDialog component**
 
 Create `src/components/seeking/tailored-resume-dialog.tsx`:
 
@@ -2420,7 +2420,7 @@ git commit -m "feat(spec5): add seeking report UI components (ScanSummary, HighM
 **Files:**
 - Modify: `src/app/(talent)/seeking/page.tsx`
 
-- [ ] **Step 1: Implement the seeking report page**
+- [x] **Step 1: Implement the seeking report page**
 
 Replace `src/app/(talent)/seeking/page.tsx`:
 
@@ -2564,7 +2564,7 @@ git commit -m "feat(spec5): implement seeking report page"
 - Modify: `src/app/(talent)/inbox/page.tsx`
 - Modify: `src/app/(enterprise)/inbox/page.tsx`
 
-- [ ] **Step 1: Implement talent inbox page**
+- [x] **Step 1: Implement talent inbox page**
 
 Replace `src/app/(talent)/inbox/page.tsx`:
 
@@ -2585,7 +2585,7 @@ export default function TalentInboxPage() {
 }
 ```
 
-- [ ] **Step 2: Implement enterprise inbox page**
+- [x] **Step 2: Implement enterprise inbox page**
 
 Replace `src/app/(enterprise)/inbox/page.tsx`:
 
@@ -2620,7 +2620,7 @@ git commit -m "feat(spec5): implement talent and enterprise inbox pages"
 **Files:**
 - Modify: `src/components/layout/sidebar-nav.tsx`
 
-- [ ] **Step 1: Add InboxBadge to sidebar nav items**
+- [x] **Step 1: Add InboxBadge to sidebar nav items**
 
 In `src/components/layout/sidebar-nav.tsx`, import and render the `InboxBadge` next to the Inbox nav item:
 
@@ -2661,7 +2661,7 @@ git commit -m "feat(spec5): add unread badge to inbox nav item in sidebar"
 - Modify: `src/i18n/messages/en.json`
 - Modify: `src/i18n/messages/zh.json`
 
-- [ ] **Step 1: Add English strings**
+- [x] **Step 1: Add English strings**
 
 Add the following keys to `src/i18n/messages/en.json`:
 
@@ -2710,7 +2710,7 @@ Add the following keys to `src/i18n/messages/en.json`:
 }
 ```
 
-- [ ] **Step 2: Add Chinese strings**
+- [x] **Step 2: Add Chinese strings**
 
 Add the following keys to `src/i18n/messages/zh.json`:
 
@@ -2800,7 +2800,7 @@ npm run test
 
 Expected: All existing tests pass, plus the new tests in `__tests__/lib/api/seeking.test.ts` and `__tests__/lib/api/inbox.test.ts`.
 
-- [ ] **Step 2: Run typecheck**
+- [x] **Step 2: Run typecheck**
 
 ```bash
 npm run typecheck
@@ -2808,7 +2808,7 @@ npm run typecheck
 
 Expected: No type errors.
 
-- [ ] **Step 3: Run build**
+- [x] **Step 3: Run build**
 
 ```bash
 npm run build

@@ -263,5 +263,55 @@
     "subtitle": "与 AI 招聘助手对话，搜索、比较和筛选候选人。",
     "placeholder": "询问候选人、比较人才或筛选名单...",
     "send": "发送"
+  },
+  "seeking": {
+    "title": "求职报告",
+    "generated": "生成于 {date}",
+    "totalScanned": "扫描机会数",
+    "highMatches": "高匹配机会",
+    "mediumMatches": "中等匹配机会",
+    "highMatchesDescription": "你的 AI 伙伴认为最值得认真跟进的岗位。",
+    "prechatActivity": "预沟通动态",
+    "prechatDescription": "AI 代表你发起或整理的预沟通摘要。",
+    "inboundInterest": "企业主动兴趣",
+    "inboundDescription": "已经对你的资料表现出兴趣的招聘团队。",
+    "generateResume": "生成定制简历",
+    "apply": "申请",
+    "dismiss": "忽略",
+    "assessment": "AI 评估",
+    "skillMatch": "技能匹配",
+    "viewSummary": "查看摘要",
+    "view": "查看",
+    "emptyTitle": "首份报告生成中...",
+    "emptyDescription": "你的 AI 正在扫描市场，稍后回来查看。",
+    "generatingResume": "正在生成你的定制简历...",
+    "resumeReady": "{company} 定制简历",
+    "resumeError": "生成定制简历失败，请稍后重试。",
+    "close": "关闭"
+  },
+  "inbox": {
+    "title": "收件箱",
+    "emptyTitle": "还没有消息",
+    "emptyDescription": "你的 AI 伙伴正在处理新的机会。",
+    "selectMessage": "选择一条消息查看详情",
+    "markRead": "标记已读",
+    "matchScore": "匹配分数",
+    "position": "职位",
+    "company": "公司",
+    "viewJob": "查看职位",
+    "viewDetails": "查看详情",
+    "filters": {
+      "all": "全部",
+      "invites": "邀请",
+      "prechats": "预沟通",
+      "matches": "匹配",
+      "system": "系统"
+    },
+    "type": {
+      "invite": "邀请",
+      "prechat_summary": "预沟通",
+      "match_notification": "匹配",
+      "system": "系统"
+    }
   }
 }

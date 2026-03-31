@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
+import { InboxBadge } from '@/components/inbox/inbox-badge';
 
 interface NavItem {
   href: string;
@@ -45,11 +46,9 @@ export function SidebarNav({ items, variant }: SidebarNavProps) {
             >
               <span>{item.icon}</span>
               <span>{t(item.labelKey)}</span>
-              {item.badge && item.badge > 0 && (
-                <span className="ml-auto rounded-full bg-destructive px-1.5 py-0.5 text-[10px] text-destructive-foreground">
-                  {item.badge}
-                </span>
-              )}
+              <div className="ml-auto">
+                <InboxBadge count={item.badge} />
+              </div>
             </Link>
           );
         })}

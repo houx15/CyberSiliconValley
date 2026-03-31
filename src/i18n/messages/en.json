@@ -263,5 +263,55 @@
     "subtitle": "Chat with your AI recruiter to search, compare, and shortlist candidates.",
     "placeholder": "Ask about candidates, compare talent, or shortlist picks...",
     "send": "Send"
+  },
+  "seeking": {
+    "title": "Seeking Report",
+    "generated": "Generated {date}",
+    "totalScanned": "Scanned opportunities",
+    "highMatches": "High Matches",
+    "mediumMatches": "Medium Matches",
+    "highMatchesDescription": "The strongest roles your AI companion believes are worth real attention.",
+    "prechatActivity": "Pre-chat Activity",
+    "prechatDescription": "Conversations your AI initiated or summarized on your behalf.",
+    "inboundInterest": "Inbound Interest",
+    "inboundDescription": "Hiring teams that already look engaged with your profile.",
+    "generateResume": "Generate Tailored Resume",
+    "apply": "Apply",
+    "dismiss": "Dismiss",
+    "assessment": "AI Assessment",
+    "skillMatch": "Skill Match",
+    "viewSummary": "View summary",
+    "view": "View",
+    "emptyTitle": "First report generating...",
+    "emptyDescription": "Your AI is scanning the market. Check back soon.",
+    "generatingResume": "Generating your tailored resume...",
+    "resumeReady": "Tailored resume for {company}",
+    "resumeError": "Failed to generate tailored resume. Please try again.",
+    "close": "Close"
+  },
+  "inbox": {
+    "title": "Inbox",
+    "emptyTitle": "No messages yet",
+    "emptyDescription": "Your AI companion is working on it.",
+    "selectMessage": "Select a message to view details",
+    "markRead": "Mark as read",
+    "matchScore": "Match Score",
+    "position": "Position",
+    "company": "Company",
+    "viewJob": "View Job",
+    "viewDetails": "View Details",
+    "filters": {
+      "all": "All",
+      "invites": "Invites",
+      "prechats": "Pre-chats",
+      "matches": "Matches",
+      "system": "System"
+    },
+    "type": {
+      "invite": "Invite",
+      "prechat_summary": "Pre-chat",
+      "match_notification": "Match",
+      "system": "System"
+    }
   }
 }

@@ -3,6 +3,8 @@ import IORedis from 'ioredis';
 import type { EmbedJobData, ScanMatchJobData, ReportJobData, PrechatJobData, GraphJobData } from './queue';
 import { embedProfile, embedJob } from '@/lib/matching/embedding';
 import { scanMatchesForJob } from '@/lib/matching/engine';
+import { handleGenerateReport } from './generate-report';
+import { handlePreChat } from './pre-chat';
 
 const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
   maxRetriesPerRequest: null,
@@ -47,7 +49,7 @@ new Worker<ReportJobData>(
   'generate-report',
   async (job) => {
     console.log(`[generate-report] Processing talent ${job.data.talentId}`);
-    // Stub: actual report generation in Spec 5
+    await handleGenerateReport(job);
   },
   { connection }
 );
@@ -57,7 +59,7 @@ new Worker<PrechatJobData>(
   'pre-chat',
   async (job) => {
     console.log(`[pre-chat] Processing job ${job.data.jobId} talent ${job.data.talentId}`);
-    // Stub: actual pre-chat in Spec 5
+    await handlePreChat(job);
   },
   { connection }
 );

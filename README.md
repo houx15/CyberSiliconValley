@@ -2,6 +2,17 @@
 
 AI-native talent matching platform.
 
+## Current Product Surface
+
+The repo now covers the core web flows for both sides of the marketplace:
+
+- Public marketing and auth flows
+- Talent onboarding, portrait, matches, seeking report, and shared inbox
+- Enterprise dashboard, talent discovery, role management, and shared inbox
+- AI-assisted resume tailoring, pre-chat preparation, and report-generation worker hooks
+
+Spec planning lives in `docs/superpowers/plans/`, and specs `0-5` are implemented in the frontend codebase.
+
 ## Local Development (Frontend Only)
 
 ```bash
@@ -11,6 +22,14 @@ npm run dev              # starts on http://localhost:3000
 ```
 
 The landing page and login page render without a database. Auth and any DB-dependent features require the backend to be running on the dev server.
+
+### Frontend Pages Added Recently
+
+- Talent seeking report: `/talent/seeking`
+- Talent inbox: `/talent/inbox`
+- Enterprise inbox: `/enterprise/inbox`
+
+These pages have mock/demo fallbacks in the frontend, but their live data paths depend on the API routes, Redis-backed jobs, and PostgreSQL-backed application data described below.
 
 ### Commands
 
@@ -25,6 +44,13 @@ npm run check        # lint + typecheck + test (all three)
 ## Deploy to Dev Server
 
 The backend (PostgreSQL, Redis, Node.js) runs on the Aliyun ECS server.
+
+Important constraints for this repo:
+
+- Do not attempt to stand up PostgreSQL locally for normal feature work
+- Build and preview the frontend locally
+- Run DB-backed flows, workers, and end-to-end verification against the ECS environment
+- Redis-dependent jobs may log connection warnings during local builds if Redis is not running
 
 ```
 ssh yuxin@YOUR_SERVER_IP

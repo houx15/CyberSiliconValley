@@ -172,3 +172,150 @@ export const MOCK_COMPANION_COUNTS = {
   matchCount: 4,
   inboxCount: 2,
 };
+
+export const MOCK_SEEKING_REPORT = {
+  scanSummary: {
+    totalScanned: 47,
+    highMatches: 3,
+    mediumMatches: 8,
+    periodLabel: 'This week',
+  },
+  highMatches: [
+    {
+      matchId: 'mock-match-1',
+      jobId: 'mock-job-1',
+      jobTitle: '高级 RAG 工程师',
+      companyName: '星辰智能科技',
+      location: 'Shanghai',
+      workMode: 'hybrid',
+      score: 92,
+      skillMatches: [
+        { skill: 'RAG Pipeline', matched: true, level: 'must-have' },
+        { skill: 'Python', matched: true, level: 'must-have' },
+        { skill: 'Vector Databases', matched: true, level: 'must-have' },
+        { skill: 'Docker', matched: true, level: 'nice-to-have' },
+      ],
+      aiAssessment:
+        '你在企业级 RAG 架构和检索优化上的实战经验，与这个岗位的核心要求高度重合。唯一需要提前说明的是你的 Go 经验不是主打优势，但这不会影响你在检索与系统设计上的竞争力。',
+    },
+    {
+      matchId: 'mock-match-2',
+      jobId: 'mock-job-2',
+      jobTitle: 'AI Agent 开发工程师',
+      companyName: '星辰智能科技',
+      location: 'Remote',
+      workMode: 'remote',
+      score: 86,
+      skillMatches: [
+        { skill: 'Prompt Engineering', matched: true, level: 'must-have' },
+        { skill: 'TypeScript', matched: true, level: 'must-have' },
+        { skill: 'Tool Calling', matched: false, level: 'must-have' },
+        { skill: 'React', matched: false, level: 'nice-to-have' },
+      ],
+      aiAssessment:
+        '你的 Prompt Engineering 与应用层交付经验很匹配这个 Agent 岗位。需要补强的是工具调用和前端协作案例，建议在申请时突出你如何把 LLM 能力落到真实业务流程里。',
+    },
+  ],
+  preChatActivity: [
+    {
+      inboxItemId: 'mock-inbox-prechat-1',
+      companyName: '星辰智能科技',
+      jobTitle: '高级 RAG 工程师',
+      summary:
+        '企业对你在法律与金融场景中的 RAG 经验很感兴趣，尤其关注你对高准确率检索链路的优化方法。对方希望下一步了解你带团队和跨部门协作的深度。',
+      generatedAt: '2026-03-30T09:00:00.000Z',
+    },
+  ],
+  inboundInterest: [
+    {
+      matchId: 'mock-match-3',
+      companyName: '北极光数据',
+      reason: '企业正在寻找能独立搭建检索增强架构的人选，你的多行业项目经验很少见。',
+      score: 89,
+      jobId: 'mock-job-4',
+    },
+  ],
+  generatedAt: '2026-03-31T08:00:00.000Z',
+};
+
+export const MOCK_TALENT_INBOX_ITEMS = [
+  {
+    id: 'mock-inbox-1',
+    itemType: 'invite',
+    title: '星辰智能科技邀请你查看高级 RAG 工程师职位',
+    content: {
+      companyName: '星辰智能科技',
+      jobTitle: '高级 RAG 工程师',
+      jobId: 'mock-job-1',
+      matchScore: 92,
+      message: '我们认为你的企业级 RAG 经验和当前团队需求高度匹配。',
+    },
+    read: false,
+    createdAt: '2026-03-31T08:30:00.000Z',
+  },
+  {
+    id: 'mock-inbox-2',
+    itemType: 'prechat_summary',
+    title: 'AI 预沟通摘要：星辰智能科技 / 高级 RAG 工程师',
+    content: {
+      companyName: '星辰智能科技',
+      jobTitle: '高级 RAG 工程师',
+      jobId: 'mock-job-1',
+      matchScore: 92,
+      summary:
+        '对方认可你在复杂知识库检索和精度优化上的经验，希望下一轮重点了解你如何定义指标并带团队落地。',
+    },
+    read: false,
+    createdAt: '2026-03-31T07:20:00.000Z',
+  },
+  {
+    id: 'mock-inbox-3',
+    itemType: 'match_notification',
+    title: '发现新的高匹配机会：AI Agent 开发工程师',
+    content: {
+      companyName: '星辰智能科技',
+      jobTitle: 'AI Agent 开发工程师',
+      jobId: 'mock-job-2',
+      matchScore: 86,
+      aiReasoning:
+        '你在应用层交付与 Prompt 设计上的经验让这个岗位值得跟进。',
+    },
+    read: true,
+    createdAt: '2026-03-30T15:00:00.000Z',
+  },
+] as const;
+
+export const MOCK_ENTERPRISE_INBOX_ITEMS = [
+  {
+    id: 'mock-enterprise-inbox-1',
+    itemType: 'match_notification',
+    title: '发现高匹配候选人：陈明远 / 高级 RAG 工程师',
+    content: {
+      talentName: '陈明远',
+      talentId: 'mock-talent-profile-1',
+      jobTitle: '高级 RAG 工程师',
+      jobId: 'mock-job-1',
+      matchScore: 92,
+      aiReasoning:
+        '候选人在企业级 RAG 场景下有直接的架构和交付经验。',
+    },
+    read: false,
+    createdAt: '2026-03-31T08:10:00.000Z',
+  },
+  {
+    id: 'mock-enterprise-inbox-2',
+    itemType: 'prechat_summary',
+    title: 'AI 预沟通摘要：陈明远 / 高级 RAG 工程师',
+    content: {
+      talentName: '陈明远',
+      talentId: 'mock-talent-profile-1',
+      jobTitle: '高级 RAG 工程师',
+      jobId: 'mock-job-1',
+      matchScore: 92,
+      summary:
+        '候选人的求职目标与职位方向高度一致，预计对进入下一轮沟通持积极态度。',
+    },
+    read: true,
+    createdAt: '2026-03-31T06:50:00.000Z',
+  },
+] as const;
