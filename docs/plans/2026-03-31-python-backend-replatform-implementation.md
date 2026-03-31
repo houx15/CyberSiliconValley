@@ -280,7 +280,7 @@ uv run pytest backend/tests/integration/test_health.py -q
 
 Expected: tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add backend/apps/api/app backend/tests/integration/test_health.py
@@ -889,7 +889,7 @@ uv run pytest backend/tests/contract -q
 
 Expected: CLI and MCP satisfy their thin-adapter contract tests.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add backend/apps/cli/app/main.py backend/apps/mcp/app backend/tests/contract
@@ -936,7 +936,7 @@ curl http://localhost:8000/api/v1/health
 
 Expected: both apps boot and respond correctly.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add README.md AGENTS.md docs/plans/2026-03-31-python-backend-cutover-checklist.md
