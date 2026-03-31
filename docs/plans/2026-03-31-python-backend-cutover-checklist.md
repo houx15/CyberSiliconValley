@@ -54,7 +54,10 @@ APP_ENV=production
 APP_SECRET=...
 COOKIE_DOMAIN=your-domain.example.com
 FRONTEND_ORIGIN=https://your-domain.example.com
-ANTHROPIC_API_KEY=...
+AI_PROTOCOL=anthropic
+AI_BASE_URL=
+AI_MODEL=claude-sonnet-4-20250514
+AI_API_KEY=...
 ```
 
 ### 4. Migrate the database

@@ -39,6 +39,21 @@ uv run alembic upgrade head
 uv run python -m apps.cli.app.main seed --reset
 ```
 
+Core backend env keys in `backend/.env`:
+
+```bash
+DATABASE_URL=postgresql+psycopg://csv:password@localhost:5432/csv
+REDIS_URL=redis://localhost:6379/0
+APP_ENV=development
+APP_SECRET=change-me
+COOKIE_DOMAIN=localhost
+FRONTEND_ORIGIN=http://localhost:3000
+AI_PROTOCOL=anthropic
+AI_BASE_URL=
+AI_MODEL=claude-sonnet-4-20250514
+AI_API_KEY=
+```
+
 ## CLI
 
 ```bash

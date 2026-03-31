@@ -186,8 +186,10 @@ APP_ENV=production
 APP_SECRET=$(openssl rand -hex 32)
 COOKIE_DOMAIN=your-domain.example.com
 FRONTEND_ORIGIN=https://your-domain.example.com
-ANTHROPIC_API_KEY=...
-# or OPENAI_API_KEY / OPENAI_BASE_URL
+AI_PROTOCOL=anthropic
+AI_BASE_URL=
+AI_MODEL=claude-sonnet-4-20250514
+AI_API_KEY=...
 ```
 
 ### 5. Run migrations

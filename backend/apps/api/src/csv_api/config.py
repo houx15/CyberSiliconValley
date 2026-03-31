@@ -15,9 +15,10 @@ class Settings:
     frontend_origin: str = "http://localhost:3000"
     database_url: str = ""
     redis_url: str = ""
-    anthropic_api_key: str = ""
-    openai_api_key: str = ""
-    openai_base_url: str = ""
+    ai_protocol: str = "anthropic"
+    ai_base_url: str = ""
+    ai_model: str = ""
+    ai_api_key: str = ""
 
 
 @lru_cache(maxsize=1)
@@ -29,7 +30,8 @@ def get_settings() -> Settings:
         frontend_origin=os.getenv("FRONTEND_ORIGIN", "http://localhost:3000"),
         database_url=os.getenv("DATABASE_URL", ""),
         redis_url=os.getenv("REDIS_URL", ""),
-        anthropic_api_key=os.getenv("ANTHROPIC_API_KEY", ""),
-        openai_api_key=os.getenv("OPENAI_API_KEY", ""),
-        openai_base_url=os.getenv("OPENAI_BASE_URL", ""),
+        ai_protocol=os.getenv("AI_PROTOCOL", "anthropic"),
+        ai_base_url=os.getenv("AI_BASE_URL", ""),
+        ai_model=os.getenv("AI_MODEL", ""),
+        ai_api_key=os.getenv("AI_API_KEY", ""),
     )
