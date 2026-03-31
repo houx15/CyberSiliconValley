@@ -203,12 +203,14 @@ name = "csv-db"
 version = "0.1.0"
 source = { editable = "packages/db" }
 dependencies = [
+    { name = "alembic" },
     { name = "psycopg", extra = ["binary"] },
     { name = "sqlalchemy" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "alembic" },
     { name = "psycopg", extras = ["binary"] },
     { name = "sqlalchemy" },
 ]
