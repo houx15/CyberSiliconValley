@@ -7,22 +7,22 @@ export function getModel() {
   if (provider === 'anthropic') {
     const anthropic = createAnthropic({
       apiKey: process.env.ANTHROPIC_API_KEY,
+      baseURL: process.env.ANTHROPIC_BASE_URL,
     });
-    return anthropic('claude-sonnet-4-20250514');
+    return anthropic(process.env.AI_MODEL || 'claude-sonnet-4-20250514');
   }
 
   const openai = createOpenAI({
     apiKey: process.env.OPENAI_API_KEY,
     baseURL: process.env.OPENAI_BASE_URL,
   });
-  return openai('gpt-4o');
+  return openai(process.env.AI_MODEL || 'gpt-4o');
 }
 
 export function getEmbeddingModel() {
-  // Embeddings always use OpenAI-compatible API
   const openai = createOpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    baseURL: process.env.OPENAI_BASE_URL,
+    apiKey: process.env.EMBEDDING_API_KEY || process.env.OPENAI_API_KEY,
+    baseURL: process.env.EMBEDDING_BASE_URL || process.env.OPENAI_BASE_URL,
   });
-  return openai.embedding('text-embedding-3-small');
+  return openai.embedding(process.env.EMBEDDING_MODEL || 'text-embedding-3-small');
 }
