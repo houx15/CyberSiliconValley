@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ApiError } from '@/lib/api/client';
+import { loginWithPassword } from '@/lib/session/current-user';
 
 const DEMO_ACCOUNTS = [
   { email: 'talent1@csv.dev', label: 'Talent 1', role: 'talent' },
@@ -26,18 +28,13 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/v1/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
+      const user = await loginWithPassword(loginEmail, loginPassword);
+      router.push(user.role === 'talent' ? '/talent/home' : '/enterprise/dashboard');
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
         setError(t('invalidCredentials'));
         return;
       }
-      router.push(data.user.role === 'talent' ? '/talent/home' : '/enterprise/dashboard');
-    } catch {
       setError('Something went wrong');
     } finally {
       setLoading(false);

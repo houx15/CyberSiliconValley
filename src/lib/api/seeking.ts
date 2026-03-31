@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { apiFetch } from '@/lib/api/client';
 
 export interface ScanSummary {
   totalScanned: number;
@@ -48,57 +48,22 @@ export interface SeekingReportData {
 }
 
 export async function getLatestReportByTalentId(
-  talentId: string
+  _talentId: string
 ): Promise<SeekingReportData | null> {
-  const [{ db }, { seekingReports }] = await Promise.all([
-    import('@/lib/db'),
-    import('@/lib/db/schema'),
-  ]);
-
-  const rows = await db
-    .select({ reportData: seekingReports.reportData })
-    .from(seekingReports)
-    .where(eq(seekingReports.talentId, talentId))
-    .orderBy(desc(seekingReports.generatedAt))
-    .limit(1);
-
-  return (rows[0]?.reportData as SeekingReportData | undefined) ?? null;
+  const response = await apiFetch<{ data: SeekingReportData | null }>('/api/v1/seeking');
+  return response.data;
 }
 
 export async function getLatestReportByUserId(
-  userId: string
+  _userId: string
 ): Promise<SeekingReportData | null> {
-  const [{ db }, { talentProfiles }] = await Promise.all([
-    import('@/lib/db'),
-    import('@/lib/db/schema'),
-  ]);
-
-  const profileRows = await db
-    .select({ id: talentProfiles.id })
-    .from(talentProfiles)
-    .where(eq(talentProfiles.userId, userId))
-    .limit(1);
-
-  const talentId = profileRows[0]?.id;
-  if (!talentId) {
-    return null;
-  }
-
-  return getLatestReportByTalentId(talentId);
+  const response = await apiFetch<{ data: SeekingReportData | null }>('/api/v1/seeking');
+  return response.data;
 }
 
 export async function upsertReport(
   talentId: string,
   reportData: SeekingReportData
 ): Promise<void> {
-  const [{ db }, { seekingReports }] = await Promise.all([
-    import('@/lib/db'),
-    import('@/lib/db/schema'),
-  ]);
-
-  await db.insert(seekingReports).values({
-    talentId,
-    reportData,
-    generatedAt: new Date(),
-  });
+  throw new Error(`Frontend seeking writes are no longer supported for ${talentId}:${reportData.generatedAt}`);
 }
