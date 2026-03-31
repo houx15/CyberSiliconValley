@@ -77,7 +77,7 @@ csv/
 - Create: `src/lib/graph/queries.ts`
 - Create: `__tests__/lib/graph/queries.test.ts`
 
-- [ ] **Step 1: Create graph type definitions**
+- [x] **Step 1: Create graph type definitions**
 
 Create `src/types/graph.ts`:
 
@@ -131,7 +131,7 @@ export interface JobDetail extends ClusterJob {
 export type CoachMode = 'chat' | 'resume-review' | 'mock-interview' | 'skill-gaps';
 ```
 
-- [ ] **Step 2: Create graph data queries**
+- [x] **Step 2: Create graph data queries**
 
 Create `src/lib/graph/queries.ts`:
 
@@ -325,7 +325,7 @@ export async function getJobDetail(
 }
 ```
 
-- [ ] **Step 3: Create graph query tests**
+- [x] **Step 3: Create graph query tests**
 
 Create `__tests__/lib/graph/queries.test.ts`:
 
@@ -406,7 +406,7 @@ git commit -m "feat(fair): add graph type definitions and data query layer"
 - Create: `src/app/api/v1/graph/route.ts`
 - Create: `src/app/api/v1/graph/[keyword]/jobs/route.ts`
 
-- [ ] **Step 1: Create graph data GET endpoint**
+- [x] **Step 1: Create graph data GET endpoint**
 
 Create `src/app/api/v1/graph/route.ts`:
 
@@ -428,7 +428,7 @@ export async function GET() {
 }
 ```
 
-- [ ] **Step 2: Create keyword jobs GET endpoint**
+- [x] **Step 2: Create keyword jobs GET endpoint**
 
 Create `src/app/api/v1/graph/[keyword]/jobs/route.ts`:
 
@@ -505,13 +505,13 @@ git commit -m "feat(fair): add graph data and keyword jobs API endpoints"
 
 This is the core visualization component. It renders a D3 force simulation with keyword pill nodes, edges, zoom/pan, and skill highlighting.
 
-- [ ] **Step 1: Install D3 dependencies**
+- [x] **Step 1: Install D3 dependencies**
 
 ```bash
 npm install d3 @types/d3
 ```
 
-- [ ] **Step 2: Create the keyword graph client component**
+- [x] **Step 2: Create the keyword graph client component**
 
 Create `src/components/fair/keyword-graph.tsx`:
 
@@ -1634,7 +1634,7 @@ git commit -m "feat(fair): add Opportunity Fair page with graph, cluster view, a
 - Create: `src/lib/jobs/workers/update-graph.ts`
 - Modify: `src/lib/jobs/worker.ts` (register the handler)
 
-- [ ] **Step 1: Create the update-graph worker**
+- [x] **Step 1: Create the update-graph worker**
 
 Create `src/lib/jobs/workers/update-graph.ts`:
 
@@ -1784,7 +1784,7 @@ export async function updateGraphWorker() {
 }
 ```
 
-- [ ] **Step 2: Register the worker in the main worker entry point**
+- [x] **Step 2: Register the worker in the main worker entry point**
 
 In `src/lib/jobs/worker.ts`, add the `update-graph` handler to the existing worker switch/map. Add the following import and case:
 
@@ -1825,7 +1825,7 @@ git commit -m "feat(fair): add update-graph background job worker"
 - Create: `src/lib/ai/prompts/coach.ts`
 - Create: `__tests__/lib/ai/prompts/coach.test.ts`
 
-- [ ] **Step 1: Create the coach prompt builder**
+- [x] **Step 1: Create the coach prompt builder**
 
 Create `src/lib/ai/prompts/coach.ts`:
 
@@ -1953,7 +1953,7 @@ export const COACH_TOOLS = [
 ];
 ```
 
-- [ ] **Step 2: Create coach prompt tests**
+- [x] **Step 2: Create coach prompt tests**
 
 Create `__tests__/lib/ai/prompts/coach.test.ts`:
 
@@ -2044,7 +2044,7 @@ git commit -m "feat(coach): add coach system prompt builder with four modes and 
 **Files:**
 - Create: `src/app/api/internal/ai/coach/route.ts`
 
-- [ ] **Step 1: Create the coach streaming endpoint**
+- [x] **Step 1: Create the coach streaming endpoint**
 
 Create `src/app/api/internal/ai/coach/route.ts`:
 
@@ -2233,7 +2233,7 @@ git commit -m "feat(coach): add AI coach streaming API endpoint with tool execut
 - Create: `src/components/coach/before-after-card.tsx`
 - Create: `src/components/coach/coach-chat.tsx`
 
-- [ ] **Step 1: Create coach mode tabs**
+- [x] **Step 1: Create coach mode tabs**
 
 Create `src/components/coach/coach-mode-tabs.tsx`:
 
@@ -2276,7 +2276,7 @@ export default function CoachModeTabs({ mode, onModeChange }: CoachModeTabsProps
 }
 ```
 
-- [ ] **Step 2: Create gap analysis card**
+- [x] **Step 2: Create gap analysis card**
 
 Create `src/components/coach/gap-analysis-card.tsx`:
 
@@ -2319,7 +2319,7 @@ export default function GapAnalysisCard({
 }
 ```
 
-- [ ] **Step 3: Create before/after card**
+- [x] **Step 3: Create before/after card**
 
 Create `src/components/coach/before-after-card.tsx`:
 
@@ -2363,7 +2363,7 @@ export default function BeforeAfterCard({
 }
 ```
 
-- [ ] **Step 4: Create the main coach chat component**
+- [x] **Step 4: Create the main coach chat component**
 
 Create `src/components/coach/coach-chat.tsx`:
 
@@ -2626,7 +2626,7 @@ git commit -m "feat(coach): add coach chat UI with mode tabs, gap analysis, and 
 **Files:**
 - Modify: `src/app/(talent)/coach/page.tsx`
 
-- [ ] **Step 1: Create the coach page**
+- [x] **Step 1: Create the coach page**
 
 Replace `src/app/(talent)/coach/page.tsx`:
 
@@ -2672,7 +2672,7 @@ git commit -m "feat(coach): add AI Coach page"
 - Modify: `src/i18n/messages/en.json`
 - Modify: `src/i18n/messages/zh.json`
 
-- [ ] **Step 1: Add fair and coach strings to English locale**
+- [x] **Step 1: Add fair and coach strings to English locale**
 
 In `src/i18n/messages/en.json`, add to the existing JSON (merge with current content):
 
@@ -2722,7 +2722,7 @@ In `src/i18n/messages/en.json`, add to the existing JSON (merge with current con
 }
 ```
 
-- [ ] **Step 2: Add fair and coach strings to Chinese locale**
+- [x] **Step 2: Add fair and coach strings to Chinese locale**
 
 In `src/i18n/messages/zh.json`, add the corresponding Chinese translations:
 
@@ -2785,7 +2785,7 @@ git commit -m "feat(i18n): add fair and coach locale strings for en and zh-CN"
 
 **Files:** None (verification only)
 
-- [ ] **Step 1: Run type checker**
+- [x] **Step 1: Run type checker**
 
 ```bash
 npm run typecheck
@@ -2796,7 +2796,7 @@ Fix any type errors that arise. Common issues to watch for:
 - D3 type generics for simulation nodes and links
 - Vercel AI SDK `useChat` and `streamText` type parameters
 
-- [ ] **Step 2: Run linter**
+- [x] **Step 2: Run linter**
 
 ```bash
 npm run lint
@@ -2804,7 +2804,7 @@ npm run lint
 
 Fix any linting issues.
 
-- [ ] **Step 3: Run tests**
+- [x] **Step 3: Run tests**
 
 ```bash
 npm run test
@@ -2812,7 +2812,7 @@ npm run test
 
 Ensure all tests pass, including the new ones from Tasks 1 and 7.
 
-- [ ] **Step 4: Run full check**
+- [x] **Step 4: Run full check**
 
 ```bash
 npm run check

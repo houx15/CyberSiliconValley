@@ -5,6 +5,7 @@ import { embedProfile, embedJob } from '@/lib/matching/embedding';
 import { scanMatchesForJob } from '@/lib/matching/engine';
 import { handleGenerateReport } from './generate-report';
 import { handlePreChat } from './pre-chat';
+import { updateGraphWorker } from './workers/update-graph';
 
 const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
   maxRetriesPerRequest: null,
@@ -68,8 +69,7 @@ new Worker<PrechatJobData>(
 new Worker<GraphJobData>(
   'update-graph',
   async (job) => {
-    console.log(`[update-graph] Trigger: ${job.data.trigger}`);
-    // Stub: actual graph update in Spec 6
+    await updateGraphWorker(job);
   },
   { connection }
 );
