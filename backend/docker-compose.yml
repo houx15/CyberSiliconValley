@@ -1,0 +1,99 @@
+name: csv-backend
+
+x-csv-env: &csv-env
+  DATABASE_URL: postgresql+psycopg://csv:csv@postgres:5432/csv
+  REDIS_URL: redis://redis:6379/0
+  APP_ENV: development
+  APP_SECRET: change-me
+  COOKIE_DOMAIN: localhost
+  FRONTEND_ORIGIN: http://localhost:3000
+  ANTHROPIC_API_KEY: ""
+  OPENAI_API_KEY: ""
+  OPENAI_BASE_URL: ""
+
+services:
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -lc "npm ci && npm run dev -- --hostname 0.0.0.0"
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    volumes:
+      - ..:/app
+      - frontend-node-modules:/app/node_modules
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: sh -lc "uv run uvicorn csv_api.main:app --host 0.0.0.0 --port 8000"
+    environment: *csv-env
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - python -c "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/api/v1/health').read()"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    command: sh -lc "uv run python -m csv_worker.main"
+    environment: *csv-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: csv
+      POSTGRES_USER: csv
+      POSTGRES_PASSWORD: csv
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U csv -d csv
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - redis-cli ping | grep PONG
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  frontend-node-modules:
+  postgres-data:
+  redis-data:

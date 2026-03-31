@@ -13,7 +13,7 @@ The repo now covers the core web flows for both sides of the marketplace:
 
 Spec planning lives in `docs/superpowers/plans/`, and specs `0-5` are implemented in the frontend codebase.
 
-## Local Development (Frontend Only)
+## Local Development
 
 ```bash
 npm install
@@ -21,7 +21,26 @@ cp .env.example .env    # edit with your API keys
 npm run dev              # starts on http://localhost:3000
 ```
 
-The landing page and login page render without a database. Auth and any DB-dependent features require the backend to be running on the dev server.
+This starts the Next.js frontend only.
+
+### Full Stack Development
+
+The new Python backend stack lives under `backend/` and is the preferred way to run the full system locally:
+
+```bash
+cd backend
+docker compose up --build
+```
+
+That compose stack brings up:
+
+- `frontend`
+- `backend`
+- `worker`
+- `postgres`
+- `redis`
+
+The backend service is intentionally wired to the future `/api/v1/health` endpoint and will become fully healthy once the Python API routes land in the next tasks.
 
 ### Frontend Pages Added Recently
 
@@ -43,7 +62,7 @@ npm run check        # lint + typecheck + test (all three)
 
 ## Deploy to Dev Server
 
-The backend (PostgreSQL, Redis, Node.js) runs on the Aliyun ECS server.
+The platform currently runs on the Aliyun ECS server; the frontend remains Next.js/Node-based, and the backend is being replatformed to Python under `backend/`.
 
 Important constraints for this repo:
 
