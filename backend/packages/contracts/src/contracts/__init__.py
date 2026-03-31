@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contracts.auth import AuthUser, ErrorResponse, LoginRequest, LoginResponse, Role, SessionResponse
+from contracts.coach import CoachMessage, CoachMessagePart, CoachMode, CoachRequest, CoachStreamEvent
 from contracts.graph import GraphDataResponse, JobDetail, KeywordJobsResponse
 from contracts.inbox import InboxDetailResponse, InboxListResponse, InboxMarkReadResponse
 from contracts.jobs import (
@@ -28,10 +29,16 @@ from contracts.profile import (
     ProfileResponse,
     TalentProfilePatch,
 )
+from contracts.screening import ScreeningRequest, ScreeningStreamEvent
 from contracts.seeking import ResumeGenerateRequest, SeekingResponse, TailoredResumeResponse
 
 __all__ = [
     "AuthUser",
+    "CoachMessage",
+    "CoachMessagePart",
+    "CoachMode",
+    "CoachRequest",
+    "CoachStreamEvent",
     "ErrorResponse",
     "EnterpriseProfilePatch",
     "GraphDataResponse",
@@ -60,6 +67,8 @@ __all__ = [
     "OnboardingUpdateRequest",
     "ProfileResponse",
     "Role",
+    "ScreeningRequest",
+    "ScreeningStreamEvent",
     "ResumeGenerateRequest",
     "SeekingResponse",
     "SessionResponse",

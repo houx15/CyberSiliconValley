@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from db.models.job import Job
 from db.models.match import Match
+from db.models.enterprise_profile import EnterpriseProfile
 from db.models.talent_profile import TalentProfile
 
 
@@ -119,3 +120,19 @@ def update_match_status(session: Session, match: Match, status: str) -> Match:
     match.status = status
     session.flush()
     return match
+
+
+def list_recent_matches_for_talent(session: Session, talent_id: UUID, limit: int = 20):
+    statement = (
+        select(
+            Match.score,
+            Job.title.label("job_title"),
+            EnterpriseProfile.company_name.label("company_name"),
+        )
+        .join(Job, Match.job_id == Job.id)
+        .outerjoin(EnterpriseProfile, Job.enterprise_id == EnterpriseProfile.id)
+        .where(Match.talent_id == talent_id)
+        .order_by(desc(Match.score))
+        .limit(limit)
+    )
+    return session.execute(statement).mappings().all()

@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 from db.repositories.auth import create_user, get_user_by_email, get_user_by_id
+from db.repositories.chat import (
+    get_chat_session_context,
+    get_or_create_chat_session,
+    load_chat_history,
+    save_chat_message,
+    update_chat_session_context,
+)
 from db.repositories.graph import (
     get_enterprise_name,
     get_job,
@@ -45,6 +52,7 @@ __all__ = [
     "create_seeking_report",
     "create_talent_profile",
     "create_user",
+    "get_chat_session_context",
     "get_enterprise_name",
     "get_enterprise_profile_by_id",
     "get_enterprise_profile_by_user_id",
@@ -60,15 +68,19 @@ __all__ = [
     "get_unread_inbox_count",
     "get_user_by_email",
     "get_user_by_id",
+    "get_or_create_chat_session",
     "list_inbox_items_for_user",
     "list_jobs_for_enterprise",
     "list_keyword_edges",
     "list_keyword_nodes",
     "list_matches_for_enterprise",
     "list_matches_for_job",
+    "load_chat_history",
     "list_open_jobs",
     "mark_inbox_item_read",
+    "save_chat_message",
     "update_enterprise_profile",
+    "update_chat_session_context",
     "update_match_status",
     "update_talent_profile",
 ]
