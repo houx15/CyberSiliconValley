@@ -234,5 +234,34 @@
       "matches": "匹配",
       "shortlisted": "入围"
     }
+  },
+  "matching": {
+    "score": "匹配分数",
+    "semantic": "语义得分",
+    "feature": "特征得分",
+    "availability": "可用性",
+    "seniority": "资历",
+    "candidate": "候选人",
+    "status": "状态",
+    "noMatches": "暂无匹配",
+    "scanning": "AI 正在扫描人才库...",
+    "scanNow": "立即扫描",
+    "rescan": "重新扫描匹配",
+    "aiScreen": "AI 筛选",
+    "sendInvite": "发送邀请",
+    "addToShortlist": "加入候选名单",
+    "aiAnalysis": "AI 分析",
+    "skillMatch": "技能匹配",
+    "mustHave": "必需",
+    "niceToHave": "加分项",
+    "filterMinScore": "最低分数",
+    "candidateCount": "{count} 位候选人",
+    "postedDate": "发布于 {date}"
+  },
+  "screening": {
+    "title": "AI 人才筛选",
+    "subtitle": "与 AI 招聘助手对话，搜索、比较和筛选候选人。",
+    "placeholder": "询问候选人、比较人才或筛选名单...",
+    "send": "发送"
   }
 }
