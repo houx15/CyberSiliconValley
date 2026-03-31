@@ -30,3 +30,27 @@ async def enqueue_match_scan_job(redis_url: str | None, job_id: str) -> object:
         return await enqueue_match_scan(queue, job_id)
     finally:
         await queue.close(close_connection_pool=True)
+
+
+async def enqueue_seeking_report_generation(queue: ArqRedis, talent_id: str) -> object:
+    return await queue.enqueue_job("generate_seeking_report", {"talent_id": talent_id}, _queue_name=WORKER_QUEUE_NAME)
+
+
+async def enqueue_seeking_report_job(redis_url: str | None, talent_id: str) -> object:
+    queue = await create_queue(redis_url)
+    try:
+        return await enqueue_seeking_report_generation(queue, talent_id)
+    finally:
+        await queue.close(close_connection_pool=True)
+
+
+async def enqueue_graph_refresh(queue: ArqRedis) -> object:
+    return await queue.enqueue_job("refresh_graph", _queue_name=WORKER_QUEUE_NAME)
+
+
+async def enqueue_graph_refresh_job(redis_url: str | None) -> object:
+    queue = await create_queue(redis_url)
+    try:
+        return await enqueue_graph_refresh(queue)
+    finally:
+        await queue.close(close_connection_pool=True)

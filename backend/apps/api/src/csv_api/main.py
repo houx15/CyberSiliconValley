@@ -4,11 +4,15 @@ from fastapi import FastAPI
 
 from csv_api.config import get_settings
 from csv_api.routers.auth import router as auth_router
+from csv_api.routers.graph import router as graph_router
 from csv_api.routers.health import router as health_router
+from csv_api.routers.inbox import router as inbox_router
 from csv_api.routers.jobs import router as jobs_router
 from csv_api.routers.matches import router as matches_router
 from csv_api.routers.onboarding import router as onboarding_router
 from csv_api.routers.profile import router as profile_router
+from csv_api.routers.resume import router as resume_router
+from csv_api.routers.seeking import router as seeking_router
 
 
 def create_app() -> FastAPI:
@@ -20,6 +24,10 @@ def create_app() -> FastAPI:
     app.include_router(onboarding_router)
     app.include_router(jobs_router)
     app.include_router(matches_router)
+    app.include_router(inbox_router)
+    app.include_router(seeking_router)
+    app.include_router(graph_router)
+    app.include_router(resume_router)
     app.state.settings = settings
     return app
 

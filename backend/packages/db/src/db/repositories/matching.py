@@ -5,7 +5,6 @@ from uuid import UUID
 from sqlalchemy import desc, select
 from sqlalchemy.orm import Session
 
-from db.models.inbox_item import InboxItem
 from db.models.job import Job
 from db.models.match import Match
 from db.models.talent_profile import TalentProfile
@@ -120,22 +119,3 @@ def update_match_status(session: Session, match: Match, status: str) -> Match:
     match.status = status
     session.flush()
     return match
-
-
-def create_inbox_item(
-    session: Session,
-    *,
-    user_id: UUID,
-    item_type: str,
-    title: str | None,
-    content: dict,
-) -> InboxItem:
-    item = InboxItem(
-        user_id=user_id,
-        item_type=item_type,
-        title=title,
-        content=content,
-    )
-    session.add(item)
-    session.flush()
-    return item

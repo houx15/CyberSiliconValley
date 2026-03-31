@@ -47,12 +47,27 @@ def get_current_user(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated") from exc
 
 
+def get_optional_user(
+    request: Request,
+    auth_service: AuthService = Depends(get_auth_service),
+) -> AuthUser | None:
+    token = request.cookies.get(auth_service.cookie_name)
+    if not token:
+        return None
+
+    try:
+        return auth_service.read_token(token)
+    except Exception:
+        return None
+
+
 __all__ = [
     "Settings",
     "get_auth_service",
     "get_current_user",
     "get_db_session",
     "get_engine",
+    "get_optional_user",
     "get_session_factory",
     "get_settings",
 ]

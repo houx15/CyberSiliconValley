@@ -8,8 +8,8 @@ from contracts.auth import AuthUser
 from contracts.matches import MatchDetail, MatchListItem, MatchStatus
 from db.models.job import Job
 from db.models.talent_profile import TalentProfile
+from db.repositories.inbox import create_inbox_item
 from db.repositories.matching import (
-    create_inbox_item,
     get_match_detail_for_enterprise,
     get_match_model_for_enterprise,
     list_matches_for_enterprise,

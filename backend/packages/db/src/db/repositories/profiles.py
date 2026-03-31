@@ -10,6 +10,16 @@ from db.models.enterprise_profile import EnterpriseProfile
 from db.models.talent_profile import TalentProfile
 
 
+def get_talent_profile_by_id(session: Session, talent_id: UUID) -> TalentProfile | None:
+    statement = select(TalentProfile).where(TalentProfile.id == talent_id)
+    return session.execute(statement).scalar_one_or_none()
+
+
+def get_enterprise_profile_by_id(session: Session, enterprise_id: UUID) -> EnterpriseProfile | None:
+    statement = select(EnterpriseProfile).where(EnterpriseProfile.id == enterprise_id)
+    return session.execute(statement).scalar_one_or_none()
+
+
 def get_talent_profile_by_user_id(session: Session, user_id: UUID) -> TalentProfile | None:
     statement = select(TalentProfile).where(TalentProfile.user_id == user_id)
     return session.execute(statement).scalar_one_or_none()
