@@ -13,6 +13,7 @@ SRC_DIR = CURRENT_DIR.parent / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
+import db.models  # noqa: F401,E402
 from db.base import Base  # noqa: E402
 
 config = context.config
@@ -24,7 +25,10 @@ target_metadata = Base.metadata
 
 
 def get_database_url() -> str:
-    return os.getenv("DATABASE_URL") or config.get_main_option("sqlalchemy.url")
+    database_url = os.getenv("DATABASE_URL")
+    if database_url is None or database_url.strip() == "":
+        raise RuntimeError("DATABASE_URL must be set for Alembic migrations")
+    return database_url
 
 
 def run_migrations_offline() -> None:

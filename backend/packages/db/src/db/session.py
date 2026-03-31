@@ -8,9 +8,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
-DEFAULT_DATABASE_URL = "postgresql+psycopg://postgres:postgres@localhost:5432/csv"
-
-
 def normalize_database_url(database_url: str) -> str:
     if database_url.startswith("postgresql+psycopg2://"):
         return database_url.replace("postgresql+psycopg2://", "postgresql+psycopg://", 1)
@@ -18,7 +15,10 @@ def normalize_database_url(database_url: str) -> str:
 
 
 def get_database_url() -> str:
-    return normalize_database_url(os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL))
+    raw_database_url = os.getenv("DATABASE_URL")
+    if raw_database_url is None or raw_database_url.strip() == "":
+        raise RuntimeError("DATABASE_URL must be set")
+    return normalize_database_url(raw_database_url)
 
 
 def create_engine_from_url(database_url: str | None = None) -> Engine:

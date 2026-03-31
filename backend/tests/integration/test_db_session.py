@@ -36,21 +36,24 @@ def _drop_test_table(engine) -> None:
 
 def test_engine_and_session_factory_execute_select_one() -> None:
     engine = create_engine_from_url(DATABASE_URL)
-    session_factory = create_session_factory(engine)
+    try:
+        session_factory = create_session_factory(engine)
 
-    with engine.connect() as connection:
-        assert connection.execute(text("SELECT 1")).scalar_one() == 1
+        with engine.connect() as connection:
+            assert connection.execute(text("SELECT 1")).scalar_one() == 1
 
-    with session_factory() as session:
-        assert session.execute(text("SELECT 1")).scalar_one() == 1
+        with session_factory() as session:
+            assert session.execute(text("SELECT 1")).scalar_one() == 1
+    finally:
+        engine.dispose()
 
 
 def test_session_scope_rolls_back_on_error() -> None:
     engine = create_engine_from_url(DATABASE_URL)
-    session_factory = create_session_factory(engine)
-    _create_test_table(engine)
-
     try:
+        session_factory = create_session_factory(engine)
+        _create_test_table(engine)
+
         with pytest.raises(RuntimeError):
             with session_scope(session_factory) as session:
                 session.execute(
@@ -68,3 +71,4 @@ def test_session_scope_rolls_back_on_error() -> None:
         assert count == 0
     finally:
         _drop_test_table(engine)
+        engine.dispose()
