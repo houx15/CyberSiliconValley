@@ -48,14 +48,14 @@ export interface SeekingReportData {
 }
 
 export async function getLatestReportByTalentId(
-  _talentId: string
+  _talentId?: string
 ): Promise<SeekingReportData | null> {
   const response = await apiFetch<{ data: SeekingReportData | null }>('/api/v1/seeking');
   return response.data;
 }
 
 export async function getLatestReportByUserId(
-  _userId: string
+  _userId?: string
 ): Promise<SeekingReportData | null> {
   const response = await apiFetch<{ data: SeekingReportData | null }>('/api/v1/seeking');
   return response.data;

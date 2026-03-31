@@ -2,29 +2,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 const CoachChat = vi.fn(() => <div data-testid="coach-chat" />);
-const verifyJWT = vi.fn();
+const getCurrentUser = vi.fn();
 const redirect = vi.fn((path: string) => {
   throw new Error(`REDIRECT:${path}`);
 });
-let authTokenValue: string | null = 'mock-token';
 
 vi.mock('@/components/coach/coach-chat', () => ({
   default: CoachChat,
 }));
 
-vi.mock('@/lib/auth', () => ({
-  verifyJWT,
-}));
-
-vi.mock('next/headers', () => ({
-  cookies: async () => ({
-    get: (key: string) =>
-      key === 'auth-token' && authTokenValue
-        ? {
-            value: authTokenValue,
-          }
-        : null,
-  }),
+vi.mock('@/lib/session/current-user', () => ({
+  getCurrentUser,
 }));
 
 vi.mock('next/navigation', () => ({
@@ -34,23 +22,22 @@ vi.mock('next/navigation', () => ({
 describe('CoachPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    authTokenValue = 'mock-token';
   });
 
-  it('redirects to login when there is no auth token', async () => {
-    authTokenValue = null;
+  it('redirects to login when there is no authenticated user', async () => {
+    getCurrentUser.mockResolvedValueOnce(null);
 
     const { default: CoachPage } = await import('../page');
 
     await expect(CoachPage()).rejects.toThrow('REDIRECT:/login');
-    expect(verifyJWT).not.toHaveBeenCalled();
+    expect(getCurrentUser).toHaveBeenCalled();
     expect(redirect).toHaveBeenCalledWith('/login');
     expect(CoachChat).not.toHaveBeenCalled();
   });
 
   it('renders the coach chat for an authenticated talent user', async () => {
-    verifyJWT.mockResolvedValueOnce({
-      userId: 'user-123',
+    getCurrentUser.mockResolvedValueOnce({
+      id: 'user-123',
       role: 'talent',
       email: 'talent@example.com',
     });
@@ -58,14 +45,14 @@ describe('CoachPage', () => {
     const { default: CoachPage } = await import('../page');
     const markup = renderToStaticMarkup(await CoachPage());
 
-    expect(verifyJWT).toHaveBeenCalledWith('mock-token');
+    expect(getCurrentUser).toHaveBeenCalled();
     expect(redirect).not.toHaveBeenCalled();
     expect(CoachChat).toHaveBeenCalledTimes(1);
     expect(markup).toContain('data-testid="coach-chat"');
   });
 
-  it('redirects to login when the token is invalid', async () => {
-    verifyJWT.mockRejectedValueOnce(new Error('invalid token'));
+  it('redirects to login when session loading fails', async () => {
+    getCurrentUser.mockRejectedValueOnce(new Error('session unavailable'));
 
     const { default: CoachPage } = await import('../page');
 
@@ -75,8 +62,8 @@ describe('CoachPage', () => {
   });
 
   it('redirects to login when the user is not talent', async () => {
-    verifyJWT.mockResolvedValueOnce({
-      userId: 'user-123',
+    getCurrentUser.mockResolvedValueOnce({
+      id: 'user-123',
       role: 'enterprise',
       email: 'enterprise@example.com',
     });

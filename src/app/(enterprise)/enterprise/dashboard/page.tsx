@@ -1,4 +1,3 @@
-import { headers } from 'next/headers';
 import Link from 'next/link';
 import { PageTransition } from '@/components/animations/page-transition';
 import { ActivityStatus } from '@/components/enterprise/activity-status';
@@ -7,80 +6,68 @@ import { EmptyJobs } from '@/components/empty-states/empty-jobs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MOCK_ENTERPRISE_PROFILE, MOCK_JOBS, MOCK_JOB_MATCH_COUNTS } from '@/lib/mock-data';
+import { listEnterpriseJobs } from '@/lib/api/jobs';
+import { getCurrentEnterpriseProfile } from '@/lib/api/profile';
 
-async function getDashboardData(userId: string) {
-  try {
-    const { db } = await import('@/lib/db');
-    const { enterpriseProfiles, jobs, matches } = await import('@/lib/db/schema');
-    const { eq, desc, sql } = await import('drizzle-orm');
+type DashboardProfile = {
+  companyName: string;
+  onboardingDone: boolean;
+};
 
-    const [profile] = await db
-      .select()
-      .from(enterpriseProfiles)
-      .where(eq(enterpriseProfiles.userId, userId))
-      .limit(1);
-
-    if (!profile?.onboardingDone) return null;
-
-    const jobsList = await db
-      .select()
-      .from(jobs)
-      .where(eq(jobs.enterpriseId, profile.id))
-      .orderBy(desc(jobs.createdAt));
-
-    const jobsWithCounts = await Promise.all(
-      jobsList.map(async (job) => {
-        const [matchStats] = await db
-          .select({
-            total: sql<number>`count(*)`,
-            shortlisted: sql<number>`count(*) filter (where ${matches.status} = 'shortlisted')`,
-          })
-          .from(matches)
-          .where(eq(matches.jobId, job.id));
-
-        return {
-          id: job.id,
-          title: job.title,
-          status: job.status,
-          createdAt: job.createdAt.toISOString(),
-          matchCount: Number(matchStats?.total ?? 0),
-          shortlistedCount: Number(matchStats?.shortlisted ?? 0),
-        };
-      })
-    );
-
-    return { profile, jobsWithCounts };
-  } catch {
-    // Fallback to mock data
-    const jobsWithCounts = MOCK_JOBS.map((job) => ({
-      id: job.id,
-      title: job.title,
-      status: job.status,
-      createdAt: job.createdAt.toISOString(),
-      matchCount: MOCK_JOB_MATCH_COUNTS[job.id]?.matchCount ?? 0,
-      shortlistedCount: MOCK_JOB_MATCH_COUNTS[job.id]?.shortlistedCount ?? 0,
-    }));
-    return { profile: MOCK_ENTERPRISE_PROFILE, jobsWithCounts };
-  }
-}
+type DashboardJob = {
+  id: string;
+  title: string;
+  status: string;
+  createdAt: string;
+  matchCount: number;
+  shortlistedCount: number;
+};
 
 export default async function DashboardPage() {
-  const headersList = await headers();
-  const userId = headersList.get('x-user-id') || 'test-enterprise-1';
-
-  const data = await getDashboardData(userId);
-  const fallbackJobsWithCounts = MOCK_JOBS.map((job) => ({
+  const fallbackJobsWithCounts: DashboardJob[] = MOCK_JOBS.map((job) => ({
     id: job.id,
-    title: job.title,
+    title: job.title || 'Untitled',
     status: job.status,
     createdAt: job.createdAt.toISOString(),
     matchCount: MOCK_JOB_MATCH_COUNTS[job.id]?.matchCount ?? 0,
     shortlistedCount: MOCK_JOB_MATCH_COUNTS[job.id]?.shortlistedCount ?? 0,
   }));
-  const resolvedData = data ?? {
-    profile: MOCK_ENTERPRISE_PROFILE,
+  let resolvedData: { profile: DashboardProfile; jobsWithCounts: DashboardJob[] } = {
+    profile: {
+      companyName: MOCK_ENTERPRISE_PROFILE.companyName,
+      onboardingDone: MOCK_ENTERPRISE_PROFILE.onboardingDone,
+    },
     jobsWithCounts: fallbackJobsWithCounts,
   };
+
+  try {
+    const [profile, jobsWithCounts] = await Promise.all([
+      getCurrentEnterpriseProfile(),
+      listEnterpriseJobs(),
+    ]);
+
+    if (profile?.onboardingDone) {
+      resolvedData = {
+        profile: {
+          companyName: profile.companyName,
+          onboardingDone: profile.onboardingDone,
+        },
+        jobsWithCounts: jobsWithCounts.map((job) => ({
+          id: job.id,
+          title: job.title,
+          status: job.status,
+          createdAt: job.createdAt,
+          matchCount: job.matchCount,
+          shortlistedCount: job.shortlistedCount,
+        })),
+      };
+    }
+  } catch {
+    resolvedData = {
+      profile: MOCK_ENTERPRISE_PROFILE,
+      jobsWithCounts: fallbackJobsWithCounts,
+    };
+  }
 
   const { profile, jobsWithCounts } = resolvedData;
   const totalMatches = jobsWithCounts.reduce((sum, j) => sum + j.matchCount, 0);

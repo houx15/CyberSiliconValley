@@ -1,44 +1,24 @@
-import { db } from '@/lib/db';
-import { jobs, enterpriseProfiles } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { cookies } from 'next/headers';
-import { verifyJWT } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { ScreeningChat } from '@/components/matching/screening-chat';
+import { listEnterpriseJobs, listOpenEnterpriseJobs } from '@/lib/api/jobs';
+import { getCurrentUser } from '@/lib/session/current-user';
+import { MOCK_JOBS } from '@/lib/mock-data';
 
 export default async function ScreeningPage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('token')?.value;
-
-  if (!token) {
+  const user = await getCurrentUser();
+  if (!user || user.role !== 'enterprise') {
     redirect('/login');
   }
-
-  let payload;
-  try {
-    payload = await verifyJWT(token);
-  } catch {
-    redirect('/login');
-  }
-
-  if (payload.role !== 'enterprise') {
-    redirect('/login');
-  }
-
-  // Load enterprise's active jobs
-  const enterprise = await db.query.enterpriseProfiles.findFirst({
-    where: eq(enterpriseProfiles.userId, payload.userId),
-  });
 
   let activeJobs: Array<{ id: string; title: string }> = [];
 
-  if (enterprise) {
-    const allJobs = await db.query.jobs.findMany({
-      where: eq(jobs.status, 'open'),
-    });
-    activeJobs = allJobs
-      .filter((j) => j.enterpriseId === enterprise.id)
-      .map((j) => ({ id: j.id, title: j.title || 'Untitled' }));
+  try {
+    activeJobs = listOpenEnterpriseJobs(await listEnterpriseJobs());
+  } catch {
+    activeJobs = MOCK_JOBS.filter((job) => job.status === 'open').map((job) => ({
+      id: job.id,
+      title: job.title || 'Untitled',
+    }));
   }
 
   return (

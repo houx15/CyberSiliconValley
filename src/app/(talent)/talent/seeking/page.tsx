@@ -1,33 +1,24 @@
-import { headers } from 'next/headers';
 import { PageTransition } from '@/components/animations/page-transition';
 import { NoReport } from '@/components/empty-states/no-report';
 import { SeekingReportClient } from '@/components/seeking/seeking-report-client';
+import { getCurrentTalentProfile } from '@/lib/api/profile';
 import { getLatestReportByUserId } from '@/lib/api/seeking';
-import { MOCK_SEEKING_REPORT, MOCK_TALENT_PROFILE } from '@/lib/mock-data';
+import { MOCK_SEEKING_REPORT } from '@/lib/mock-data';
 
 export default async function SeekingPage() {
-  const headersList = await headers();
-  const userId = headersList.get('x-user-id') || MOCK_TALENT_PROFILE.userId;
   let report = null;
-  let talentId = MOCK_TALENT_PROFILE.id;
+  let talentId = '';
 
   try {
-    report = await getLatestReportByUserId(userId);
-    const { db } = await import('@/lib/db');
-    const { talentProfiles } = await import('@/lib/db/schema');
-    const { eq } = await import('drizzle-orm');
-    const rows = await db
-      .select({ id: talentProfiles.id })
-      .from(talentProfiles)
-      .where(eq(talentProfiles.userId, userId))
-      .limit(1);
-    talentId = rows[0]?.id ?? talentId;
+    const [nextReport, profile] = await Promise.all([
+      getLatestReportByUserId(),
+      getCurrentTalentProfile(),
+    ]);
+    report = nextReport;
+    talentId = profile?.id || '';
   } catch {
     report = MOCK_SEEKING_REPORT;
-  }
-
-  if (!report && userId === MOCK_TALENT_PROFILE.userId) {
-    report = MOCK_SEEKING_REPORT;
+    talentId = 'mock-talent-profile-1';
   }
 
   if (!report) {

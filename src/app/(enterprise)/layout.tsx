@@ -1,16 +1,15 @@
-import { headers } from 'next/headers';
 import { SidebarNav } from '@/components/layout/sidebar-nav';
 import { CompanionBar } from '@/components/layout/companion-bar';
+import { getCurrentUser } from '@/lib/session/current-user';
 
 export default async function EnterpriseLayout({ children }: { children: React.ReactNode }) {
-  const headersList = await headers();
-  const userId = headersList.get('x-user-id');
+  const user = await getCurrentUser();
 
   let inboxBadge = 0;
   try {
-    if (userId) {
+    if (user?.role === 'enterprise') {
       const { getUnreadInboxCount } = await import('@/lib/api/inbox');
-      inboxBadge = await getUnreadInboxCount(userId);
+      inboxBadge = await getUnreadInboxCount(user.id);
     }
   } catch {
     inboxBadge = 1;

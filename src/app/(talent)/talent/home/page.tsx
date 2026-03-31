@@ -1,34 +1,21 @@
-import { headers } from 'next/headers';
 import { PageTransition } from '@/components/animations/page-transition';
 import { ProfileHeader } from '@/components/talent/profile-header';
 import { CapabilityPortrait } from '@/components/talent/capability-portrait';
 import { ExperienceList } from '@/components/talent/experience-list';
 import { getTranslations } from 'next-intl/server';
 import { MOCK_TALENT_PROFILE } from '@/lib/mock-data';
+import { getCurrentTalentProfile } from '@/lib/api/profile';
 import type { Skill, Experience, Availability } from '@/types';
 
-async function getProfile(userId: string) {
-  try {
-    const { db } = await import('@/lib/db');
-    const { talentProfiles } = await import('@/lib/db/schema');
-    const { eq } = await import('drizzle-orm');
-    const [profile] = await db
-      .select()
-      .from(talentProfiles)
-      .where(eq(talentProfiles.userId, userId))
-      .limit(1);
-    return profile;
-  } catch {
-    return MOCK_TALENT_PROFILE;
-  }
-}
-
 export default async function TalentHomePage() {
-  const headersList = await headers();
-  const userId = headersList.get('x-user-id') || 'test-user-1';
   const t = await getTranslations('talentHome');
+  let profile = null;
 
-  const profile = await getProfile(userId);
+  try {
+    profile = await getCurrentTalentProfile();
+  } catch {
+    profile = MOCK_TALENT_PROFILE;
+  }
 
   if (!profile) {
     return (

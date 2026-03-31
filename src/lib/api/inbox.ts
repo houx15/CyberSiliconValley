@@ -24,7 +24,7 @@ interface InboxMarkReadResponse {
 }
 
 export async function listInboxItemsByUserId(
-  _userId: string,
+  _userId?: string,
   filter: InboxFilter = 'all'
 ): Promise<InboxItemRow[]> {
   const response = await apiFetch<InboxListResponse>(`/api/v1/inbox?filter=${filter}`);
@@ -33,7 +33,7 @@ export async function listInboxItemsByUserId(
 
 export async function markInboxItemRead(
   id: string,
-  _userId: string
+  _userId?: string
 ): Promise<boolean> {
   const response = await apiFetch<InboxMarkReadResponse>(`/api/v1/inbox/${id}`, {
     method: 'PATCH',
@@ -41,7 +41,7 @@ export async function markInboxItemRead(
   return response.success;
 }
 
-export async function getUnreadInboxCount(_userId: string): Promise<number> {
+export async function getUnreadInboxCount(_userId?: string): Promise<number> {
   const response = await apiFetch<InboxListResponse>('/api/v1/inbox?filter=all');
   return response.data.unreadCount;
 }

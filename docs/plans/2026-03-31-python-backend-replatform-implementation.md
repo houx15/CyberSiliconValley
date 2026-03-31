@@ -783,15 +783,15 @@ git commit -m "refactor: move frontend auth and api access to backend clients"
 - Modify: `src/app/(enterprise)/enterprise/inbox/page.tsx`
 - Modify: `src/app/(talent)/talent/inbox/page.tsx`
 
-- [ ] **Step 1: Write or update page-level tests**
+- [x] **Step 1: Write or update page-level tests**
 
 Ensure each page can render from mocked API clients instead of DB/auth imports.
 
-- [ ] **Step 2: Remove `drizzle-orm`, DB, and auth imports from pages**
+- [x] **Step 2: Remove `drizzle-orm`, DB, and auth imports from pages**
 
 Move all page data loading to frontend API wrappers.
 
-- [ ] **Step 3: Run targeted frontend tests**
+- [x] **Step 3: Run targeted frontend tests**
 
 Run:
 
@@ -801,7 +801,7 @@ npm run test -- src/app/(talent)/talent src/app/(enterprise)/enterprise
 
 Expected: pages render against mocked API clients only.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/app/(talent)/talent src/app/(enterprise)/enterprise

@@ -1,18 +1,17 @@
-import { headers } from 'next/headers';
 import { SidebarNav } from '@/components/layout/sidebar-nav';
 import { CompanionBar } from '@/components/layout/companion-bar';
 import { MOCK_COMPANION_COUNTS } from '@/lib/mock-data';
+import { getCurrentUser } from '@/lib/session/current-user';
 
 export default async function TalentLayout({ children }: { children: React.ReactNode }) {
-  const headersList = await headers();
-  const userId = headersList.get('x-user-id');
+  const user = await getCurrentUser();
 
   let statusMessage: string | undefined;
   let inboxBadge = 0;
   try {
-    if (userId) {
+    if (user?.role === 'talent') {
       const { getTalentCompanionCounts } = await import('@/lib/companion-status');
-      const { matchCount, inboxCount } = await getTalentCompanionCounts(userId);
+      const { matchCount, inboxCount } = await getTalentCompanionCounts(user.id);
       inboxBadge = inboxCount;
       if (matchCount > 0 || inboxCount > 0) {
         statusMessage = `You have ${matchCount} new matches and ${inboxCount} new messages. Click to chat.`;

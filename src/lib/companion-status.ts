@@ -1,6 +1,5 @@
-import { db } from '@/lib/db';
-import { inboxItems, matches, talentProfiles } from '@/lib/db/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { getUnreadInboxCount } from '@/lib/api/inbox';
+import { getLatestReportByUserId } from '@/lib/api/seeking';
 
 /**
  * Fetch companion status counts for a talent user.
@@ -8,30 +7,14 @@ import { eq, and, sql } from 'drizzle-orm';
  */
 export async function getTalentCompanionCounts(userId: string) {
   try {
-    // Get the talent profile ID
-    const [profile] = await db
-      .select({ id: talentProfiles.id })
-      .from(talentProfiles)
-      .where(eq(talentProfiles.userId, userId))
-      .limit(1);
-
-    if (!profile) return { inboxCount: 0, matchCount: 0 };
-
-    // Count unread inbox items
-    const [inboxResult] = await db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(inboxItems)
-      .where(and(eq(inboxItems.userId, userId), eq(inboxItems.read, false)));
-
-    // Count new matches
-    const [matchResult] = await db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(matches)
-      .where(and(eq(matches.talentId, profile.id), eq(matches.status, 'new')));
+    const [inboxCount, report] = await Promise.all([
+      getUnreadInboxCount(userId),
+      getLatestReportByUserId(userId),
+    ]);
 
     return {
-      inboxCount: inboxResult?.count ?? 0,
-      matchCount: matchResult?.count ?? 0,
+      inboxCount,
+      matchCount: report?.scanSummary.highMatches ?? 0,
     };
   } catch (error) {
     console.warn('Failed to fetch companion counts:', error);
