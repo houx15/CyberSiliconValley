@@ -159,13 +159,23 @@ CREATE INDEX IF NOT EXISTS idx_jobs_embedding ON jobs USING ivfflat (embedding v
 "
 ```
 
-#### 6. Seed demo accounts
+#### 6. Seed demo data
 
 ```bash
-npm run seed:users
+cd backend
+uv sync
+uv run python -m apps.cli.app.main seed --reset
 ```
 
-This creates 5 accounts (password: `csv2026`):
+This creates the Python-backend demo dataset, including:
+
+- the 5 fixed login accounts below
+- seeded talent and enterprise profiles
+- seeded jobs and computed matches
+- keyword graph nodes and edges
+- inbox fixtures and seeking reports
+
+The fixed login accounts all use password `csv2026`:
 - `talent1@csv.dev`, `talent2@csv.dev`, `talent3@csv.dev`
 - `enterprise1@csv.dev`, `enterprise2@csv.dev`
 
@@ -274,3 +284,10 @@ src/
 | talent3@csv.dev | csv2026 | Talent |
 | enterprise1@csv.dev | csv2026 | Enterprise |
 | enterprise2@csv.dev | csv2026 | Enterprise |
+
+These are created by the Python seed command:
+
+```bash
+cd backend
+uv run python -m apps.cli.app.main seed
+```

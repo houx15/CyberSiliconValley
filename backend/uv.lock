@@ -256,11 +256,17 @@ name = "csv-cli"
 version = "0.1.0"
 source = { editable = "apps/cli" }
 dependencies = [
+    { name = "csv-core" },
+    { name = "csv-db" },
     { name = "httpx" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "httpx" }]
+requires-dist = [
+    { name = "csv-core", editable = "packages/core" },
+    { name = "csv-db", editable = "packages/db" },
+    { name = "httpx" },
+]
 
 [[package]]
 name = "csv-contracts"
