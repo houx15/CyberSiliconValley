@@ -73,7 +73,7 @@ csv/
 
 This is the foundation all seed data references. Every skill name across all 50 talent profiles and 30 jobs must use these exact strings.
 
-- [ ] **Step 1: Write vocabulary test**
+- [x] **Step 1: Write vocabulary test**
 
 Create `__tests__/seed/vocabulary.test.ts`:
 
@@ -116,7 +116,7 @@ describe('Controlled Skill Vocabulary', () => {
 });
 ```
 
-- [ ] **Step 2: Create vocabulary module**
+- [x] **Step 2: Create vocabulary module**
 
 Create `scripts/seed/vocabulary.ts`:
 
@@ -338,7 +338,7 @@ export type BackgroundType = (typeof BACKGROUND_TYPES)[number];
 export const AVAILABILITY_STATES = ['open', 'busy', 'not_looking'] as const;
 ```
 
-- [ ] **Step 3: Run test**
+- [x] **Step 3: Run test**
 
 ```bash
 npx vitest run __tests__/seed/vocabulary.test.ts
@@ -362,7 +362,7 @@ git commit -m "feat(seed): add controlled skill vocabulary with 90+ normalized s
 
 These are the exact prompts sent to the configured LLM to generate seed data.
 
-- [ ] **Step 1: Create prompts module**
+- [x] **Step 1: Create prompts module**
 
 Create `scripts/seed/prompts.ts`:
 
@@ -688,7 +688,7 @@ git commit -m "feat(seed): add LLM prompt templates for seed data generation"
 **Files:**
 - Create: `scripts/seed/users.ts`
 
-- [ ] **Step 1: Create users seed**
+- [x] **Step 1: Create users seed**
 
 Create `scripts/seed/users.ts`:
 
@@ -758,7 +758,7 @@ git commit -m "feat(seed): add predefined user account seeding"
 **Files:**
 - Create: `scripts/seed/profiles.ts`
 
-- [ ] **Step 1: Create profiles seed**
+- [x] **Step 1: Create profiles seed**
 
 Create `scripts/seed/profiles.ts`:
 
@@ -1089,7 +1089,7 @@ git commit -m "feat(seed): add LLM-powered talent and enterprise profile generat
 **Files:**
 - Create: `scripts/seed/jobs.ts`
 
-- [ ] **Step 1: Create jobs seed**
+- [x] **Step 1: Create jobs seed**
 
 Create `scripts/seed/jobs.ts`:
 
@@ -1232,7 +1232,7 @@ git commit -m "feat(seed): add LLM-powered job posting generation with skill val
 **Files:**
 - Create: `scripts/seed/compute.ts`
 
-- [ ] **Step 1: Create compute seed**
+- [x] **Step 1: Create compute seed**
 
 Create `scripts/seed/compute.ts`:
 
@@ -1688,7 +1688,7 @@ git commit -m "feat(seed): add embedding computation, matching engine, and keywo
 **Files:**
 - Create: `scripts/seed/content.ts`
 
-- [ ] **Step 1: Create content seed**
+- [x] **Step 1: Create content seed**
 
 Create `scripts/seed/content.ts`:
 
@@ -2022,7 +2022,7 @@ git commit -m "feat(seed): add inbox item and seeking report generation"
 - Create: `scripts/seed.ts`
 - Modify: `package.json`
 
-- [ ] **Step 1: Create reset script**
+- [x] **Step 1: Create reset script**
 
 Create `scripts/seed/reset.ts`:
 
@@ -2060,7 +2060,7 @@ export async function resetDatabase(): Promise<void> {
 }
 ```
 
-- [ ] **Step 2: Create main orchestrator**
+- [x] **Step 2: Create main orchestrator**
 
 Create `scripts/seed.ts`:
 
@@ -2164,7 +2164,7 @@ async function main() {
 main();
 ```
 
-- [ ] **Step 3: Add npm scripts to package.json**
+- [x] **Step 3: Add npm scripts to package.json**
 
 Add to `package.json` `scripts` section:
 
@@ -2197,7 +2197,7 @@ git commit -m "feat(seed): add main orchestrator with sub-commands and reset cap
 - Create: `src/components/empty-states/no-report.tsx`
 - Create: `src/components/empty-states/empty-jobs.tsx`
 
-- [ ] **Step 1: Create empty state components**
+- [x] **Step 1: Create empty state components**
 
 Create `src/components/empty-states/no-matches.tsx`:
 
@@ -2359,7 +2359,7 @@ git commit -m "feat(ui): add empty state components for matches, inbox, reports,
 - Create: `src/components/loading/graph-skeleton.tsx`
 - Create: `src/components/loading/job-list-skeleton.tsx`
 
-- [ ] **Step 1: Create skeleton components**
+- [x] **Step 1: Create skeleton components**
 
 Create `src/components/loading/profile-skeleton.tsx`:
 
@@ -2611,7 +2611,7 @@ git commit -m "feat(ui): add loading skeleton components for all major views"
 - Create: `src/components/animations/count-up.tsx`
 - Create: `src/components/animations/pulse-dot.tsx`
 
-- [ ] **Step 1: Create animation components**
+- [x] **Step 1: Create animation components**
 
 Create `src/components/animations/page-transition.tsx`:
 
@@ -2830,7 +2830,7 @@ git commit -m "feat(ui): add animation utility components (page transition, stag
 - Modify: `src/i18n/messages/en.json`
 - Modify: `src/i18n/messages/zh.json`
 
-- [ ] **Step 1: Add landing page i18n strings**
+- [x] **Step 1: Add landing page i18n strings**
 
 Add the following keys to both `en.json` and `zh.json` under a `"landing"` section (extending existing keys):
 
@@ -2908,7 +2908,7 @@ In `src/i18n/messages/zh.json`, merge into `landing`:
 }
 ```
 
-- [ ] **Step 2: Create hero section**
+- [x] **Step 2: Create hero section**
 
 Create `src/components/landing/hero-section.tsx`:
 
@@ -2975,7 +2975,7 @@ export function HeroSection() {
 }
 ```
 
-- [ ] **Step 3: Create how-it-works section**
+- [x] **Step 3: Create how-it-works section**
 
 Create `src/components/landing/how-it-works.tsx`:
 
@@ -3057,7 +3057,7 @@ export function HowItWorks() {
 }
 ```
 
-- [ ] **Step 4: Create feature highlights section**
+- [x] **Step 4: Create feature highlights section**
 
 Create `src/components/landing/feature-highlights.tsx`:
 
@@ -3122,7 +3122,7 @@ export function FeatureHighlights() {
 }
 ```
 
-- [ ] **Step 5: Create final CTA section**
+- [x] **Step 5: Create final CTA section**
 
 Create `src/components/landing/final-cta.tsx`:
 
@@ -3166,7 +3166,7 @@ export function FinalCta() {
 }
 ```
 
-- [ ] **Step 6: Update landing page**
+- [x] **Step 6: Update landing page**
 
 Replace `src/app/page.tsx`:
 
@@ -3210,7 +3210,7 @@ git commit -m "feat(landing): add full narrative landing page with hero, how-it-
 
 This task wires up the skeleton and empty state components into the existing pages from Specs 2-6. Each page should show the skeleton during loading (via `loading.tsx` or Suspense) and the empty state when data is empty.
 
-- [ ] **Step 1: Add loading.tsx files for each route**
+- [x] **Step 1: Add loading.tsx files for each route**
 
 Create `src/app/(talent)/home/loading.tsx`:
 
@@ -3282,7 +3282,7 @@ export default function JobsLoading() {
 }
 ```
 
-- [ ] **Step 2: Wire empty states into page components**
+- [x] **Step 2: Wire empty states into page components**
 
 For each existing page, add conditional rendering. The exact integration depends on Spec 2-6 implementations, but the pattern is:
 
@@ -3333,7 +3333,7 @@ git commit -m "feat(ui): integrate loading skeletons and empty states into all p
 
 These are smoke tests that verify the seed data creates a coherent demo experience.
 
-- [ ] **Step 1: Create flow checklist test**
+- [x] **Step 1: Create flow checklist test**
 
 Create `__tests__/e2e/flow-checklist.test.ts`:
 
@@ -3588,7 +3588,7 @@ git commit -m "test: add end-to-end seed data quality and flow checklist tests"
 
 ### Task 15: Final Integration and Verification
 
-- [ ] **Step 1: Verify all imports resolve**
+- [x] **Step 1: Verify all imports resolve**
 
 Run the TypeScript checker:
 
@@ -3622,7 +3622,7 @@ Update seed scripts in `package.json` to use it:
 }
 ```
 
-- [ ] **Step 2: Run vocabulary tests**
+- [x] **Step 2: Run vocabulary tests**
 
 ```bash
 npx vitest run __tests__/seed/vocabulary.test.ts

@@ -1,4 +1,5 @@
 import { headers } from 'next/headers';
+import { PageTransition } from '@/components/animations/page-transition';
 import { ProfileHeader } from '@/components/talent/profile-header';
 import { CapabilityPortrait } from '@/components/talent/capability-portrait';
 import { ExperienceList } from '@/components/talent/experience-list';
@@ -41,7 +42,7 @@ export default async function TalentHomePage() {
   const experience = (profile.experience as Experience[]) || [];
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
+    <PageTransition className="mx-auto max-w-4xl space-y-8">
       <ProfileHeader
         displayName={profile.displayName}
         headline={profile.headline}
@@ -60,6 +61,6 @@ export default async function TalentHomePage() {
         </h2>
         <ExperienceList experience={experience} />
       </section>
-    </div>
+    </PageTransition>
   );
 }

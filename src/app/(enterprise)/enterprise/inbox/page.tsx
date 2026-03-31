@@ -1,5 +1,7 @@
 import { headers } from 'next/headers';
 import { getTranslations } from 'next-intl/server';
+import { PageTransition } from '@/components/animations/page-transition';
+import { EmptyInbox } from '@/components/empty-states/empty-inbox';
 import { InboxList } from '@/components/inbox/inbox-list';
 import { listInboxItemsByUserId } from '@/lib/api/inbox';
 import { MOCK_ENTERPRISE_INBOX_ITEMS } from '@/lib/mock-data';
@@ -20,12 +22,16 @@ export default async function EnterpriseInboxPage() {
     items = [...MOCK_ENTERPRISE_INBOX_ITEMS];
   }
 
+  if (items.length === 0) {
+    return <EmptyInbox />;
+  }
+
   return (
-    <div className="space-y-6">
+    <PageTransition className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold text-foreground">{t('title')}</h1>
       </div>
       <InboxList initialItems={items} />
-    </div>
+    </PageTransition>
   );
 }

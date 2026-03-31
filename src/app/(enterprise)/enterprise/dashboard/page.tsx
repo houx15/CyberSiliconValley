@@ -1,7 +1,9 @@
 import { headers } from 'next/headers';
 import Link from 'next/link';
+import { PageTransition } from '@/components/animations/page-transition';
 import { ActivityStatus } from '@/components/enterprise/activity-status';
 import { JobList } from '@/components/enterprise/job-list';
+import { EmptyJobs } from '@/components/empty-states/empty-jobs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MOCK_ENTERPRISE_PROFILE, MOCK_JOBS, MOCK_JOB_MATCH_COUNTS } from '@/lib/mock-data';
@@ -67,26 +69,25 @@ export default async function DashboardPage() {
   const userId = headersList.get('x-user-id') || 'test-enterprise-1';
 
   const data = await getDashboardData(userId);
+  const fallbackJobsWithCounts = MOCK_JOBS.map((job) => ({
+    id: job.id,
+    title: job.title,
+    status: job.status,
+    createdAt: job.createdAt.toISOString(),
+    matchCount: MOCK_JOB_MATCH_COUNTS[job.id]?.matchCount ?? 0,
+    shortlistedCount: MOCK_JOB_MATCH_COUNTS[job.id]?.shortlistedCount ?? 0,
+  }));
+  const resolvedData = data ?? {
+    profile: MOCK_ENTERPRISE_PROFILE,
+    jobsWithCounts: fallbackJobsWithCounts,
+  };
 
-  if (!data) {
-    // Use mock anyway for demo
-    const jobsWithCounts = MOCK_JOBS.map((job) => ({
-      id: job.id,
-      title: job.title,
-      status: job.status,
-      createdAt: job.createdAt.toISOString(),
-      matchCount: MOCK_JOB_MATCH_COUNTS[job.id]?.matchCount ?? 0,
-      shortlistedCount: MOCK_JOB_MATCH_COUNTS[job.id]?.shortlistedCount ?? 0,
-    }));
-    Object.assign(data ?? {}, { profile: MOCK_ENTERPRISE_PROFILE, jobsWithCounts });
-  }
-
-  const { profile, jobsWithCounts } = data!;
+  const { profile, jobsWithCounts } = resolvedData;
   const totalMatches = jobsWithCounts.reduce((sum, j) => sum + j.matchCount, 0);
   const totalShortlisted = jobsWithCounts.reduce((sum, j) => sum + j.shortlistedCount, 0);
 
   return (
-    <div className="space-y-6">
+    <PageTransition className="space-y-6">
       <ActivityStatus
         initial={{
           profilesScanned: totalMatches > 0 ? totalMatches * 5 : 0,
@@ -133,10 +134,10 @@ export default async function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <JobList jobs={jobsWithCounts} />
+            {jobsWithCounts.length === 0 ? <EmptyJobs /> : <JobList jobs={jobsWithCounts} />}
           </CardContent>
         </Card>
       </section>
-    </div>
+    </PageTransition>
   );
 }

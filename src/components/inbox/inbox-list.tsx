@@ -6,6 +6,7 @@ import { INBOX_FILTER_TABS } from '@/lib/inbox-shared';
 import { InboxDetail } from './inbox-detail';
 import { InboxItemRow } from './inbox-item-row';
 import { Button } from '@/components/ui/button';
+import { EmptyInbox } from '@/components/empty-states/empty-inbox';
 import { useTranslations } from 'next-intl';
 
 interface InboxListProps {
@@ -76,12 +77,7 @@ export function InboxList({ initialItems }: InboxListProps) {
 
         <div className="flex-1 overflow-y-auto">
           {filteredItems.length === 0 ? (
-            <div className="flex h-full flex-col items-center justify-center px-8 text-center">
-              <p className="text-sm font-medium text-foreground">{t('emptyTitle')}</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {t('emptyDescription')}
-              </p>
-            </div>
+            <EmptyInbox />
           ) : (
             <div className="divide-y divide-border/60">
               {filteredItems.map((item) => (

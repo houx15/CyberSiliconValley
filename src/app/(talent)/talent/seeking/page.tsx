@@ -1,4 +1,6 @@
 import { headers } from 'next/headers';
+import { PageTransition } from '@/components/animations/page-transition';
+import { NoReport } from '@/components/empty-states/no-report';
 import { SeekingReportClient } from '@/components/seeking/seeking-report-client';
 import { getLatestReportByUserId } from '@/lib/api/seeking';
 import { MOCK_SEEKING_REPORT, MOCK_TALENT_PROFILE } from '@/lib/mock-data';
@@ -28,5 +30,13 @@ export default async function SeekingPage() {
     report = MOCK_SEEKING_REPORT;
   }
 
-  return <SeekingReportClient initialReport={report} talentId={talentId} />;
+  if (!report) {
+    return <NoReport />;
+  }
+
+  return (
+    <PageTransition>
+      <SeekingReportClient initialReport={report} talentId={talentId} />
+    </PageTransition>
+  );
 }

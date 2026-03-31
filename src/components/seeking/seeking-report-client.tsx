@@ -8,6 +8,7 @@ import { PreChatActivity } from './prechat-activity';
 import { InboundInterest } from './inbound-interest';
 import { TailoredResumeDialog } from './tailored-resume-dialog';
 import { useTranslations } from 'next-intl';
+import { NoReport } from '@/components/empty-states/no-report';
 
 interface SeekingReportClientProps {
   initialReport: SeekingReportData | null;
@@ -22,12 +23,7 @@ export function SeekingReportClient({
   const t = useTranslations('seeking');
 
   if (!initialReport) {
-    return (
-      <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 px-8 py-14 text-center">
-        <p className="text-lg font-semibold text-foreground">{t('emptyTitle')}</p>
-        <p className="mt-2 text-sm text-muted-foreground">{t('emptyDescription')}</p>
-      </div>
-    );
+    return <NoReport />;
   }
 
   return (

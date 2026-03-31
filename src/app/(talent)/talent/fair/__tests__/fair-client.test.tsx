@@ -27,8 +27,8 @@ describe('FairClient', () => {
     const { default: FairClient } = await import('../fair-client');
     const markup = renderToStaticMarkup(<FairClient userSkills={['RAG Pipeline']} />);
 
-    expect(markup).toContain('Rendering opportunity graph...');
-    expect(markup).toContain('bg-white/5');
+    expect(markup).toContain('Loading graph...');
+    expect(markup).toContain('animate-pulse bg-muted');
   });
 
   it('keeps the opened sheet keyword stable even after active keyword clears', () => {

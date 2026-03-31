@@ -1,5 +1,7 @@
 import { cookies } from 'next/headers';
 import { eq } from 'drizzle-orm';
+import { PageTransition } from '@/components/animations/page-transition';
+import { NoMatches } from '@/components/empty-states/no-matches';
 import FairClient from './fair-client';
 import { db } from '@/lib/db';
 import { talentProfiles } from '@/lib/db/schema';
@@ -39,5 +41,13 @@ export default async function FairPage() {
     userSkills = MOCK_TALENT_PROFILE.skills.map((skill) => skill.name);
   }
 
-  return <FairClient userSkills={userSkills} />;
+  if (userSkills.length === 0) {
+    return <NoMatches />;
+  }
+
+  return (
+    <PageTransition>
+      <FairClient userSkills={userSkills} />
+    </PageTransition>
+  );
 }

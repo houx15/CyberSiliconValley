@@ -6,7 +6,8 @@ import KeywordGraph from '@/components/fair/keyword-graph';
 import ClusterView from '@/components/fair/cluster-view';
 import JobDetailSheet from '@/components/fair/job-detail-sheet';
 import GraphSearch from '@/components/fair/graph-search';
-import { Skeleton } from '@/components/ui/skeleton';
+import { GraphSkeleton } from '@/components/loading/graph-skeleton';
+import { NoMatches } from '@/components/empty-states/no-matches';
 import type { GraphData } from '@/types/graph';
 
 type FairClientProps = {
@@ -76,10 +77,8 @@ export default function FairClient({ userSkills }: FairClientProps) {
   if (loading) {
     return (
       <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center px-6 py-10">
-        <div className="flex w-full max-w-3xl flex-col items-center gap-5">
-          <Skeleton className="h-80 w-full rounded-[28px] border border-white/10 bg-white/5" />
-          <Skeleton className="h-16 w-2/3 rounded-2xl border border-white/10 bg-white/5" />
-          <p className="text-sm text-muted-foreground">Rendering opportunity graph...</p>
+        <div className="w-full max-w-4xl">
+          <GraphSkeleton />
         </div>
       </div>
     );
@@ -117,14 +116,7 @@ export default function FairClient({ userSkills }: FairClientProps) {
         <div className="mx-auto flex h-full w-full max-w-7xl flex-col gap-4">
           {graph.nodes.length === 0 ? (
             <div className="flex min-h-[480px] items-center justify-center rounded-[28px] border border-white/10 bg-white/5 px-6 text-center">
-              <div className="max-w-lg space-y-3">
-                <p className="text-xl font-semibold text-foreground">
-                  No opportunity data available yet.
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Your AI is scanning the market. When graph data is seeded, the keyword map will appear here.
-                </p>
-              </div>
+              <NoMatches />
             </div>
           ) : (
             <div className="relative flex-1 overflow-hidden rounded-[28px] border border-white/10 bg-white/5 shadow-2xl shadow-black/30">

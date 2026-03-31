@@ -13,7 +13,13 @@
     "check": "npm run lint && npm run typecheck && npm run test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "seed:users": "npx tsx scripts/seed-users.ts"
+    "seed": "npx tsx scripts/seed.ts seed",
+    "seed:users": "npx tsx scripts/seed.ts seed:users",
+    "seed:profiles": "npx tsx scripts/seed.ts seed:profiles",
+    "seed:jobs": "npx tsx scripts/seed.ts seed:jobs",
+    "seed:compute": "npx tsx scripts/seed.ts seed:compute",
+    "seed:content": "npx tsx scripts/seed.ts seed:content",
+    "seed:reset": "npx tsx scripts/seed.ts seed:reset"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.64",
