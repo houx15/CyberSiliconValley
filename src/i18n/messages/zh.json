@@ -37,5 +37,70 @@
   "companion": {
     "placeholder": "问你的 AI 伙伴任何问题...",
     "collapsed": "点击开始对话 →"
+  },
+  "onboarding": {
+    "greeting": "你好，我是你在 CSV 上的 AI 伙伴。我想了解你——你的技能、经历、是什么驱动着你。让我们一起构建你的职业画像。",
+    "continue": "开始吧",
+    "entryPrompt": "你想怎么开始？选一个最自然的方式。",
+    "comingSoon": "即将推出",
+    "companionName": "CSV 伙伴",
+    "companionStatus": "正在了解你",
+    "inputPlaceholder": "和我聊聊你自己...",
+    "profileTitle": "你的画像",
+    "profileSubtitle": "随着对话的深入，各个版块将逐步揭开",
+    "entry": {
+      "resume": {
+        "title": "上传简历",
+        "description": "分享 PDF 或图片格式的简历，我来提取信息。"
+      },
+      "link": {
+        "title": "分享链接",
+        "description": "GitHub、LinkedIn、个人网站——我会读取并自动填充。"
+      },
+      "conversation": {
+        "title": "直接聊天",
+        "description": "我们对话吧。我会提问，然后把信息拼凑起来。"
+      },
+      "voice": {
+        "title": "语音消息",
+        "description": "对我说话，我会转录并理解你的意思。"
+      }
+    },
+    "chips": {
+      "skills": "我的技能",
+      "experience": "工作经历",
+      "goals": "我的目标",
+      "done": "完成"
+    },
+    "profile": {
+      "identity": "身份",
+      "skills": "技能",
+      "experience": "经历",
+      "goals": "目标",
+      "targetRoles": "目标职位",
+      "workPreferences": "工作偏好",
+      "interests": "兴趣方向"
+    },
+    "tour": {
+      "next": "下一步",
+      "skip": "跳过导览",
+      "start": "开始使用",
+      "home": {
+        "title": "首页",
+        "description": "你的能力画像——技能和经验的可视化地图。企业就是这样看到你的。"
+      },
+      "coach": {
+        "title": "AI 教练",
+        "description": "你的个人职业顾问。获取技能发展、目标岗位和个人定位的建议。"
+      },
+      "seeking": {
+        "title": "求职报告",
+        "description": "AI 生成的市场匹配度分析。了解哪些岗位适合你，市场需求如何。"
+      },
+      "fair": {
+        "title": "机会集市",
+        "description": "以技能和关键词连接的机会可视化图谱。探索外面的世界。"
+      }
+    }
   }
 }

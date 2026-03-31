@@ -37,5 +37,70 @@
   "companion": {
     "placeholder": "Ask your companion anything...",
     "collapsed": "Click to chat →"
+  },
+  "onboarding": {
+    "greeting": "Hello. I'm your AI companion on CSV. I'm here to learn about you — your skills, your experience, what makes you tick. Let's build your professional portrait together.",
+    "continue": "Let's begin",
+    "entryPrompt": "How would you like to get started? Pick whichever feels most natural.",
+    "comingSoon": "Coming soon",
+    "companionName": "CSV Companion",
+    "companionStatus": "Getting to know you",
+    "inputPlaceholder": "Tell me about yourself...",
+    "profileTitle": "Your Profile",
+    "profileSubtitle": "Sections reveal as we discover more about you",
+    "entry": {
+      "resume": {
+        "title": "Upload your resume",
+        "description": "Share a PDF or image of your resume and I'll extract the details."
+      },
+      "link": {
+        "title": "Share a link",
+        "description": "GitHub, LinkedIn, personal site — I'll read it and fill things in."
+      },
+      "conversation": {
+        "title": "Just tell me",
+        "description": "Let's have a conversation. I'll ask questions and piece things together."
+      },
+      "voice": {
+        "title": "Voice message",
+        "description": "Talk to me and I'll transcribe and understand what you say."
+      }
+    },
+    "chips": {
+      "skills": "My skills",
+      "experience": "Work experience",
+      "goals": "My goals",
+      "done": "Wrap up"
+    },
+    "profile": {
+      "identity": "Identity",
+      "skills": "Skills",
+      "experience": "Experience",
+      "goals": "Goals",
+      "targetRoles": "Target roles",
+      "workPreferences": "Work preferences",
+      "interests": "Interests"
+    },
+    "tour": {
+      "next": "Next",
+      "skip": "Skip tour",
+      "start": "Let's go",
+      "home": {
+        "title": "Home",
+        "description": "Your capability portrait — a visual map of your skills and experience. This is how companies see you."
+      },
+      "coach": {
+        "title": "AI Coach",
+        "description": "Your personal career advisor. Get guidance on skills to develop, roles to target, and how to position yourself."
+      },
+      "seeking": {
+        "title": "Seeking Report",
+        "description": "AI-generated analysis of your market fit. See which roles match your profile and what the demand looks like."
+      },
+      "fair": {
+        "title": "Opportunity Fair",
+        "description": "A visual graph of opportunities connected by skills and keywords. Explore what's out there."
+      }
+    }
   }
 }
