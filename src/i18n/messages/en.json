@@ -36,7 +36,12 @@
   },
   "companion": {
     "placeholder": "Ask your companion anything...",
-    "collapsed": "Click to chat →"
+    "collapsed": "Click to chat with your AI companion",
+    "statusTemplate": "You have {matchCount} new matches and {inboxCount} new messages. Click to chat.",
+    "emptyChat": "Start a conversation with your AI companion.",
+    "tab_general": "General",
+    "tab_home": "Home",
+    "tab_coach": "Coach"
   },
   "onboarding": {
     "greeting": "Hello. I'm your AI companion on CSV. I'm here to learn about you — your skills, your experience, what makes you tick. Let's build your professional portrait together.",
@@ -102,5 +107,64 @@
         "description": "A visual graph of opportunities connected by skills and keywords. Explore what's out there."
       }
     }
+  },
+  "talentHome": {
+    "unnamed": "Unnamed User",
+    "availabilityOpen": "Open to work",
+    "availabilityBusy": "Busy",
+    "availabilityNotLooking": "Not looking",
+    "lastUpdated": "Last updated {date}",
+    "editProfile": "Edit Profile",
+    "skillsTitle": "Capability Portrait",
+    "experienceTitle": "Experience",
+    "noSkills": "No skills added yet. Edit your profile to add skills.",
+    "noExperience": "No experience added yet. Edit your profile to add experience.",
+    "noProfile": "Profile not found. Please complete onboarding first."
+  },
+  "profileEditor": {
+    "title": "Edit Profile",
+    "backToHome": "Back to Home",
+    "noProfile": "Profile not found. Please complete onboarding first.",
+    "basicInfo": "Basic Information",
+    "displayName": "Display Name",
+    "displayNamePlaceholder": "Your display name",
+    "headline": "Headline",
+    "headlinePlaceholder": "e.g. Senior AI Engineer",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us about yourself...",
+    "availability": "Availability",
+    "availability_open": "Open to work",
+    "availability_busy": "Busy",
+    "availability_not_looking": "Not looking",
+    "skills": "Skills",
+    "skillName": "Skill name",
+    "skillCategory": "Category",
+    "levelBeginner": "Beginner",
+    "levelIntermediate": "Intermediate",
+    "levelAdvanced": "Advanced",
+    "levelExpert": "Expert",
+    "experience": "Experience",
+    "role": "Role / Title",
+    "company": "Company",
+    "duration": "Duration (e.g. 2022-2024)",
+    "description": "Description",
+    "education": "Education",
+    "institution": "Institution",
+    "degree": "Degree",
+    "field": "Field of Study",
+    "year": "Year",
+    "goals": "Career Goals",
+    "targetRoles": "Target Roles",
+    "targetRolePlaceholder": "e.g. AI Lead",
+    "workPreferences": "Work Preferences",
+    "workPrefPlaceholder": "e.g. Remote",
+    "salaryRange": "Salary Expectation",
+    "min": "Min",
+    "max": "Max",
+    "add": "Add",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "saved": "Profile saved successfully!"
   }
 }

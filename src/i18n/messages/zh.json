@@ -36,7 +36,12 @@
   },
   "companion": {
     "placeholder": "问你的 AI 伙伴任何问题...",
-    "collapsed": "点击开始对话 →"
+    "collapsed": "点击与 AI 伙伴对话",
+    "statusTemplate": "你有 {matchCount} 个新匹配和 {inboxCount} 条新消息，点击聊天。",
+    "emptyChat": "开始与 AI 伙伴对话吧。",
+    "tab_general": "通用",
+    "tab_home": "首页",
+    "tab_coach": "教练"
   },
   "onboarding": {
     "greeting": "你好，我是你在 CSV 上的 AI 伙伴。我想了解你——你的技能、经历、是什么驱动着你。让我们一起构建你的职业画像。",
@@ -102,5 +107,64 @@
         "description": "以技能和关键词连接的机会可视化图谱。探索外面的世界。"
       }
     }
+  },
+  "talentHome": {
+    "unnamed": "未命名用户",
+    "availabilityOpen": "开放求职",
+    "availabilityBusy": "忙碌中",
+    "availabilityNotLooking": "暂不考虑",
+    "lastUpdated": "最后更新于 {date}",
+    "editProfile": "编辑资料",
+    "skillsTitle": "能力画像",
+    "experienceTitle": "工作经历",
+    "noSkills": "尚未添加技能，请编辑资料添加。",
+    "noExperience": "尚未添加经历，请编辑资料添加。",
+    "noProfile": "未找到个人资料，请先完成入职引导。"
+  },
+  "profileEditor": {
+    "title": "编辑资料",
+    "backToHome": "返回首页",
+    "noProfile": "未找到个人资料，请先完成入职引导。",
+    "basicInfo": "基本信息",
+    "displayName": "显示名称",
+    "displayNamePlaceholder": "你的显示名称",
+    "headline": "职位头衔",
+    "headlinePlaceholder": "例如：资深 AI 工程师",
+    "bio": "个人简介",
+    "bioPlaceholder": "介绍一下你自己...",
+    "availability": "求职状态",
+    "availability_open": "开放求职",
+    "availability_busy": "忙碌中",
+    "availability_not_looking": "暂不考虑",
+    "skills": "技能",
+    "skillName": "技能名称",
+    "skillCategory": "分类",
+    "levelBeginner": "入门",
+    "levelIntermediate": "中级",
+    "levelAdvanced": "高级",
+    "levelExpert": "专家",
+    "experience": "工作经历",
+    "role": "职位",
+    "company": "公司",
+    "duration": "时间段（如 2022-2024）",
+    "description": "描述",
+    "education": "教育经历",
+    "institution": "学校",
+    "degree": "学位",
+    "field": "专业",
+    "year": "年份",
+    "goals": "职业目标",
+    "targetRoles": "目标职位",
+    "targetRolePlaceholder": "例如：AI 负责人",
+    "workPreferences": "工作偏好",
+    "workPrefPlaceholder": "例如：远程",
+    "salaryRange": "薪资期望",
+    "min": "最低",
+    "max": "最高",
+    "add": "添加",
+    "cancel": "取消",
+    "save": "保存更改",
+    "saving": "保存中...",
+    "saved": "资料保存成功！"
   }
 }
