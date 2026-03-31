@@ -8,6 +8,7 @@ dependencies = [
   "csv-contracts",
   "csv-core",
   "csv-db",
+  "csv-redis-layer",
 ]
 
 [build-system]

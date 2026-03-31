@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from csv_api.config import get_settings
 from csv_api.routers.auth import router as auth_router
 from csv_api.routers.health import router as health_router
+from csv_api.routers.jobs import router as jobs_router
+from csv_api.routers.matches import router as matches_router
 from csv_api.routers.onboarding import router as onboarding_router
 from csv_api.routers.profile import router as profile_router
 
@@ -16,6 +18,8 @@ def create_app() -> FastAPI:
     app.include_router(auth_router)
     app.include_router(profile_router)
     app.include_router(onboarding_router)
+    app.include_router(jobs_router)
+    app.include_router(matches_router)
     app.state.settings = settings
     return app
 

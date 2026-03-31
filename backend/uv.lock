@@ -183,6 +183,7 @@ dependencies = [
     { name = "csv-contracts" },
     { name = "csv-core" },
     { name = "csv-db" },
+    { name = "csv-redis-layer" },
     { name = "fastapi" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -192,6 +193,7 @@ requires-dist = [
     { name = "csv-contracts", editable = "packages/contracts" },
     { name = "csv-core", editable = "packages/core" },
     { name = "csv-db", editable = "packages/db" },
+    { name = "csv-redis-layer", editable = "packages/redis_layer" },
     { name = "fastapi" },
     { name = "uvicorn", extras = ["standard"] },
 ]

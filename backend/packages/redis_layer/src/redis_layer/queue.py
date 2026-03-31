@@ -18,3 +18,15 @@ async def create_queue(redis_url: str | None = None) -> ArqRedis:
 
 async def enqueue_ping_job(queue: ArqRedis, value: str = "pong") -> object:
     return await queue.enqueue_job("ping", value, _queue_name=WORKER_QUEUE_NAME)
+
+
+async def enqueue_match_scan(queue: ArqRedis, job_id: str) -> object:
+    return await queue.enqueue_job("scan_matches", {"job_id": job_id}, _queue_name=WORKER_QUEUE_NAME)
+
+
+async def enqueue_match_scan_job(redis_url: str | None, job_id: str) -> object:
+    queue = await create_queue(redis_url)
+    try:
+        return await enqueue_match_scan(queue, job_id)
+    finally:
+        await queue.close(close_connection_pool=True)
