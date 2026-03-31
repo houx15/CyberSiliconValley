@@ -26,7 +26,8 @@ COPY packages/db/pyproject.toml packages/db/pyproject.toml
 COPY packages/db/src packages/db/src
 COPY packages/redis_layer/pyproject.toml packages/redis_layer/pyproject.toml
 COPY packages/redis_layer/src packages/redis_layer/src
+COPY apps/worker/app app
 
 RUN uv sync --frozen --no-dev --package csv-worker
 
-CMD ["sh", "-lc", "uv run python -m csv_worker.main"]
+CMD ["sh", "-lc", "uv run python -m app.main"]

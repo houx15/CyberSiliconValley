@@ -36,3 +36,5 @@ members = [
   "packages/*",
 ]
 
+[tool.uv.sources]
+csv-redis-layer = { workspace = true }

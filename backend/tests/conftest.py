@@ -11,6 +11,8 @@ PACKAGE_SRC_DIRS = [
     ROOT / "packages" / "db" / "src",
     ROOT / "packages" / "ai" / "src",
     ROOT / "packages" / "redis_layer" / "src",
+    ROOT / "apps" / "worker",
+    ROOT / "apps" / "worker" / "src",
 ]
 
 for src_dir in PACKAGE_SRC_DIRS:

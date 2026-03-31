@@ -231,17 +231,6 @@ name = "csv-redis-layer"
 version = "0.1.0"
 source = { editable = "packages/redis_layer" }
 dependencies = [
-    { name = "redis" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "redis" }]
-
-[[package]]
-name = "csv-worker"
-version = "0.1.0"
-source = { editable = "apps/worker" }
-dependencies = [
     { name = "arq" },
     { name = "redis" },
 ]
@@ -249,6 +238,23 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "arq" },
+    { name = "redis" },
+]
+
+[[package]]
+name = "csv-worker"
+version = "0.1.0"
+source = { editable = "apps/worker" }
+dependencies = [
+    { name = "arq" },
+    { name = "csv-redis-layer" },
+    { name = "redis" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "arq" },
+    { name = "csv-redis-layer", editable = "packages/redis_layer" },
     { name = "redis" },
 ]
 
