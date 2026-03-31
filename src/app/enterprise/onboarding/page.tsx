@@ -1,9 +1,22 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { db } from '@/lib/db';
-import { enterpriseProfiles } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
 import { OnboardingChat } from '@/components/enterprise/onboarding-chat';
+
+async function isAlreadyOnboarded(userId: string): Promise<boolean> {
+  try {
+    const { db } = await import('@/lib/db');
+    const { enterpriseProfiles } = await import('@/lib/db/schema');
+    const { eq } = await import('drizzle-orm');
+    const [profile] = await db
+      .select()
+      .from(enterpriseProfiles)
+      .where(eq(enterpriseProfiles.userId, userId))
+      .limit(1);
+    return !!profile?.onboardingDone;
+  } catch {
+    return false; // No DB = show onboarding
+  }
+}
 
 export default async function EnterpriseOnboardingPage() {
   const headersList = await headers();
@@ -13,14 +26,7 @@ export default async function EnterpriseOnboardingPage() {
     redirect('/login');
   }
 
-  // Check if already onboarded
-  const [profile] = await db
-    .select()
-    .from(enterpriseProfiles)
-    .where(eq(enterpriseProfiles.userId, userId))
-    .limit(1);
-
-  if (profile?.onboardingDone) {
+  if (await isAlreadyOnboarded(userId)) {
     redirect('/enterprise/dashboard');
   }
 

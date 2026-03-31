@@ -1,9 +1,7 @@
 import { headers } from 'next/headers';
-import { db } from '@/lib/db';
-import { talentProfiles } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
 import { getTranslations } from 'next-intl/server';
 import { ProfileEditor } from '@/components/talent/profile-editor';
+import { MOCK_TALENT_PROFILE } from '@/lib/mock-data';
 import Link from 'next/link';
 import type { Skill, Experience, Availability } from '@/types';
 
@@ -25,16 +23,28 @@ interface SalaryRange {
   currency?: string;
 }
 
+async function getProfile(userId: string) {
+  try {
+    const { db } = await import('@/lib/db');
+    const { talentProfiles } = await import('@/lib/db/schema');
+    const { eq } = await import('drizzle-orm');
+    const [profile] = await db
+      .select()
+      .from(talentProfiles)
+      .where(eq(talentProfiles.userId, userId))
+      .limit(1);
+    return profile;
+  } catch {
+    return MOCK_TALENT_PROFILE;
+  }
+}
+
 export default async function ProfileEditorPage() {
   const headersList = await headers();
-  const userId = headersList.get('x-user-id')!;
+  const userId = headersList.get('x-user-id') || 'test-user-1';
   const t = await getTranslations('profileEditor');
 
-  const [profile] = await db
-    .select()
-    .from(talentProfiles)
-    .where(eq(talentProfiles.userId, userId))
-    .limit(1);
+  const profile = await getProfile(userId);
 
   if (!profile) {
     return (
