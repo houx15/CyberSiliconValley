@@ -13,7 +13,7 @@ Read these before starting any implementation work:
 ## Development Environment
 
 - **No local PostgreSQL or backend** — do not attempt to run the backend locally
-- **Deployment server**: `ssh yuxin@47.93.151.131` (Aliyun ECS)
+- **Deployment server**: Aliyun ECS (see `.env` for connection details)
   - Pull the backend codebase on this server and run it there
   - PostgreSQL runs on this server
 - **Frontend**: can be developed and previewed locally

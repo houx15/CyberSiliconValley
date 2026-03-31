@@ -27,7 +27,7 @@ npm run check        # lint + typecheck + test (all three)
 The backend (PostgreSQL, Redis, Node.js) runs on the Aliyun ECS server.
 
 ```
-ssh yuxin@47.93.151.131
+ssh yuxin@YOUR_SERVER_IP
 ```
 
 ### First-Time Server Setup
@@ -92,7 +92,7 @@ REDIS_URL=redis://localhost:6379
 AI_PROVIDER=anthropic
 ANTHROPIC_API_KEY=sk-ant-your-key-here
 JWT_SECRET=$(openssl rand -hex 32)
-NEXT_PUBLIC_APP_URL=http://47.93.151.131:3000
+NEXT_PUBLIC_APP_URL=http://YOUR_SERVER_IP:3000
 NODE_ENV=production
 ```
 
@@ -149,14 +149,14 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-Edit `nginx.conf` to replace `csv.yourdomain.com` with your actual domain. For dev without a domain, you can access directly via `http://47.93.151.131:3000`.
+Edit `nginx.conf` to replace `csv.yourdomain.com` with your actual domain. For dev without a domain, you can access directly via `http://YOUR_SERVER_IP:3000`.
 
 ### Subsequent Deploys
 
 After the first-time setup, deploy updates with:
 
 ```bash
-ssh yuxin@47.93.151.131
+ssh yuxin@YOUR_SERVER_IP
 cd ~/csv
 ./scripts/deploy.sh
 ```
