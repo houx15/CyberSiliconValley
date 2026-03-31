@@ -3,9 +3,11 @@ from __future__ import annotations
 from collections.abc import Generator
 from functools import lru_cache
 
+from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from contracts.auth import AuthUser
 from core.auth.service import AuthService
 from db.session import create_engine_from_url, create_session_factory, request_session
 
@@ -31,9 +33,24 @@ def get_auth_service() -> AuthService:
     return AuthService(secret=get_settings().app_secret)
 
 
+def get_current_user(
+    request: Request,
+    auth_service: AuthService = Depends(get_auth_service),
+) -> AuthUser:
+    token = request.cookies.get(auth_service.cookie_name)
+    if not token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+
+    try:
+        return auth_service.read_token(token)
+    except Exception as exc:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated") from exc
+
+
 __all__ = [
     "Settings",
     "get_auth_service",
+    "get_current_user",
     "get_db_session",
     "get_engine",
     "get_session_factory",
