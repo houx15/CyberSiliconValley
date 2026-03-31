@@ -234,5 +234,34 @@
       "matches": "matches",
       "shortlisted": "shortlisted"
     }
+  },
+  "matching": {
+    "score": "Match Score",
+    "semantic": "Semantic Score",
+    "feature": "Feature Score",
+    "availability": "Availability",
+    "seniority": "Seniority",
+    "candidate": "Candidate",
+    "status": "Status",
+    "noMatches": "No matches yet",
+    "scanning": "Your AI is scanning the talent pool...",
+    "scanNow": "Scan Now",
+    "rescan": "Re-scan Matches",
+    "aiScreen": "AI Screen",
+    "sendInvite": "Send Invite",
+    "addToShortlist": "Add to Shortlist",
+    "aiAnalysis": "AI Analysis",
+    "skillMatch": "Skill Match",
+    "mustHave": "Must-have",
+    "niceToHave": "Nice-to-have",
+    "filterMinScore": "Min score",
+    "candidateCount": "{count} candidate(s)",
+    "postedDate": "Posted {date}"
+  },
+  "screening": {
+    "title": "AI Talent Screening",
+    "subtitle": "Chat with your AI recruiter to search, compare, and shortlist candidates.",
+    "placeholder": "Ask about candidates, compare talent, or shortlist picks...",
+    "send": "Send"
   }
 }
