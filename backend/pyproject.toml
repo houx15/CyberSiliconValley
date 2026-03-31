@@ -10,6 +10,8 @@ dependencies = [
   "sqlalchemy",
   "alembic",
   "psycopg[binary]",
+  "bcrypt",
+  "itsdangerous",
   "redis",
   "arq",
   "httpx",
@@ -37,4 +39,7 @@ members = [
 ]
 
 [tool.uv.sources]
+csv-contracts = { workspace = true }
+csv-core = { workspace = true }
+csv-db = { workspace = true }
 csv-redis-layer = { workspace = true }
