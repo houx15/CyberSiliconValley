@@ -1,10 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { useChat } from '@ai-sdk/react';
-import { TextStreamChatTransport } from 'ai';
-import type { UIMessage } from 'ai';
 import { motion } from 'framer-motion';
 import { Loader2, Send } from 'lucide-react';
 import CoachModeTabs from './coach-mode-tabs';
@@ -14,11 +11,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { CoachMode } from '@/types/graph';
+import { postSseJson } from '@/lib/api/sse';
 
 type CoachEmptyState = {
   title: string;
   description: string;
   placeholder: string;
+};
+
+type CoachPart =
+  | { type: 'text'; text: string }
+  | { type: 'tool-suggestSkill'; toolCallId: string; output: { suggestion?: { name?: string; reason?: string } } }
+  | { type: 'tool-rewriteFocus'; toolCallId: string; output: { before?: string; after?: string } };
+
+type CoachMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  parts: CoachPart[];
 };
 
 const EMPTY_STATE_COPY: Record<CoachMode, CoachEmptyState> = {
@@ -44,9 +53,9 @@ const EMPTY_STATE_COPY: Record<CoachMode, CoachEmptyState> = {
   },
 };
 
-function getMessageText(message: Pick<UIMessage, 'parts'>): string {
+function getMessageText(message: Pick<CoachMessage, 'parts'>): string {
   return message.parts
-    .filter((part): part is Extract<UIMessage['parts'][number], { type: 'text' }> => part.type === 'text')
+    .filter((part): part is Extract<CoachPart, { type: 'text' }> => part.type === 'text')
     .map((part) => part.text)
     .join('');
 }
@@ -69,22 +78,15 @@ function splitBeforeAfterBlocks(text: string) {
   return blocks;
 }
 
-function getToolResultView(message: UIMessage) {
+function getToolResultView(message: CoachMessage) {
   const toolParts = message.parts.filter(
-    (part) =>
-      part.type === 'tool-suggestSkill' ||
-      part.type === 'tool-updateProfileField'
+    (part) => part.type === 'tool-suggestSkill' || part.type === 'tool-rewriteFocus'
   );
 
   return toolParts.flatMap((part) => {
-    if (part.type === 'tool-suggestSkill' && part.state === 'output-available') {
-      const result = part.output as {
-        success?: boolean;
-        suggestion?: { name?: string; reason?: string };
-        message?: string;
-      };
-      const suggestionName = result.suggestion?.name || 'Suggested skill';
-      const suggestionReason = result.suggestion?.reason || result.message || '';
+    if (part.type === 'tool-suggestSkill') {
+      const suggestionName = part.output.suggestion?.name || 'Suggested skill';
+      const suggestionReason = part.output.suggestion?.reason || '';
 
       return [
         <div key={part.toolCallId} className="mt-3">
@@ -93,20 +95,14 @@ function getToolResultView(message: UIMessage) {
       ];
     }
 
-    if (part.type === 'tool-updateProfileField' && part.state === 'output-available') {
-      const field = typeof part.input === 'object' && part.input && 'field' in part.input
-        ? String((part.input as { field?: unknown }).field ?? 'Profile update')
-        : 'Profile update';
-      const value = typeof part.input === 'object' && part.input && 'value' in part.input
-        ? (part.input as { value?: unknown }).value
-        : undefined;
-      const after = typeof value === 'string' ? value : JSON.stringify(value ?? {});
-      const result = part.output as { message?: string; success?: boolean } | undefined;
-      const before = result?.message ? `Coach approved: ${result.message}` : 'Profile change prepared for review.';
-
+    if (part.type === 'tool-rewriteFocus') {
       return [
         <div key={part.toolCallId} className="mt-3">
-          <BeforeAfterCard field={field} before={before} after={after} />
+          <BeforeAfterCard
+            field="Suggested rewrite"
+            before={part.output.before || 'Original wording'}
+            after={part.output.after || 'Rewrite unavailable'}
+          />
         </div>,
       ];
     }
@@ -115,7 +111,7 @@ function getToolResultView(message: UIMessage) {
   });
 }
 
-function renderAssistantBlocks(message: UIMessage) {
+function renderAssistantBlocks(message: CoachMessage) {
   const text = getMessageText(message);
   const beforeAfterBlocks = splitBeforeAfterBlocks(text);
 
@@ -160,7 +156,7 @@ function renderAssistantBlocks(message: UIMessage) {
 export function resetCoachConversation(
   stop: () => void,
   setMode: (mode: CoachMode) => void,
-  setMessages: (messages: UIMessage[]) => void,
+  setMessages: (messages: CoachMessage[]) => void,
   setInput: (value: string) => void,
   nextMode: CoachMode
 ) {
@@ -173,13 +169,16 @@ export function resetCoachConversation(
 export default function CoachChat() {
   const [mode, setMode] = useState<CoachMode>('chat');
   const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<CoachMessage[]>([]);
+  const [status, setStatus] = useState<'ready' | 'submitted' | 'streaming'>('ready');
   const scrollRef = useRef<HTMLDivElement>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const { messages, sendMessage, status, setMessages, stop } = useChat({
-    transport: new TextStreamChatTransport({
-      api: '/api/internal/ai/coach',
-    }),
-  });
+  const stop = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setStatus('ready');
+  }, []);
 
   const isLoading = status === 'submitted' || status === 'streaming';
   const emptyState = EMPTY_STATE_COPY[mode];
@@ -268,8 +267,140 @@ export default function CoachChat() {
               return;
             }
 
-            sendMessage({ text }, { body: { mode } });
+            const nextMessages: CoachMessage[] = [
+              ...messages,
+              { id: `user-${Date.now()}`, role: 'user', parts: [{ type: 'text', text }] },
+            ];
+            const assistantId = `assistant-${Date.now()}`;
+            const controller = new AbortController();
+            abortRef.current = controller;
+            setMessages([...nextMessages, { id: assistantId, role: 'assistant', parts: [] }]);
             setInput('');
+            setStatus('submitted');
+
+            void postSseJson(
+              '/api/v1/coach',
+              {
+                mode,
+                messages: nextMessages.map((message) => ({
+                  role: message.role,
+                  content: getMessageText(message),
+                })),
+              },
+              {
+                signal: controller.signal,
+                onEvent: (streamEvent) => {
+                  if (streamEvent.event === 'start') {
+                    setStatus('streaming');
+                    return;
+                  }
+
+                  if (streamEvent.event === 'tool') {
+                    setMessages((prev) =>
+                      prev.map((message) => {
+                        if (message.id !== assistantId) {
+                          return message;
+                        }
+
+                        if (streamEvent.data.name === 'suggest_skill') {
+                          const suggestion = (streamEvent.data.suggestion ?? {}) as {
+                            name?: string;
+                            reason?: string;
+                          };
+                          return {
+                            ...message,
+                            parts: [
+                              ...message.parts,
+                              {
+                                type: 'tool-suggestSkill',
+                                toolCallId: `tool-${Date.now()}`,
+                                output: {
+                                  suggestion: {
+                                    name: String(suggestion.name ?? 'Suggested skill'),
+                                    reason: String(suggestion.reason ?? ''),
+                                  },
+                                },
+                              },
+                            ],
+                          };
+                        }
+
+                        if (streamEvent.data.name === 'rewrite_focus') {
+                          return {
+                            ...message,
+                            parts: [
+                              ...message.parts,
+                              {
+                                type: 'tool-rewriteFocus',
+                                toolCallId: `tool-${Date.now()}`,
+                                output: {
+                                  before: String(streamEvent.data.before ?? ''),
+                                  after: String(streamEvent.data.after ?? ''),
+                                },
+                              },
+                            ],
+                          };
+                        }
+
+                        return message;
+                      })
+                    );
+                    return;
+                  }
+
+                  if (streamEvent.event === 'text') {
+                    const delta = String(streamEvent.data.delta ?? '');
+                    setMessages((prev) =>
+                      prev.map((message) => {
+                        if (message.id !== assistantId) {
+                          return message;
+                        }
+
+                        const currentText = getMessageText(message);
+                        const nextTextPart: CoachPart = { type: 'text', text: `${currentText}${delta}` };
+                        const nonTextParts = message.parts.filter((part) => part.type !== 'text');
+                        return { ...message, parts: [nextTextPart, ...nonTextParts] };
+                      })
+                    );
+                    return;
+                  }
+
+                  if (streamEvent.event === 'done') {
+                    const finalMessage = String(streamEvent.data.message ?? '');
+                    setMessages((prev) =>
+                      prev.map((message) => {
+                        if (message.id !== assistantId) {
+                          return message;
+                        }
+
+                        const nonTextParts = message.parts.filter((part) => part.type !== 'text');
+                        return {
+                          ...message,
+                          parts: [{ type: 'text', text: finalMessage || getMessageText(message) }, ...nonTextParts],
+                        };
+                      })
+                    );
+                    setStatus('ready');
+                    if (abortRef.current === controller) {
+                      abortRef.current = null;
+                    }
+                  }
+                },
+              }
+            ).catch((error) => {
+              if (!controller.signal.aborted) {
+                const errorText = error instanceof Error ? error.message : 'Unable to reach the coach right now.';
+                setMessages((prev) =>
+                  prev.map((message) =>
+                    message.id === assistantId ? { ...message, parts: [{ type: 'text', text: errorText }] } : message
+                  )
+                );
+              }
+              setStatus('ready');
+              if (abortRef.current === controller) {
+                abortRef.current = null;
+              }
+            });
           }}
         >
           <Input

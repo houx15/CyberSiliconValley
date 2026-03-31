@@ -12,18 +12,31 @@ Read these before starting any implementation work:
 
 ## Development Environment
 
-- **No local PostgreSQL or backend** — do not attempt to run the backend locally
-- **Deployment server**: Aliyun ECS (see `.env` for connection details)
-  - Pull the backend codebase on this server and run it there
-  - PostgreSQL runs on this server
-- **Frontend**: can be developed and previewed locally
+- **Frontend**: Next.js in `src/`
+- **Backend**: Python workspace in `backend/`
+  - `backend/apps/api` = FastAPI
+  - `backend/apps/worker` = worker
+  - `backend/apps/cli` = CLI
+  - `backend/apps/mcp` = MCP server
+- **Primary local workflow**: run frontend with `npm` and backend with `uv`
+- **Deployment server**: Aliyun ECS
+  - PostgreSQL and Redis run on that server
+  - Production deploy is a split stack: Next.js on `3000`, FastAPI on `8000`, worker as a separate process
 
 ## Guidelines
 
-- Next.js 15 (App Router) + TypeScript + Tailwind CSS 4 + shadcn/ui
-- Drizzle ORM for database, pgvector for embeddings
-- Vercel AI SDK for LLM integration
+- Next.js 16 + TypeScript + Tailwind CSS 4 + shadcn/ui for the frontend
+- FastAPI + SQLAlchemy + Alembic + Redis + arq + uv for the backend
+- pgvector remains in PostgreSQL for embeddings
 - Follow the project structure defined in `docs/technical-architecture.md`
+
+## Backend Rewrite Rules
+
+- Do not add backend behavior to `src/app/api/**` or revive deleted Next.js API routes
+- Do not add direct database access back into the frontend under `src/**`
+- Frontend data access should go through backend HTTP clients in `src/lib/api/**`
+- Keep deployment instructions free of server-specific secrets, IPs, or credentials
+- If new operational guidance or cutover notes are needed, write them in `README.md`, `backend/README.md`, or `docs/plans/*`
 
 ## Shared Memory
 

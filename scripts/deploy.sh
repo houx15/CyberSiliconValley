@@ -8,17 +8,23 @@ git pull origin main
 
 echo "2. Installing dependencies..."
 npm install
+cd backend
+uv sync
+cd ..
 
 echo "3. Building..."
 npm run build
 
 echo "4. Running migrations..."
-npx drizzle-kit migrate
+cd backend
+uv run alembic upgrade head
+cd ..
 
-echo "5. Seeding users (if needed)..."
-npm run seed:users
-
-echo "6. Restarting PM2..."
+echo "5. Restarting PM2..."
 pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
+
+echo "6. Health checks..."
+curl --fail http://localhost:3000 >/dev/null
+curl --fail http://localhost:8000/api/v1/health >/dev/null
 
 echo "=== Deploy complete ==="

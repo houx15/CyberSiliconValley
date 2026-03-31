@@ -1,7 +1,5 @@
 'use client';
 
-import { useChat } from '@ai-sdk/react';
-import { TextStreamChatTransport } from 'ai';
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -9,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CompanyReveal } from './company-reveal';
-import type { UIMessage } from 'ai';
+import { postSseJson } from '@/lib/api/sse';
 
 interface OnboardingContext {
   step?: string;
@@ -24,57 +22,19 @@ interface OnboardingContext {
   onboardingDone?: boolean;
 }
 
-function getMessageText(msg: UIMessage): string {
-  return msg.parts
-    .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
-    .map((p) => p.text)
-    .join('');
-}
+type ChatMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+};
 
 export function OnboardingChat() {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [context, setContext] = useState<OnboardingContext>({});
   const [inputValue, setInputValue] = useState('');
-
-  const { messages, sendMessage, status } = useChat({
-    transport: new TextStreamChatTransport({
-      api: '/api/internal/ai/enterprise-onboarding',
-    }),
-    onToolCall: ({ toolCall }) => {
-      if (toolCall.toolName === 'setCompanyProfile') {
-        const args = toolCall.input as Record<string, string>;
-        setContext((prev) => ({
-          ...prev,
-          step: 'company_confirmed',
-          companyName: args.companyName,
-          industry: args.industry,
-          companySize: args.companySize,
-          website: args.website,
-          description: args.description,
-          aiMaturity: args.aiMaturity,
-        }));
-      } else if (toolCall.toolName === 'createJob') {
-        const args = toolCall.input as Record<string, string>;
-        setContext((prev) => ({
-          ...prev,
-          step: 'job_created',
-          jobTitle: args.title,
-        }));
-      } else if (toolCall.toolName === 'completeOnboarding') {
-        setContext((prev) => ({
-          ...prev,
-          step: 'complete',
-          onboardingDone: true,
-        }));
-        setTimeout(() => {
-          router.push('/enterprise/dashboard');
-        }, 2000);
-      }
-    },
-  });
-
-  const isLoading = status === 'submitted' || status === 'streaming';
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
@@ -89,8 +49,84 @@ export function OnboardingChat() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!inputValue.trim() || isLoading || context.step === 'complete') return;
-    sendMessage({ text: inputValue });
+    const text = inputValue.trim();
+    const assistantId = `assistant-${Date.now()}`;
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: text,
+    };
+    setMessages((prev) => [...prev, userMessage, { id: assistantId, role: 'assistant', content: '' }]);
     setInputValue('');
+    setIsLoading(true);
+
+    void postSseJson(
+      '/api/v1/enterprise/onboarding/chat',
+      { message: text },
+      {
+        onEvent: (event) => {
+          if (event.event === 'tool') {
+            if (event.data.name === 'set_company_profile') {
+              setContext((prev) => ({
+                ...prev,
+                step: 'company_confirmed',
+                companyName: String(event.data.companyName ?? prev.companyName ?? ''),
+                industry: String(event.data.industry ?? prev.industry ?? ''),
+                companySize: String(event.data.companySize ?? prev.companySize ?? ''),
+                website: event.data.website ? String(event.data.website) : prev.website,
+                description: String(event.data.description ?? prev.description ?? ''),
+                aiMaturity: event.data.aiMaturity ? String(event.data.aiMaturity) : prev.aiMaturity,
+              }));
+            }
+
+            if (event.data.name === 'create_job') {
+              setContext((prev) => ({
+                ...prev,
+                step: 'job_created',
+                jobTitle: String(event.data.title ?? prev.jobTitle ?? ''),
+                jobId: event.data.jobId ? String(event.data.jobId) : prev.jobId,
+              }));
+            }
+
+            if (event.data.name === 'complete_onboarding') {
+              setContext((prev) => ({
+                ...prev,
+                step: 'complete',
+                onboardingDone: true,
+              }));
+              setTimeout(() => {
+                router.push('/enterprise/dashboard');
+              }, 1200);
+            }
+          }
+
+          if (event.event === 'text') {
+            const delta = String(event.data.delta ?? '');
+            setMessages((prev) =>
+              prev.map((message) =>
+                message.id === assistantId ? { ...message, content: `${message.content}${delta}` } : message
+              )
+            );
+          }
+
+          if (event.event === 'done') {
+            const finalMessage = String(event.data.message ?? '');
+            setMessages((prev) =>
+              prev.map((message) =>
+                message.id === assistantId ? { ...message, content: finalMessage || message.content } : message
+              )
+            );
+            setIsLoading(false);
+          }
+        },
+      }
+    ).catch((error) => {
+      const content = error instanceof Error ? error.message : 'Unable to continue onboarding right now.';
+      setMessages((prev) =>
+        prev.map((message) => (message.id === assistantId ? { ...message, content } : message))
+      );
+      setIsLoading(false);
+    });
   }
 
   return (
@@ -119,8 +155,7 @@ export function OnboardingChat() {
             )}
 
             {messages.map((msg) => {
-              const text = getMessageText(msg);
-              if (!text) return null;
+              if (!msg.content) return null;
               return (
                 <motion.div
                   key={msg.id}
@@ -136,7 +171,7 @@ export function OnboardingChat() {
                         : 'bg-muted text-foreground'
                     }`}
                   >
-                    <div className="whitespace-pre-wrap">{text}</div>
+                    <div className="whitespace-pre-wrap">{msg.content}</div>
                   </div>
                 </motion.div>
               );

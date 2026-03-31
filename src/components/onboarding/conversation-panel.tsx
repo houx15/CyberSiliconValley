@@ -4,10 +4,16 @@ import { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { Send } from 'lucide-react';
-import type { UIMessage } from 'ai';
+
+type ConversationMessage = {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  parts?: Array<{ type: string; text?: string }>;
+  content?: string;
+};
 
 interface ConversationPanelProps {
-  messages: UIMessage[];
+  messages: ConversationMessage[];
   isLoading: boolean;
   onSendMessage: (text: string) => void;
 }
@@ -19,11 +25,13 @@ const quickChips = [
   { labelKey: 'chips.done' as const, message: "I think that covers everything. Let's wrap up!" },
 ];
 
-function getMessageText(message: UIMessage): string {
-  return message.parts
-    .filter((part): part is { type: 'text'; text: string } => part.type === 'text')
+function getMessageText(message: ConversationMessage): string {
+  return (
+    message.parts
+    ?.filter((part): part is { type: 'text'; text: string } => part.type === 'text')
     .map((part) => part.text)
-    .join('');
+    .join('') || message.content || ''
+  );
 }
 
 export function ConversationPanel({

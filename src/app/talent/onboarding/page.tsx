@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
 import { AwakeningScreen } from '@/components/onboarding/awakening-screen';
 import { EntryPaths } from '@/components/onboarding/entry-paths';
 import { ConversationPanel } from '@/components/onboarding/conversation-panel';
 import { ProfileReveal } from '@/components/onboarding/profile-reveal';
 import { GuidedTour } from '@/components/onboarding/guided-tour';
 import type { Skill, Experience } from '@/types';
+import { postSseJson } from '@/lib/api/sse';
 
 type OnboardingScreen = 'awakening' | 'entry' | 'conversation' | 'tour';
 
@@ -25,6 +24,12 @@ interface ProfileData {
   };
 }
 
+type ChatMessage = {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  parts: Array<{ type: 'text'; text: string }>;
+};
+
 export default function OnboardingPage() {
   const [screen, setScreen] = useState<OnboardingScreen>('awakening');
   const [profileData, setProfileData] = useState<ProfileData>({
@@ -32,6 +37,8 @@ export default function OnboardingPage() {
     experience: [],
   });
   const [revealedFields, setRevealedFields] = useState<Set<string>>(new Set());
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRevealField = useCallback((field: string, value: unknown) => {
     setRevealedFields((prev) => new Set([...prev, field]));
@@ -63,27 +70,86 @@ export default function OnboardingPage() {
     setScreen('tour');
   }, []);
 
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({
-      api: '/api/internal/ai/onboarding',
-    }),
-    onToolCall({ toolCall }) {
-      const tc = toolCall as { toolName: string; input: Record<string, unknown> };
-      if (tc.toolName === 'revealProfileField') {
-        handleRevealField(tc.input.field as string, tc.input.value);
-      } else if (tc.toolName === 'addSkillTag') {
-        handleAddSkill({
-          name: tc.input.name as string,
-          level: tc.input.level as Skill['level'],
-          category: tc.input.category as string,
-        });
-      } else if (tc.toolName === 'completeOnboarding') {
-        handleComplete();
+  const sendMessage = useCallback(
+    async (text: string) => {
+      const messageText = text.trim();
+      if (!messageText || isLoading) {
+        return;
+      }
+
+      const userMessage: ChatMessage = {
+        id: `user-${Date.now()}`,
+        role: 'user',
+        parts: [{ type: 'text', text: messageText }],
+      };
+      const assistantId = `assistant-${Date.now()}`;
+
+      setMessages((prev) => [...prev, userMessage, { id: assistantId, role: 'assistant', parts: [] }]);
+      setIsLoading(true);
+
+      try {
+        await postSseJson(
+          '/api/v1/onboarding/chat',
+          { message: messageText },
+          {
+            onEvent: (event) => {
+              if (event.event === 'tool') {
+                if (event.data.name === 'reveal_profile_field') {
+                  handleRevealField(String(event.data.field ?? ''), event.data.value);
+                } else if (event.data.name === 'add_skill_tag') {
+                  handleAddSkill({
+                    name: String(event.data.skillName ?? 'Skill'),
+                    level: String(event.data.level ?? 'intermediate') as Skill['level'],
+                    category: String(event.data.category ?? 'general'),
+                  });
+                } else if (event.data.name === 'complete_onboarding') {
+                  handleComplete();
+                }
+              }
+
+              if (event.event === 'text') {
+                const delta = String(event.data.delta ?? '');
+                setMessages((prev) =>
+                  prev.map((message) =>
+                    message.id === assistantId
+                      ? {
+                          ...message,
+                          parts: [{ type: 'text', text: `${message.parts[0]?.text ?? ''}${delta}` }],
+                        }
+                      : message
+                  )
+                );
+              }
+
+              if (event.event === 'done') {
+                const finalMessage = String(event.data.message ?? '');
+                setMessages((prev) =>
+                  prev.map((message) =>
+                    message.id === assistantId
+                      ? {
+                          ...message,
+                          parts: [{ type: 'text', text: finalMessage || message.parts[0]?.text || '' }],
+                        }
+                      : message
+                  )
+                );
+                setIsLoading(false);
+              }
+            },
+          }
+        );
+      } catch (error) {
+        const errorText = error instanceof Error ? error.message : 'Unable to continue onboarding right now.';
+        setMessages((prev) =>
+          prev.map((message) =>
+            message.id === assistantId ? { ...message, parts: [{ type: 'text', text: errorText }] } : message
+          )
+        );
+        setIsLoading(false);
       }
     },
-  });
-
-  const isLoading = status === 'streaming' || status === 'submitted';
+    [handleAddSkill, handleComplete, handleRevealField, isLoading]
+  );
 
   const handleAwakeningComplete = useCallback(() => {
     setScreen('entry');
@@ -99,7 +165,7 @@ export default function OnboardingPage() {
         voice: "I'd like to introduce myself by voice.",
       };
       const text = messageMap[path] ?? messageMap['conversation']!;
-      sendMessage({ text });
+      void sendMessage(text);
     },
     [sendMessage]
   );
@@ -127,7 +193,9 @@ export default function OnboardingPage() {
         <ConversationPanel
           messages={messages}
           isLoading={isLoading}
-          onSendMessage={(text: string) => sendMessage({ text })}
+          onSendMessage={(text: string) => {
+            void sendMessage(text);
+          }}
         />
       </div>
       <div className="w-1/2 h-full overflow-auto">

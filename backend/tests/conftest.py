@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_SRC_DIRS = [
     ROOT / "apps" / "api" / "src",
     ROOT / "apps" / "cli" / "src",
+    ROOT / "apps" / "mcp" / "src",
     ROOT / "packages" / "contracts" / "src",
     ROOT / "packages" / "core" / "src",
     ROOT / "packages" / "db" / "src",

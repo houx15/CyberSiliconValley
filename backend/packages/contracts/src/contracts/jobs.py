@@ -46,6 +46,12 @@ class JobCreateRequest(BaseModel):
     auto_prechat: bool = Field(default=False, alias="autoPrechat")
 
 
+class JobParseRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    message: str = Field(min_length=1)
+
+
 class JobRecord(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 

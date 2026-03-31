@@ -730,7 +730,7 @@ git commit -m "feat: implement python seed pipeline"
 - Delete: `src/lib/auth/middleware.ts`
 - Delete: `src/app/api/v1/auth/login/route.ts`
 
-- [ ] **Step 1: Write failing frontend contract tests**
+- [x] **Step 1: Write failing frontend contract tests**
 
 Add tests around:
 
@@ -738,7 +738,7 @@ Add tests around:
 - session fetch
 - authenticated API client behavior
 
-- [ ] **Step 2: Implement backend-backed frontend API client**
+- [x] **Step 2: Implement backend-backed frontend API client**
 
 Create a shared fetch wrapper that:
 
@@ -746,11 +746,11 @@ Create a shared fetch wrapper that:
 - sends credentials
 - normalizes API errors
 
-- [ ] **Step 3: Remove frontend-side JWT logic**
+- [x] **Step 3: Remove frontend-side JWT logic**
 
 Replace middleware/session logic with backend session checks only.
 
-- [ ] **Step 4: Run targeted frontend tests**
+- [x] **Step 4: Run targeted frontend tests**
 
 Run:
 
@@ -822,19 +822,19 @@ git commit -m "refactor: remove direct backend imports from frontend pages"
 - Modify: `README.md`
 - Modify: `ecosystem.config.js`
 
-- [ ] **Step 1: Remove dead runtime files**
+- [x] **Step 1: Remove dead runtime files**
 
 Delete the old backend directories once the Python replacements are verified and the git archive tag/branch exists.
 
-- [ ] **Step 2: Update frontend package scripts**
+- [x] **Step 2: Update frontend package scripts**
 
 Keep only frontend-relevant scripts in the root `package.json`.
 
-- [ ] **Step 3: Update process management docs**
+- [x] **Step 3: Update process management docs**
 
 Replace PM2 Node worker guidance with the new compose/backend process model.
 
-- [ ] **Step 4: Run verification**
+- [x] **Step 4: Run verification**
 
 Run:
 
@@ -866,7 +866,7 @@ git commit -m "refactor: remove legacy typescript backend runtime"
 - Create: `backend/tests/contract/test_cli_contract.py`
 - Create: `backend/tests/contract/test_mcp_contract.py`
 
-- [ ] **Step 1: Write failing contract tests**
+- [x] **Step 1: Write failing contract tests**
 
 Cover:
 
@@ -874,11 +874,11 @@ Cover:
 - MCP tool registration
 - backend API interaction shape
 
-- [ ] **Step 2: Implement thin adapters**
+- [x] **Step 2: Implement thin adapters**
 
 Keep them thin and backend-facing rather than DB-facing.
 
-- [ ] **Step 3: Run contract tests**
+- [x] **Step 3: Run contract tests**
 
 Run:
 
@@ -905,7 +905,7 @@ git commit -m "feat: add cli and mcp adapters over python backend"
 - Modify: `AGENTS.md`
 - Create: `docs/plans/2026-03-31-python-backend-cutover-checklist.md`
 
-- [ ] **Step 1: Write deployment checklist**
+- [x] **Step 1: Write deployment checklist**
 
 Document:
 
@@ -917,7 +917,7 @@ Document:
 - rollback approach
 - legacy archive tag/branch reference
 
-- [ ] **Step 2: Update shared instructions**
+- [x] **Step 2: Update shared instructions**
 
 Add backend development expectations to `AGENTS.md`.
 
@@ -947,26 +947,26 @@ git commit -m "docs: finalize python backend deployment guidance"
 
 ## Deletion Checklist
 
-- [ ] Remove `src/app/api/internal/**`
-- [ ] Remove `src/app/api/v1/**`
-- [ ] Remove `src/lib/db/**`
-- [ ] Remove `src/lib/jobs/**`
-- [ ] Remove backend-owned `src/lib/ai/**`
-- [ ] Remove backend auth ownership from `src/lib/auth/**`
-- [ ] Remove old Node deployment assumptions from `README.md` and `ecosystem.config.js`
+- [x] Remove `src/app/api/internal/**`
+- [x] Remove `src/app/api/v1/**`
+- [x] Remove `src/lib/db/**`
+- [x] Remove `src/lib/jobs/**`
+- [x] Remove backend-owned `src/lib/ai/**`
+- [x] Remove backend auth ownership from `src/lib/auth/**`
+- [x] Remove old Node deployment assumptions from `README.md` and `ecosystem.config.js`
 
 ---
 
 ## Verification Checklist
 
-- [ ] `npm run typecheck`
-- [ ] `npm run test`
-- [ ] `cd backend && uv run pytest`
+- [x] `npm run typecheck`
+- [x] `npm run test`
+- [x] `cd backend && uv run pytest`
 - [ ] `cd backend && docker compose config`
 - [ ] `cd backend && docker compose up -d`
 - [ ] backend health endpoint responds
-- [ ] frontend renders using backend APIs only
-- [ ] seed pipeline runs in Python
+- [x] frontend renders using backend APIs only
+- [x] seed pipeline runs in Python
 - [ ] worker processes a real queued job
 
 ---

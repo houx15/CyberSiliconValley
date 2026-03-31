@@ -10,11 +10,21 @@ module.exports = {
       },
     },
     {
-      name: 'csv-worker',
-      script: 'npx',
-      args: 'tsx src/lib/jobs/worker.ts',
+      name: 'csv-api',
+      cwd: './backend',
+      script: 'uv',
+      args: 'run uvicorn csv_api.main:app --host 0.0.0.0 --port 8000',
       env: {
-        NODE_ENV: 'production',
+        APP_ENV: 'production',
+      },
+    },
+    {
+      name: 'csv-worker',
+      cwd: './backend',
+      script: 'uv',
+      args: 'run python -m csv_worker.main',
+      env: {
+        APP_ENV: 'production',
       },
     },
   ],

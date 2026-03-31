@@ -1,38 +1,30 @@
 'use client';
 
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { useChat } from '@ai-sdk/react';
-import { TextStreamChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
-import type { UIMessage } from 'ai';
+import { postSseJson } from '@/lib/api/sse';
 
 interface ScreeningChatProps {
   activeJobs: Array<{ id: string; title: string }>;
 }
 
-function getMessageText(msg: UIMessage): string {
-  return msg.parts
-    .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
-    .map((p) => p.text)
-    .join('');
-}
+type ChatMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+};
 
 export function ScreeningChat({ activeJobs }: ScreeningChatProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState('');
-
-  const { messages, sendMessage, status } = useChat({
-    transport: new TextStreamChatTransport({
-      api: '/api/internal/ai/screening',
-    }),
-  });
-
-  const isLoading = status === 'submitted' || status === 'streaming';
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
@@ -60,7 +52,59 @@ export function ScreeningChat({ activeJobs }: ScreeningChatProps) {
     const messageText = text || inputValue;
     if (!messageText.trim() || isLoading) return;
     setInputValue('');
-    sendMessage({ text: messageText });
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: messageText,
+    };
+    const assistantId = `assistant-${Date.now()}`;
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setIsLoading(true);
+    setMessages((prev) => [...prev, userMessage, { id: assistantId, role: 'assistant', content: '' }]);
+
+    try {
+      await postSseJson(
+        '/api/v1/screening',
+        { message: messageText },
+        {
+          signal: controller.signal,
+          onEvent: (event) => {
+            if (event.event === 'text') {
+              const delta = String(event.data.delta ?? '');
+              setMessages((prev) =>
+                prev.map((message) =>
+                  message.id === assistantId
+                    ? { ...message, content: `${message.content}${delta}` }
+                    : message
+                )
+              );
+            }
+
+            if (event.event === 'done') {
+              const finalMessage = String(event.data.message ?? '');
+              setMessages((prev) =>
+                prev.map((message) =>
+                  message.id === assistantId ? { ...message, content: finalMessage || message.content } : message
+                )
+              );
+            }
+          },
+        }
+      );
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        const content = error instanceof Error ? error.message : 'Unable to screen candidates right now.';
+        setMessages((prev) =>
+          prev.map((message) => (message.id === assistantId ? { ...message, content } : message))
+        );
+      }
+    } finally {
+      if (abortRef.current === controller) {
+        abortRef.current = null;
+      }
+      setIsLoading(false);
+    }
   };
 
   const welcomeText = activeJobs.length > 0
@@ -83,8 +127,7 @@ export function ScreeningChat({ activeJobs }: ScreeningChatProps) {
           </div>
 
           {messages.map((message) => {
-            const text = getMessageText(message);
-            if (!text) return null;
+            if (!message.content) return null;
 
             return (
               <motion.div
@@ -108,7 +151,7 @@ export function ScreeningChat({ activeJobs }: ScreeningChatProps) {
                       : 'bg-zinc-800 text-foreground'
                   }`}
                 >
-                  <div className="whitespace-pre-wrap">{text}</div>
+                  <div className="whitespace-pre-wrap">{message.content}</div>
                 </div>
               </motion.div>
             );

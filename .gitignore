@@ -89,6 +89,8 @@ venv/
 # Common build directories
 dist/
 build/
+.next/
+tsconfig.tsbuildinfo
 
 # Python package build
 *.egg-info/
@@ -110,6 +112,9 @@ logs/
 # JavaScript/TypeScript
 coverage/
 .nyc_output/
+.playwright-mcp/
+screenshots/
+.claude/worktrees/
 
 # Python
 htmlcov/

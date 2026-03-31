@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useChat } from '@ai-sdk/react';
-import { TextStreamChatTransport } from 'ai';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { JdEditor } from '@/components/enterprise/jd-editor';
-import type { UIMessage } from 'ai';
+import { postSseJson } from '@/lib/api/sse';
 
 interface StructuredJobData {
   title: string;
@@ -34,47 +32,92 @@ const emptyJob: StructuredJobData = {
   workMode: 'remote',
 };
 
-function getMessageText(msg: UIMessage): string {
-  return msg.parts
-    .filter((p): p is { type: 'text'; text: string } => p.type === 'text')
-    .map((p) => p.text)
-    .join('');
-}
+type ChatMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+};
 
 export default function NewJobPage() {
   const [structured, setStructured] = useState<StructuredJobData | null>(null);
   const [pasteText, setPasteText] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
   const [chatInput, setChatInput] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { messages, sendMessage, status } = useChat({
-    transport: new TextStreamChatTransport({
-      api: '/api/internal/ai/jd-parse',
-    }),
-    onToolCall: ({ toolCall }) => {
-      if (toolCall.toolName === 'structureJob') {
-        const args = toolCall.input as StructuredJobData;
-        setStructured(args);
-      }
-    },
-  });
+  async function sendForParsing(text: string) {
+    const messageText = text.trim();
+    if (!messageText || isLoading) {
+      return;
+    }
 
-  const isLoading = status === 'submitted' || status === 'streaming';
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      role: 'user',
+      content: messageText,
+    };
+    const assistantId = `assistant-${Date.now()}`;
+
+    setMessages((prev) => [...prev, userMessage, { id: assistantId, role: 'assistant', content: '' }]);
+    setIsLoading(true);
+
+    try {
+      await postSseJson(
+        '/api/v1/jobs/parse',
+        { message: messageText },
+        {
+          onEvent: (event) => {
+            if (event.event === 'tool' && event.data.name === 'structure_job' && event.data.structured) {
+              setStructured(event.data.structured as StructuredJobData);
+            }
+
+            if (event.event === 'text') {
+              const delta = String(event.data.delta ?? '');
+              setMessages((prev) =>
+                prev.map((message) =>
+                  message.id === assistantId
+                    ? { ...message, content: `${message.content}${delta}` }
+                    : message
+                )
+              );
+            }
+
+            if (event.event === 'done') {
+              const finalMessage = String(event.data.message ?? '');
+              setMessages((prev) =>
+                prev.map((message) =>
+                  message.id === assistantId ? { ...message, content: finalMessage || message.content } : message
+                )
+              );
+            }
+          },
+        }
+      );
+    } catch (error) {
+      const content = error instanceof Error ? error.message : 'Unable to structure this job right now.';
+      setMessages((prev) =>
+        prev.map((message) => (message.id === assistantId ? { ...message, content } : message))
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   function handlePasteSubmit() {
     if (!pasteText.trim()) return;
-    sendMessage({ text: pasteText });
+    void sendForParsing(pasteText);
   }
 
   function handleLinkSubmit() {
     if (!linkUrl.trim()) return;
-    sendMessage({ text: `Please parse this job posting URL: ${linkUrl}` });
+    void sendForParsing(`Please parse this job posting URL: ${linkUrl}`);
   }
 
   function handleChatSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!chatInput.trim() || isLoading) return;
-    sendMessage({ text: chatInput });
+    void sendForParsing(chatInput);
     setChatInput('');
   }
 
@@ -169,8 +212,7 @@ export default function NewJobPage() {
                   )}
                   <AnimatePresence mode="popLayout">
                     {messages.map((msg) => {
-                      const text = getMessageText(msg);
-                      if (!text) return null;
+                      if (!msg.content) return null;
                       return (
                         <motion.div
                           key={msg.id}
@@ -185,7 +227,7 @@ export default function NewJobPage() {
                                 : 'bg-muted text-foreground'
                             }`}
                           >
-                            <div className="whitespace-pre-wrap">{text}</div>
+                            <div className="whitespace-pre-wrap">{msg.content}</div>
                           </div>
                         </motion.div>
                       );

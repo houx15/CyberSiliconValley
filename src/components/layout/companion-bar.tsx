@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Send, ChevronUp, ChevronDown, MessageSquare } from 'lucide-react';
+import { postSseJson } from '@/lib/api/sse';
 
 interface ChatMessage {
   id: string;
@@ -61,41 +62,34 @@ export function CompanionBar({ statusMessage, sessionTypes }: CompanionBarProps)
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/internal/ai/companion', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const assistantId = `assistant-${Date.now()}`;
+      setMessages((prev) => [...prev, { id: assistantId, role: 'assistant', content: '' }]);
+      await postSseJson(
+        '/api/v1/companion',
+        {
           messages: updatedMessages.map((m) => ({ role: m.role, content: m.content })),
           sessionType: activeTab,
-        }),
-      });
+        },
+        {
+          onEvent: (event) => {
+            if (event.event === 'text') {
+              const delta = String(event.data.delta ?? '');
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId ? { ...m, content: `${m.content}${delta}` } : m
+                )
+              );
+            }
 
-      if (!res.ok) {
-        throw new Error('Failed to get response');
-      }
-
-      const reader = res.body?.getReader();
-      if (!reader) throw new Error('No reader');
-
-      const assistantId = `assistant-${Date.now()}`;
-      const decoder = new TextDecoder();
-      let assistantContent = '';
-
-      // Add empty assistant message
-      setMessages((prev) => [...prev, { id: assistantId, role: 'assistant', content: '' }]);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        assistantContent += chunk;
-        const currentContent = assistantContent;
-
-        setMessages((prev) =>
-          prev.map((m) => (m.id === assistantId ? { ...m, content: currentContent } : m))
-        );
-      }
+            if (event.event === 'done') {
+              const finalMessage = String(event.data.message ?? '');
+              setMessages((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, content: finalMessage || m.content } : m))
+              );
+            }
+          },
+        }
+      );
     } catch (error) {
       console.error('Companion chat error:', error);
       setMessages((prev) => [
