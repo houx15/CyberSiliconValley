@@ -1,6 +1,5 @@
 from __future__ import annotations
 
+from csv_worker.jobs.ping import ping
 
-async def ping(ctx: dict[str, object], value: str = "pong") -> dict[str, str]:
-    _ = ctx
-    return {"value": value}
+__all__ = ["ping"]

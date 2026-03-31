@@ -5,6 +5,8 @@ from arq.connections import RedisSettings
 
 from redis_layer.cache import get_redis_url
 
+WORKER_QUEUE_NAME = "csv:worker:default"
+
 
 def create_arq_settings(redis_url: str | None = None) -> RedisSettings:
     return RedisSettings.from_dsn(get_redis_url(redis_url))
@@ -15,4 +17,4 @@ async def create_queue(redis_url: str | None = None) -> ArqRedis:
 
 
 async def enqueue_ping_job(queue: ArqRedis, value: str = "pong") -> object:
-    return await queue.enqueue_job("ping", value)
+    return await queue.enqueue_job("ping", value, _queue_name=WORKER_QUEUE_NAME)

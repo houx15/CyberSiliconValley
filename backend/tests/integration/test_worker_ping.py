@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from app.main import build_worker
+from csv_worker.main import build_worker
 from redis_layer.queue import create_queue, enqueue_ping_job
 
 
