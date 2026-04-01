@@ -62,6 +62,8 @@
     "talentMarket": "人才市场",
     "dashboard": "工作台",
     "screening": "人才筛选",
+    "buddy": "AI 伙伴",
+    "aiHr": "AI HR",
     "settings": "设置"
   },
   "auth": {
@@ -155,11 +157,23 @@
     "availabilityNotLooking": "暂不考虑",
     "lastUpdated": "最后更新于 {date}",
     "editProfile": "编辑资料",
+    "editResume": "编辑简历",
     "skillsTitle": "能力画像",
     "experienceTitle": "工作经历",
     "noSkills": "尚未添加技能，请编辑资料添加。",
     "noExperience": "尚未添加经历，请编辑资料添加。",
     "noProfile": "未找到个人资料，请先完成入职引导。"
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "管理账号、可见性和会员方案",
+    "visibility": "可见性设置",
+    "visibleToCompanies": "对企业可见",
+    "visibleToTalent": "对人才可见",
+    "membership": "会员等级",
+    "viewPlans": "查看套餐",
+    "upgradeTalent": "升级解锁更多匹配和教练功能",
+    "upgradeEnterprise": "升级解锁更多招聘和筛选功能"
   },
   "profileEditor": {
     "title": "编辑资料",
@@ -369,6 +383,52 @@
     "startHint": "在下方输入消息开始。",
     "suggestedImprovement": "建议改进",
     "profileUpdated": "个人资料已更新"
+  },
+  "prechat": {
+    "title": "AI 预沟通",
+    "optInTitle": "AI 预沟通邀请",
+    "optInAccept": "同意参与",
+    "optInDecline": "暂不参与",
+    "privacyNote": "预沟通期间不会泄露你的联系方式，AI 会保护你的隐私。",
+    "transcript": "对话记录",
+    "round": "第 {current} / {max} ��",
+    "summary": "AI 摘要",
+    "viewTranscript": "查看完整对话记录",
+    "replyHint": "输入你的回复，补充 AI 可能遗漏的信息...",
+    "statusPendingTalent": "等待人才确认",
+    "statusPendingEnterprise": "等待企业确认",
+    "statusActive": "进��中",
+    "statusCompleted": "已完成",
+    "statusDeclined": "已拒绝"
+  },
+  "memory": {
+    "title": "AI 记忆空间",
+    "description": "AI 基于与你的对话积累的记忆。你可以查看和编辑这些内容。",
+    "save": "保存",
+    "addLabel": "记忆标签",
+    "addContent": "记忆内容"
+  },
+  "subscription": {
+    "tierComparison": "套餐对比",
+    "usageToday": "今日用量",
+    "current": "当��",
+    "upgrade": "���级",
+    "perMonth": "/月",
+    "unlimited": "无限",
+    "matchesPerDay": "每日匹配数",
+    "preChatsPerDay": "每日预沟通数",
+    "coachPerDay": "每日教练对话数",
+    "jobPostings": "职位发布数",
+    "resumeScansPerDay": "每日简历扫描数"
+  },
+  "upload": {
+    "dropLabel": "拖拽文件到这里，或点击选择",
+    "uploading": "正在上传...",
+    "success": "上传��功",
+    "retry": "重试",
+    "reupload": "重新上传",
+    "maxSize": "最大允许 {size}MB",
+    "formats": "支持 PDF、Word"
   },
   "inbox": {
     "title": "收件箱",

@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation';
-import { CoachPageClient } from '@/components/coach/coach-page-client';
 import { getCurrentUser } from '@/lib/session/current-user';
+import { BuddyPageClient } from '@/components/ai/buddy-page-client';
+import { PageTransition } from '@/components/animations/page-transition';
 
-export default async function CoachPage() {
+export default async function BuddyPage() {
   let user = null;
   try {
     user = await getCurrentUser();
@@ -14,5 +15,9 @@ export default async function CoachPage() {
     redirect('/login');
   }
 
-  return <CoachPageClient />;
+  return (
+    <PageTransition>
+      <BuddyPageClient />
+    </PageTransition>
+  );
 }

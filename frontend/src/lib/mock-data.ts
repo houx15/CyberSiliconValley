@@ -168,6 +168,25 @@ export const MOCK_JOB_MATCH_COUNTS: Record<string, { matchCount: number; shortli
   'mock-job-3': { matchCount: 8, shortlistedCount: 1 },
 };
 
+export const MOCK_TALENT_HOME_STATS = {
+  companiesExplored: 47,
+  preChatsActive: 2,
+  invitesReceived: 3,
+  matchesFound: 11,
+  seekingReportReady: true,
+};
+
+export const MOCK_WORKBENCH_STATS = {
+  resumesScanned: 1247,
+  preliminaryMatches: 86,
+  preChatCompleted: 23,
+  invitesSent: 15,
+  invitesAccepted: 9,
+  interviewsScheduled: 5,
+  activeJobs: 3,
+  talentPoolSize: 342,
+};
+
 export const MOCK_COMPANION_COUNTS = {
   matchCount: 4,
   inboxCount: 2,

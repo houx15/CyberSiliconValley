@@ -62,6 +62,8 @@
     "talentMarket": "Talent Market",
     "dashboard": "Dashboard",
     "screening": "Screen Talent",
+    "buddy": "AI Buddy",
+    "aiHr": "AI HR",
     "settings": "Settings"
   },
   "auth": {
@@ -155,11 +157,23 @@
     "availabilityNotLooking": "Not looking",
     "lastUpdated": "Last updated {date}",
     "editProfile": "Edit Profile",
+    "editResume": "Edit Resume",
     "skillsTitle": "Capability Portrait",
     "experienceTitle": "Experience",
     "noSkills": "No skills added yet. Edit your profile to add skills.",
     "noExperience": "No experience added yet. Edit your profile to add experience.",
     "noProfile": "Profile not found. Please complete onboarding first."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account, visibility, and membership",
+    "visibility": "Visibility",
+    "visibleToCompanies": "Visible to companies",
+    "visibleToTalent": "Visible to talent",
+    "membership": "Membership",
+    "viewPlans": "View Plans",
+    "upgradeTalent": "Upgrade to unlock more matches and coaching features",
+    "upgradeEnterprise": "Upgrade to unlock more recruiting and screening features"
   },
   "profileEditor": {
     "title": "Edit Profile",
@@ -369,6 +383,52 @@
     "startHint": "Type a message below to get started.",
     "suggestedImprovement": "Suggested improvement",
     "profileUpdated": "Profile updated"
+  },
+  "prechat": {
+    "title": "AI Pre-chat",
+    "optInTitle": "AI Pre-chat Invitation",
+    "optInAccept": "Accept",
+    "optInDecline": "Decline",
+    "privacyNote": "Your contact information will not be shared during the pre-chat. AI protects your privacy.",
+    "transcript": "Transcript",
+    "round": "Round {current} / {max}",
+    "summary": "AI Summary",
+    "viewTranscript": "View full transcript",
+    "replyHint": "Type your reply to add information AI might have missed...",
+    "statusPendingTalent": "Pending talent opt-in",
+    "statusPendingEnterprise": "Pending enterprise opt-in",
+    "statusActive": "Active",
+    "statusCompleted": "Completed",
+    "statusDeclined": "Declined"
+  },
+  "memory": {
+    "title": "AI Memory Space",
+    "description": "Memory accumulated by AI from your conversations. You can view and edit these entries.",
+    "save": "Save",
+    "addLabel": "Memory label",
+    "addContent": "Memory content"
+  },
+  "subscription": {
+    "tierComparison": "Plan Comparison",
+    "usageToday": "Today's Usage",
+    "current": "Current",
+    "upgrade": "Upgrade",
+    "perMonth": "/mo",
+    "unlimited": "Unlimited",
+    "matchesPerDay": "Matches per day",
+    "preChatsPerDay": "Pre-chats per day",
+    "coachPerDay": "Coach sessions per day",
+    "jobPostings": "Job postings",
+    "resumeScansPerDay": "Resume scans per day"
+  },
+  "upload": {
+    "dropLabel": "Drag & drop files here, or click to browse",
+    "uploading": "Uploading...",
+    "success": "Upload successful",
+    "retry": "Retry",
+    "reupload": "Upload again",
+    "maxSize": "Max {size}MB",
+    "formats": "Supports PDF, Word"
   },
   "inbox": {
     "title": "Inbox",

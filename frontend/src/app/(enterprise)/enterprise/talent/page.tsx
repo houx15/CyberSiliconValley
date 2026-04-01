@@ -1,4 +1,5 @@
 import { PageTransition } from '@/components/animations/page-transition';
+import { TalentMarketList } from '@/components/enterprise/talent-market-list';
 
 export default function TalentMarketPage() {
   return (
@@ -11,9 +12,7 @@ export default function TalentMarketPage() {
           </p>
         </div>
 
-        <div className="flex h-80 items-center justify-center rounded-2xl border border-dashed border-border/60 text-sm text-muted-foreground">
-          人才市场功能即将上线
-        </div>
+        <TalentMarketList />
       </div>
     </PageTransition>
   );

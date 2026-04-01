@@ -11,6 +11,8 @@ import {
   LayoutDashboard,
   Briefcase,
   Users,
+  UserRound,
+  Bot,
   Settings,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -24,6 +26,8 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   dashboard: LayoutDashboard,
   briefcase: Briefcase,
   users: Users,
+  'user-round': UserRound,
+  bot: Bot,
   settings: Settings,
 };
 
