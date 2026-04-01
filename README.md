@@ -25,7 +25,7 @@ backend/apps/worker      arq worker
 backend/apps/cli         operator CLI
 backend/apps/mcp         MCP server
 backend/packages/*       shared Python contracts, db, core, ai, redis
-docs/plans/              rewrite and cutover plans
+docs/archive/            historical plans and legacy architecture
 ```
 
 ## Local Development
@@ -74,10 +74,12 @@ docker compose up --build
 This brings up:
 
 - `frontend`
-- `api`
+- `backend`
 - `worker`
 - `postgres`
 - `redis`
+
+The frontend, API, and worker each run as separate containers. The API and worker also have separate Python Dockerfiles.
 
 ## Commands
 
@@ -100,7 +102,7 @@ This is the recommended deployment shape for a single ECS host:
 
 - Next.js frontend on `127.0.0.1:3000`
 - FastAPI backend on `127.0.0.1:8000`
-- Python worker as a separate PM2 process
+- Python worker as a separate process
 - PostgreSQL and Redis on the same machine
 - Nginx routing `/` to Next and `/api/` to FastAPI on one public origin
 
@@ -122,8 +124,7 @@ sudo apt-get install -y redis-server
 sudo systemctl enable redis-server
 sudo systemctl start redis-server
 
-# PM2 + Nginx
-sudo npm install -g pm2
+# Nginx
 sudo apt-get install -y nginx
 ```
 
@@ -229,18 +230,16 @@ Fixed demo accounts use password `csv2026`:
 npm run build
 ```
 
-### 8. Start processes with PM2
+### 8. Start the services
 
 ```bash
-pm2 start ecosystem.config.js
-pm2 save
+npm run start &
+cd backend
+uv run uvicorn apps.api.app.main:app --host 0.0.0.0 --port 8000 &
+uv run python -m apps.worker.app.main &
 ```
 
-Expected processes:
-
-- `csv-web`
-- `csv-api`
-- `csv-worker`
+Use your actual service manager or container runtime in production. The key requirement is one frontend process, one API process, and one worker process.
 
 ### 9. Configure Nginx
 
@@ -261,11 +260,6 @@ The important routing rule is:
 ### 10. Smoke test the deployment
 
 ```bash
-pm2 status
-pm2 logs csv-web --lines 20
-pm2 logs csv-api --lines 20
-pm2 logs csv-worker --lines 20
-
 curl -I http://127.0.0.1:3000
 curl http://127.0.0.1:8000/api/v1/health
 curl http://127.0.0.1:8000/api/v1/ready
@@ -299,7 +293,6 @@ uv sync
 uv run alembic upgrade head
 cd ..
 npm run build
-pm2 restart ecosystem.config.js
 ```
 
 ## Rollback Notes
@@ -307,13 +300,13 @@ pm2 restart ecosystem.config.js
 - Keep the previous deployment directory until the new stack passes smoke tests.
 - The legacy TypeScript backend reference is `archive/ts-backend-pre-python-rewrite`.
 - Treat that archive as a code reference, not a schema-compatible hot rollback once the Python migrations and seed reset have been applied.
-- If a fresh deploy fails before cutover, restore the previous app directory and PM2 processes instead of mixing runtimes.
+- If a fresh deploy fails before cutover, restore the previous app directory and the previously running frontend/backend/worker processes instead of mixing runtimes.
 
 ## More Detail
 
 - Backend workspace guide: `backend/README.md`
-- Cutover checklist: `docs/plans/2026-03-31-python-backend-cutover-checklist.md`
-- Rewrite design: `docs/plans/2026-03-31-python-backend-replatform-design.md`
+- Current architecture: `docs/technical-architecture.md`
+- Historical cutover notes: `docs/archive/`
 
 Expected: JSON response with `{"user":{"id":"...","email":"talent1@csv.dev","role":"talent"}}` and a `Set-Cookie` header.
 
@@ -323,7 +316,7 @@ Expected: JSON response with `{"user":{"id":"...","email":"talent1@csv.dev","rol
 
 **"Redis connection refused"**: Check `REDIS_URL` in `.env`. Verify Redis is running: `sudo systemctl status redis-server`
 
-**"Port 3000 already in use"**: Kill existing process: `pm2 kill` then restart.
+**"Port 3000 already in use"**: Stop the existing frontend process, then restart it cleanly.
 
 **Build fails with type errors**: Run `npm run typecheck` to see the specific errors.
 

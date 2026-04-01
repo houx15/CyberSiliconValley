@@ -20,10 +20,7 @@ cd backend
 uv run alembic upgrade head
 cd ..
 
-echo "5. Restarting PM2..."
-pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
-
-echo "6. Health checks..."
+echo "5. Health checks..."
 curl --fail http://localhost:3000 >/dev/null
 curl --fail http://localhost:8000/api/v1/health >/dev/null
 

@@ -10,6 +10,8 @@ Read these before starting any implementation work:
 2. **Technical Architecture**: `docs/technical-architecture.md` — Tech stack, project structure, data models, API design
 3. **Web Visual Identity** (reference only): `docs/WebsiteUI.md` — "Calm Functionalism" design system. If it conflicts with PRD or technical architecture, follow those instead.
 
+Historical planning and legacy architecture material lives under `docs/archive/`. Do not use archived docs as the source of truth for current implementation work.
+
 ## Development Environment
 
 - **Frontend**: Next.js in `src/`
@@ -36,7 +38,7 @@ Read these before starting any implementation work:
 - Do not add direct database access back into the frontend under `src/**`
 - Frontend data access should go through backend HTTP clients in `src/lib/api/**`
 - Keep deployment instructions free of server-specific secrets, IPs, or credentials
-- If new operational guidance or cutover notes are needed, write them in `README.md`, `backend/README.md`, or `docs/plans/*`
+- If new operational guidance or cutover notes are needed, write them in `README.md`, `backend/README.md`, or `docs/plans/*`. Archive obsolete plans under `docs/archive/`.
 
 ## Shared Memory
 

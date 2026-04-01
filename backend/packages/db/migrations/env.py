@@ -10,8 +10,16 @@ from sqlalchemy import engine_from_config, pool
 
 CURRENT_DIR = Path(__file__).resolve().parent
 SRC_DIR = CURRENT_DIR.parent / "src"
+BACKEND_ROOT = CURRENT_DIR.parents[2]
+
+if str(BACKEND_ROOT) not in sys.path:
+    sys.path.insert(0, str(BACKEND_ROOT))
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
+
+from apps._runtime_env import load_backend_env  # noqa: E402
+
+load_backend_env()
 
 import db.models  # noqa: F401,E402
 from db.base import Base  # noqa: E402

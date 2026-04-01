@@ -8,6 +8,8 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
+COPY apps/_runtime_env.py apps/_runtime_env.py
+COPY apps/worker/app apps/worker/app
 COPY apps/api/pyproject.toml apps/api/pyproject.toml
 COPY apps/api/src apps/api/src
 COPY apps/cli/pyproject.toml apps/cli/pyproject.toml
@@ -26,7 +28,6 @@ COPY packages/db/pyproject.toml packages/db/pyproject.toml
 COPY packages/db/src packages/db/src
 COPY packages/redis_layer/pyproject.toml packages/redis_layer/pyproject.toml
 COPY packages/redis_layer/src packages/redis_layer/src
-COPY apps/worker/app app
 COPY apps/worker/src apps/worker/src
 
 RUN uv sync --frozen --no-dev --package csv-worker
