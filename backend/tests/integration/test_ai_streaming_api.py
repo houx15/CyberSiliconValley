@@ -168,7 +168,7 @@ async def test_screening_validates_message(ai_app) -> None:
     async with AsyncClient(
         transport=transport,
         base_url="http://testserver",
-        cookies=_issue_token(role="enterprise", cookie_name="token"),
+        cookies=_issue_token(role="enterprise", cookie_name="auth-token"),
     ) as client:
         response = await client.post("/api/v1/screening", json={"message": ""})
 
@@ -182,7 +182,7 @@ async def test_screening_stream_returns_typed_sse_events(ai_app) -> None:
     async with AsyncClient(
         transport=transport,
         base_url="http://testserver",
-        cookies=_issue_token(role="enterprise", cookie_name="token"),
+        cookies=_issue_token(role="enterprise", cookie_name="auth-token"),
     ) as client:
         response = await client.post("/api/v1/screening", json={"message": "Find ML engineers"})
 

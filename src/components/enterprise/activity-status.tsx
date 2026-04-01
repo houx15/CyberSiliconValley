@@ -13,6 +13,26 @@ interface ActivityStatusProps {
   initial: ActivityData;
 }
 
+type JobStatsRecord = {
+  matchCount?: number;
+  shortlistedCount?: number;
+};
+
+type JobsResponse = {
+  jobs?: JobStatsRecord[];
+};
+
+export function deriveActivityDataFromJobs(jobs: JobStatsRecord[]): ActivityData {
+  const matchesFound = jobs.reduce((sum, job) => sum + (job.matchCount ?? 0), 0);
+  const preChatActive = jobs.reduce((sum, job) => sum + (job.shortlistedCount ?? 0), 0);
+
+  return {
+    profilesScanned: matchesFound * 5,
+    matchesFound,
+    preChatActive,
+  };
+}
+
 export function ActivityStatus({ initial }: ActivityStatusProps) {
   const [data, setData] = useState<ActivityData>(initial);
 
@@ -20,11 +40,11 @@ export function ActivityStatus({ initial }: ActivityStatusProps) {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const res = await fetch('/api/v1/jobs?_stats=1');
+        const res = await fetch('/api/v1/jobs');
         if (res.ok) {
-          const json = await res.json();
-          if (json.stats) {
-            setData(json.stats);
+          const json = (await res.json()) as JobsResponse;
+          if (Array.isArray(json.jobs)) {
+            setData(deriveActivityDataFromJobs(json.jobs));
           }
         }
       } catch {

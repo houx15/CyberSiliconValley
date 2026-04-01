@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/v1/screening", tags=["screening"])
 
 
 def get_screening_user(request: Request, auth_service: AuthService = Depends(get_auth_service)) -> AuthUser:
-    token = request.cookies.get("token")
+    token = request.cookies.get(auth_service.cookie_name)
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     try:
