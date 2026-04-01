@@ -2,7 +2,7 @@
 
 CSV is now a split-stack product:
 
-- `src/` = React/Next.js frontend only
+- `frontend/` = React/Next.js frontend only
 - `backend/` = FastAPI API, worker, CLI, and MCP apps
 - PostgreSQL = system of record
 - Redis = queue, cache, and worker coordination
@@ -19,7 +19,7 @@ The old TypeScript backend has been retired. Its archive reference is the git ta
 ## Repository Layout
 
 ```text
-src/                     Next.js frontend
+frontend/                Next.js frontend
 backend/apps/api         FastAPI app
 backend/apps/worker      arq worker
 backend/apps/cli         operator CLI
@@ -33,6 +33,7 @@ docs/archive/            historical plans and legacy architecture
 ### Frontend only
 
 ```bash
+cd frontend
 npm install
 cp .env.example .env
 npm run dev
@@ -96,6 +97,8 @@ npm run seed
 npm run seed:reset
 ```
 
+These root scripts proxy frontend work into `frontend/` and backend work into `backend/`.
+
 ## Backend Deployment From Scratch
 
 This is the recommended deployment shape for a single ECS host:
@@ -151,8 +154,9 @@ cd ~/apps
 git clone <your-repo-url> CyberSiliconValley
 cd CyberSiliconValley
 git checkout main
+cd frontend
 npm install
-cd backend
+cd ../backend
 uv sync
 cd ..
 ```
@@ -162,6 +166,7 @@ cd ..
 Frontend:
 
 ```bash
+cd frontend
 cp .env.example .env
 ```
 
@@ -227,14 +232,16 @@ Fixed demo accounts use password `csv2026`:
 ### 7. Build the frontend
 
 ```bash
+cd frontend
 npm run build
 ```
 
 ### 8. Start the services
 
 ```bash
+cd frontend
 npm run start &
-cd backend
+cd ../backend
 uv run uvicorn apps.api.app.main:app --host 0.0.0.0 --port 8000 &
 uv run python -m apps.worker.app.main &
 ```
@@ -287,11 +294,12 @@ Manual equivalent:
 
 ```bash
 git pull origin main
+cd frontend
 npm install
-cd backend
+cd ../backend
 uv sync
 uv run alembic upgrade head
-cd ..
+cd ../frontend
 npm run build
 ```
 
@@ -325,7 +333,7 @@ Expected: JSON response with `{"user":{"id":"...","email":"talent1@csv.dev","rol
 ## Project Structure
 
 ```
-src/
+frontend/src/
 ├── app/                    # Next.js App Router pages
 │   ├── (auth)/login/       # Login page
 │   ├── (talent)/talent/    # Talent-side pages

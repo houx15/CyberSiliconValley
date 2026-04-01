@@ -7,14 +7,14 @@
 Read these before starting any implementation work:
 
 1. **Product Requirements**: `docs/PRD.md` — Full product spec, page inventory, design principles
-2. **Technical Architecture**: `docs/technical-architecture.md` — Tech stack, project structure, data models, API design
+2. **Technical Architecture**: `docs/technical-architecture.md` — Tech stack, project structure, runtime boundaries, API design
 3. **Web Visual Identity** (reference only): `docs/WebsiteUI.md` — "Calm Functionalism" design system. If it conflicts with PRD or technical architecture, follow those instead.
 
 Historical planning and legacy architecture material lives under `docs/archive/`. Do not use archived docs as the source of truth for current implementation work.
 
 ## Development Environment
 
-- **Frontend**: Next.js in `src/`
+- **Frontend**: Next.js in `frontend/`
 - **Backend**: Python workspace in `backend/`
   - `backend/apps/api` = FastAPI
   - `backend/apps/worker` = worker
@@ -34,9 +34,9 @@ Historical planning and legacy architecture material lives under `docs/archive/`
 
 ## Backend Rewrite Rules
 
-- Do not add backend behavior to `src/app/api/**` or revive deleted Next.js API routes
-- Do not add direct database access back into the frontend under `src/**`
-- Frontend data access should go through backend HTTP clients in `src/lib/api/**`
+- Do not add backend behavior to `frontend/src/app/api/**` or revive deleted Next.js API routes
+- Do not add direct database access back into the frontend under `frontend/src/**`
+- Frontend data access should go through backend HTTP clients in `frontend/src/lib/api/**`
 - Keep deployment instructions free of server-specific secrets, IPs, or credentials
 - If new operational guidance or cutover notes are needed, write them in `README.md`, `backend/README.md`, or `docs/plans/*`. Archive obsolete plans under `docs/archive/`.
 

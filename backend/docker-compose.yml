@@ -15,16 +15,16 @@ x-csv-env: &csv-env
 services:
   frontend:
     image: node:20-alpine
-    working_dir: /app
+    working_dir: /app/frontend
     command: sh -lc "npm ci && npm run dev -- --hostname 0.0.0.0"
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: development
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      NEXT_PUBLIC_API_BASE_URL: http://backend:8000
     volumes:
       - ..:/app
-      - frontend-node-modules:/app/node_modules
+      - frontend-node-modules:/app/frontend/node_modules
 
   backend:
     build:

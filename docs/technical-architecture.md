@@ -6,7 +6,7 @@ This document describes the live architecture for Cyber Silicon Valley after the
 
 ## System Shape
 
-- `src/` contains the Next.js frontend only.
+- `frontend/` contains the Next.js frontend only.
 - `backend/` contains the Python backend workspace.
 - Frontend and backend communicate over HTTP APIs.
 - Background work runs in a separate Python worker process.
@@ -19,10 +19,10 @@ This document describes the live architecture for Cyber Silicon Valley after the
 
 | Layer | Choice | Notes |
 |-------|--------|-------|
-| Framework | Next.js 16 App Router | UI only. No backend business logic in `src/app/api/**`. |
+| Framework | Next.js 16 App Router | UI only. No backend business logic in `frontend/src/app/api/**`. |
 | Language | TypeScript | Shared frontend types and UI logic. |
 | Styling | Tailwind CSS 4 | With shadcn/ui components where useful. |
-| Data access | `src/lib/api/**` | Frontend talks to FastAPI over HTTP and SSE. |
+| Data access | `frontend/src/lib/api/**` | Frontend talks to FastAPI over HTTP and SSE. |
 
 ### Backend
 
@@ -48,7 +48,7 @@ This document describes the live architecture for Cyber Silicon Valley after the
 ## Repository Structure
 
 ```text
-src/                         Next.js frontend
+frontend/                    Next.js frontend
 backend/apps/api             FastAPI application
 backend/apps/worker          arq worker application
 backend/apps/cli             Python CLI entrypoints
@@ -62,7 +62,7 @@ docs/archive/                historical plans and legacy architecture
 ### Frontend
 
 - Runs as its own Node.js process or container.
-- Uses `src/lib/api/client.ts` and related clients to call backend APIs.
+- Uses `frontend/src/lib/api/client.ts` and related clients to call backend APIs.
 - Must not connect directly to PostgreSQL or Redis.
 - Must not reintroduce backend behavior into Next.js route handlers.
 
@@ -88,7 +88,9 @@ docs/archive/                historical plans and legacy architecture
 ### Frontend
 
 ```bash
+cd frontend
 npm install
+cp .env.example .env
 npm run dev
 ```
 

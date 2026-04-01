@@ -7,13 +7,16 @@ echo "1. Pulling latest code..."
 git pull origin main
 
 echo "2. Installing dependencies..."
+cd frontend
 npm install
-cd backend
+cd ../backend
 uv sync
 cd ..
 
 echo "3. Building..."
+cd frontend
 npm run build
+cd ..
 
 echo "4. Running migrations..."
 cd backend
