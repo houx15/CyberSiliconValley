@@ -82,3 +82,5 @@ uv run pytest
 ```bash
 docker compose up --build
 ```
+
+This starts `frontend`, `postgres`, `redis`, a one-shot `migrate` service, then the API and worker. A fresh Compose stack applies Alembic migrations automatically before the runtime services come up.

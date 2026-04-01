@@ -8,6 +8,7 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
+COPY alembic.ini alembic.ini
 COPY apps/_runtime_env.py apps/_runtime_env.py
 COPY apps/api/app apps/api/app
 COPY apps/api/pyproject.toml apps/api/pyproject.toml
@@ -25,6 +26,7 @@ COPY packages/contracts/src packages/contracts/src
 COPY packages/core/pyproject.toml packages/core/pyproject.toml
 COPY packages/core/src packages/core/src
 COPY packages/db/pyproject.toml packages/db/pyproject.toml
+COPY packages/db/migrations packages/db/migrations
 COPY packages/db/src packages/db/src
 COPY packages/redis_layer/pyproject.toml packages/redis_layer/pyproject.toml
 COPY packages/redis_layer/src packages/redis_layer/src

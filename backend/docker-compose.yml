@@ -35,6 +35,8 @@ services:
     ports:
       - "8000:8000"
     depends_on:
+      migrate:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       redis:
@@ -55,9 +57,21 @@ services:
     command: sh -lc "uv run python -m apps.worker.app.main"
     environment: *csv-env
     depends_on:
+      migrate:
+        condition: service_completed_successfully
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: sh -lc "uv run alembic upgrade head"
+    environment: *csv-env
+    depends_on:
+      postgres:
         condition: service_healthy
 
   postgres:

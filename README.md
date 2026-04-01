@@ -81,6 +81,7 @@ This brings up:
 - `redis`
 
 The frontend, API, and worker each run as separate containers. The API and worker also have separate Python Dockerfiles.
+Compose also runs a one-shot `migrate` service first, so a brand-new local stack applies Alembic migrations before the API and worker start.
 
 ## Commands
 
