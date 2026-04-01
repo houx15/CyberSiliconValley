@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Send, ChevronUp, ChevronDown, MessageSquare } from 'lucide-react';
+import { Send, ChevronUp, ChevronDown, MessageSquare, Bot, UserRound } from 'lucide-react';
 import { postSseJson } from '@/lib/api/sse';
 
 interface ChatMessage {
@@ -15,6 +15,8 @@ interface ChatMessage {
 }
 
 interface CompanionBarProps {
+  /** AI persona: "buddy" for talent, "ai-hr" for enterprise */
+  persona?: 'buddy' | 'ai-hr';
   /** Pre-computed status message (counts etc.) from server */
   statusMessage?: string;
   /** Available session types for tab switching */
@@ -23,7 +25,7 @@ interface CompanionBarProps {
 
 const DEFAULT_TABS = ['general', 'home', 'coach'];
 
-export function CompanionBar({ statusMessage, sessionTypes }: CompanionBarProps) {
+export function CompanionBar({ persona = 'buddy', statusMessage, sessionTypes }: CompanionBarProps) {
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -113,9 +115,20 @@ export function CompanionBar({ statusMessage, sessionTypes }: CompanionBarProps)
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-primary to-purple-500 opacity-80">
-            <MessageSquare className="h-3.5 w-3.5 text-white" />
+          <div className={`flex h-7 w-7 items-center justify-center rounded-full opacity-80 ${
+            persona === 'ai-hr'
+              ? 'bg-gradient-to-br from-emerald-600 to-teal-500'
+              : 'bg-gradient-to-br from-primary to-purple-500'
+          }`}>
+            {persona === 'ai-hr' ? (
+              <Bot className="h-3.5 w-3.5 text-white" />
+            ) : (
+              <UserRound className="h-3.5 w-3.5 text-white" />
+            )}
           </div>
+          <span className="text-xs font-medium text-foreground/70">
+            {persona === 'ai-hr' ? t('personaHr') : t('personaBuddy')}
+          </span>
           <span className="text-sm text-muted-foreground">
             {statusMessage || t('collapsed')}
           </span>

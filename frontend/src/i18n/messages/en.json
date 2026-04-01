@@ -57,8 +57,10 @@
     "seeking": "Seeking Report",
     "fair": "Opportunity Fair",
     "inbox": "Inbox",
-    "dashboard": "Dashboard",
+    "workbench": "Workbench",
     "jobs": "Jobs",
+    "talentMarket": "Talent Market",
+    "dashboard": "Dashboard",
     "screening": "Screen Talent",
     "settings": "Settings"
   },
@@ -72,9 +74,11 @@
   },
   "companion": {
     "placeholder": "Ask your companion anything...",
-    "collapsed": "Click to chat with your AI companion",
+    "collapsed": "Click to chat",
+    "personaBuddy": "AI Buddy",
+    "personaHr": "AI HR",
     "statusTemplate": "You have {matchCount} new matches and {inboxCount} new messages. Click to chat.",
-    "emptyChat": "Start a conversation with your AI companion.",
+    "emptyChat": "Start a conversation.",
     "tab_general": "General",
     "tab_home": "Home",
     "tab_coach": "Coach"

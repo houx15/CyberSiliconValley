@@ -54,7 +54,7 @@ export function JobList({ jobs }: JobListProps) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {jobs.map((job) => {
         const status = statusConfig[job.status as JobStatus] || statusConfig.open;
         return (

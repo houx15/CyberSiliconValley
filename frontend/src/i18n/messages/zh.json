@@ -57,8 +57,10 @@
     "seeking": "求职报告",
     "fair": "机会集市",
     "inbox": "收件箱",
-    "dashboard": "工作台",
+    "workbench": "工作台",
     "jobs": "职位管理",
+    "talentMarket": "人才市场",
+    "dashboard": "工作台",
     "screening": "人才筛选",
     "settings": "设置"
   },
@@ -72,9 +74,11 @@
   },
   "companion": {
     "placeholder": "问你的 AI 伙伴任何问题...",
-    "collapsed": "点击与 AI 伙伴对话",
+    "collapsed": "点击对话",
+    "personaBuddy": "AI 伙伴",
+    "personaHr": "AI HR",
     "statusTemplate": "你有 {matchCount} 个新匹配和 {inboxCount} 条新消息，点击聊天。",
-    "emptyChat": "开始与 AI 伙伴对话吧。",
+    "emptyChat": "开始对话吧。",
     "tab_general": "通用",
     "tab_home": "首页",
     "tab_coach": "教练"

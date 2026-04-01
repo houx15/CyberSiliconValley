@@ -144,12 +144,12 @@ export function CandidateTable({
                 className="cursor-pointer border-b border-zinc-800/50 transition-colors hover:bg-zinc-800/30"
                 onClick={() => onSelectCandidate(candidate)}
               >
-                <td className="px-4 py-3">
+                <td className="px-4 py-4">
                   <div>
                     <div className="font-medium">
                       {candidate.displayName ?? 'Unknown'}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="mt-0.5 text-xs text-muted-foreground">
                       {candidate.headline ?? ''}
                     </div>
                   </div>

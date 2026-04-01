@@ -37,13 +37,13 @@ export function SeekingReportClient({
 
       <ScanSummary data={initialReport.scanSummary} />
 
-      <section className="space-y-3">
+      <section className="space-y-4">
         <div>
           <h2 className="text-lg font-semibold text-foreground">{t('highMatches')}</h2>
           <p className="text-sm text-muted-foreground">{t('highMatchesDescription')}</p>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {initialReport.highMatches.map((match, index) => (
             <HighMatchCard
               key={match.matchId}
