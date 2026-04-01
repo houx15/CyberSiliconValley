@@ -6,6 +6,7 @@ import os
 import sys
 
 from csv_cli.backend import BackendApiError, BackendClient
+from csv_cli.commands.init_db import run_init_db_command
 from csv_cli.commands.seed import run_seed_command
 
 
@@ -15,6 +16,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     seed_parser = subparsers.add_parser("seed", help="Seed demo data into the Python backend schema")
     seed_parser.add_argument("--reset", action="store_true", help="Drop and recreate all backend tables before seeding")
+
+    init_db_parser = subparsers.add_parser(
+        "init-db",
+        help="Create the database role, database, and optional extensions",
+    )
+    init_db_parser.add_argument("--admin-url", default=None, help="Postgres admin URL used for role/database creation")
+    init_db_parser.add_argument(
+        "--skip-vector",
+        action="store_true",
+        help="Skip CREATE EXTENSION IF NOT EXISTS vector on the target database",
+    )
 
     doctor_parser = subparsers.add_parser("doctor", help="Check backend health")
     doctor_parser.add_argument("--api-base-url", default=None, help="Backend API base URL")
@@ -71,6 +83,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "seed":
         return run_seed_command(reset=bool(args.reset))
+
+    if args.command == "init-db":
+        return run_init_db_command(admin_url=args.admin_url, create_extension=not bool(args.skip_vector))
 
     try:
         with BackendClient(base_url=getattr(args, "api_base_url", None)) as client:

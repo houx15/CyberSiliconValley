@@ -30,8 +30,11 @@ uv run python -m apps.worker.app.main
 ## Database
 
 ```bash
+uv run python -m apps.cli.app.main init-db --admin-url postgresql+psycopg://postgres:your-admin-password@localhost:5432/postgres
 uv run alembic upgrade head
 ```
+
+`init-db` is the bootstrap step for a brand-new server. It creates the app role, creates the target database, and enables `pgvector` on that database. Use a Postgres admin URL with permission to create roles and databases.
 
 ## Seed demo data
 
@@ -58,6 +61,7 @@ AI_API_KEY=
 
 ```bash
 uv run python -m apps.cli.app.main doctor --api-base-url http://localhost:8000
+uv run python -m apps.cli.app.main init-db --admin-url postgresql+psycopg://postgres:your-admin-password@localhost:5432/postgres
 uv run python -m apps.cli.app.main whoami --api-base-url http://localhost:8000 --email talent1@csv.dev --password csv2026
 ```
 

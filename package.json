@@ -13,6 +13,7 @@
     "check": "npm --prefix frontend run check",
     "backend:sync": "cd backend && uv sync",
     "backend:test": "cd backend && uv run pytest",
+    "init-db": "cd backend && uv run python -m apps.cli.app.main init-db",
     "backend:migrate": "cd backend && uv run alembic upgrade head",
     "seed": "cd backend && uv run python -m apps.cli.app.main seed",
     "seed:reset": "cd backend && uv run python -m apps.cli.app.main seed --reset"

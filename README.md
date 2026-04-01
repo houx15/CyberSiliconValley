@@ -92,6 +92,7 @@ npm run test
 npm run check
 npm run backend:sync
 npm run backend:test
+npm run init-db
 npm run backend:migrate
 npm run seed
 npm run seed:reset
@@ -133,21 +134,7 @@ sudo apt-get install -y nginx
 
 If your distro provides a separate `pgvector` package, install that as well.
 
-### 2. Create the database
-
-```bash
-sudo -u postgres psql
-```
-
-```sql
-CREATE USER csv WITH PASSWORD 'change-this-password';
-CREATE DATABASE csv OWNER csv;
-\c csv
-CREATE EXTENSION IF NOT EXISTS vector;
-\q
-```
-
-### 3. Clone and install
+### 2. Clone and install
 
 ```bash
 cd ~/apps
@@ -161,7 +148,7 @@ uv sync
 cd ..
 ```
 
-### 4. Create environment files
+### 3. Create environment files
 
 Frontend:
 
@@ -197,6 +184,22 @@ AI_BASE_URL=
 AI_MODEL=claude-sonnet-4-20250514
 AI_API_KEY=...
 ```
+
+### 4. Bootstrap the database
+
+Run the CLI bootstrap command with a Postgres admin URL that has permission to create roles and databases:
+
+```bash
+cd backend
+uv run python -m apps.cli.app.main init-db \
+  --admin-url postgresql+psycopg://postgres:your-admin-password@localhost:5432/postgres
+```
+
+This command:
+
+- creates the application role from `DATABASE_URL` if it does not exist
+- creates the target database from `DATABASE_URL` if it does not exist
+- enables `pgvector` on the target database
 
 ### 5. Run migrations
 

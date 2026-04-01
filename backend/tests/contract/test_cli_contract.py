@@ -25,7 +25,26 @@ def test_cli_registers_backend_facing_commands() -> None:
     parser = build_parser()
     commands = parser._subparsers._group_actions[0].choices
 
-    assert {"seed", "doctor", "whoami", "profile", "matches", "inbox", "graph"} <= set(commands)
+    assert {"seed", "init-db", "doctor", "whoami", "profile", "matches", "inbox", "graph"} <= set(commands)
+
+
+def test_init_db_command_dispatches_to_bootstrap_runner(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_run_init_db_command(*, admin_url: str | None, create_extension: bool) -> int:
+        captured["admin_url"] = admin_url
+        captured["create_extension"] = create_extension
+        return 0
+
+    monkeypatch.setattr("csv_cli.main.run_init_db_command", fake_run_init_db_command)
+
+    exit_code = main(["init-db", "--admin-url", "postgresql+psycopg://postgres@localhost:5432/postgres"])
+
+    assert exit_code == 0
+    assert captured == {
+        "admin_url": "postgresql+psycopg://postgres@localhost:5432/postgres",
+        "create_extension": True,
+    }
 
 
 def test_doctor_command_hits_health_endpoint(monkeypatch, capsys) -> None:
