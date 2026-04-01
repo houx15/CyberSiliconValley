@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Eye,
 } from 'lucide-react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AutoTextarea } from '@/components/ui/auto-textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -338,6 +339,14 @@ export function AiHrPageClient() {
               {totalTalents}
             </Badge>
           </button>
+          <div className="flex-1" />
+          <Link
+            href="/enterprise/conversations"
+            className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <MessageSquare className="h-3.5 w-3.5" />
+            查看所有对话
+          </Link>
         </div>
 
         <AnimatePresence mode="wait">
@@ -610,10 +619,13 @@ export function AiHrPageClient() {
                                     <div className="rounded-lg border border-border/30 bg-muted/20 px-3 py-2">
                                       <p className="mb-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">预沟通摘要</p>
                                       <p className="text-xs text-foreground/70">{talent.preChatPreview}</p>
-                                      <button className="mt-1.5 flex items-center gap-1 text-xs text-primary hover:underline">
+                                      <Link
+                                        href={`/enterprise/conversations?id=conv-${talent.id}`}
+                                        className="mt-1.5 flex items-center gap-1 text-xs text-primary hover:underline"
+                                      >
                                         <Eye className="h-3 w-3" />
                                         查看完整对话记录
-                                      </button>
+                                      </Link>
                                     </div>
                                   )}
                                 </motion.div>
@@ -632,10 +644,8 @@ export function AiHrPageClient() {
       </div>
 
       {/* ── Right sidebar: Memory ── */}
-      <div className="hidden w-72 shrink-0 flex-col border-l border-border/50 bg-background lg:flex">
-        <div className="flex-1 overflow-auto p-4">
-          <MemoryViewer scopeType="enterprise_global" title="AI HR 记忆" />
-        </div>
+      <div className="hidden w-80 shrink-0 flex-col border-l border-border/50 bg-background lg:flex">
+        <MemoryViewer scopeType="enterprise_global" title="AI HR 记忆" />
       </div>
     </div>
   );
