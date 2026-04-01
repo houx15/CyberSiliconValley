@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from uuid import UUID
 
 from contracts.graph import GraphDataResponse, JobDetail, KeywordJobsResponse
-from core.graph.service import get_graph_data, get_job_detail, get_jobs_for_keyword
+from core.graph.service import get_all_open_jobs, get_graph_data, get_job_detail, get_jobs_for_keyword
 from csv_api.config import Settings, get_settings
 from csv_api.dependencies import get_auth_service, get_db_session
 from db.models.talent_profile import TalentProfile
@@ -45,6 +45,17 @@ async def read_graph(
         except Exception:
             pass
     return data
+
+
+@router.get("/jobs/all", response_model=KeywordJobsResponse)
+async def read_all_jobs(
+    request: Request,
+    session: Session = Depends(get_db_session),
+    auth_service=Depends(get_auth_service),
+) -> KeywordJobsResponse:
+    talent_id = _resolve_talent_id(request, session, auth_service)
+    jobs = get_all_open_jobs(session, talent_id)
+    return KeywordJobsResponse(keyword="all", jobs=jobs)
 
 
 @router.get("/{keyword}/jobs", response_model=KeywordJobsResponse | JobDetail)

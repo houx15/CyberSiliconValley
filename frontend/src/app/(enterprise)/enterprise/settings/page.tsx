@@ -3,6 +3,7 @@ import { VisibilityToggle } from '@/components/settings/visibility-toggle';
 import { MembershipCard } from '@/components/settings/membership-card';
 import { TierComparison } from '@/components/settings/tier-comparison';
 import { UsageMeter } from '@/components/settings/usage-meter';
+import { LogoutButton } from '@/components/settings/logout-button';
 
 export default function EnterpriseSettingsPage() {
   return (
@@ -17,6 +18,7 @@ export default function EnterpriseSettingsPage() {
         <MembershipCard tier="basic" variant="enterprise" />
         <UsageMeter variant="enterprise" />
         <TierComparison role="enterprise" currentTierId="ent-basic" />
+        <LogoutButton />
       </div>
     </PageTransition>
   );

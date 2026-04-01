@@ -84,5 +84,13 @@ def get_enterprise_job_detail(session, current_user: AuthUser, job_id: str):
     job = get_job_by_id_for_enterprise(session, UUID(job_id), profile.id)
     if job is None:
         return None
-    matches = [JobDetailMatch(**dict(row)) for row in list_matches_for_job(session, job.id, profile.id)]
+    raw_matches = list_matches_for_job(session, job.id, profile.id)
+    matches = []
+    for row in raw_matches:
+        d = dict(row)
+        d.pop("job_id", None)
+        for key in ("match_id", "talent_id"):
+            if key in d and not isinstance(d[key], str):
+                d[key] = str(d[key])
+        matches.append(JobDetailMatch(**d))
     return _serialize_job_record(job), matches

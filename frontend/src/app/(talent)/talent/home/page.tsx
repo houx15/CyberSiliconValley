@@ -2,11 +2,12 @@ import { PageTransition } from '@/components/animations/page-transition';
 import { BuddyReport } from '@/components/talent/buddy-report';
 import { ResumeSection } from '@/components/talent/resume-section';
 import { ProfileHeader } from '@/components/talent/profile-header';
+import { ProfilePreferences } from '@/components/talent/profile-preferences';
 import { getTranslations } from 'next-intl/server';
 import { MOCK_TALENT_PROFILE, MOCK_TALENT_HOME_STATS } from '@/lib/mock-data';
 import { getCurrentTalentProfile } from '@/lib/api/profile';
 import { getTalentHomeStats } from '@/lib/api/talent-dashboard';
-import type { Skill, Experience, Availability } from '@/types';
+import type { Skill, Experience, Availability, OpportunityType } from '@/types';
 import type { TalentHomeStats } from '@/lib/api/talent-dashboard';
 
 export default async function TalentHomePage() {
@@ -58,6 +59,11 @@ export default async function TalentHomePage() {
       />
 
       <BuddyReport stats={homeStats} displayName={profile.displayName || '你'} />
+
+      <ProfilePreferences
+        visible={(profile as Record<string, unknown>).visible !== false}
+        interestedTypes={(((profile as Record<string, unknown>).goals as Record<string, unknown>)?.interestedOpportunityTypes as OpportunityType[]) || []}
+      />
 
       <ResumeSection profile={editorProfile} />
     </PageTransition>

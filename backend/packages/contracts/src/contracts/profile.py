@@ -22,6 +22,7 @@ class TalentProfilePatch(BaseModel):
     resume_url: str | None = Field(default=None, alias="resumeUrl")
     profile_data: dict[str, Any] | None = Field(default=None, alias="profileData")
     onboarding_done: bool | None = Field(default=None, alias="onboardingDone")
+    visible: bool | None = None
 
 
 class EnterpriseProfilePatch(BaseModel):

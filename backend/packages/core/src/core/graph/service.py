@@ -85,6 +85,26 @@ def get_jobs_for_keyword(session, keyword: str, talent_id: str | None = None) ->
     return results
 
 
+def get_all_open_jobs(session, talent_id: str | None = None) -> list[ClusterJob]:
+    talent_uuid = UUID(talent_id) if talent_id else None
+    results: list[ClusterJob] = []
+    for job in list_open_jobs(session):
+        structured = job.structured or {}
+        match = get_match_for_talent_and_job(session, talent_uuid, job.id) if talent_uuid else None
+        results.append(
+            ClusterJob(
+                id=str(job.id),
+                title=job.title,
+                company_name=get_enterprise_name(session, job.enterprise_id),
+                location=str(structured.get("location") or "Remote"),
+                work_mode=str(structured.get("workMode") or "remote"),
+                match_score=match.score if match else None,
+                skills=list(structured.get("skills") or []),
+            )
+        )
+    return results
+
+
 def get_job_detail(session, job_id: str, talent_id: str | None = None) -> JobDetail | None:
     job = get_job(session, UUID(job_id))
     if job is None:

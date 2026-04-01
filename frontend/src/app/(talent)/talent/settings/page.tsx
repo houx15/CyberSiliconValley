@@ -3,6 +3,7 @@ import { VisibilityToggle } from '@/components/settings/visibility-toggle';
 import { MembershipCard } from '@/components/settings/membership-card';
 import { TierComparison } from '@/components/settings/tier-comparison';
 import { UsageMeter } from '@/components/settings/usage-meter';
+import { LogoutButton } from '@/components/settings/logout-button';
 
 export default function TalentSettingsPage() {
   return (
@@ -17,6 +18,7 @@ export default function TalentSettingsPage() {
         <MembershipCard tier="free" variant="talent" />
         <UsageMeter variant="talent" />
         <TierComparison role="talent" />
+        <LogoutButton />
       </div>
     </PageTransition>
   );

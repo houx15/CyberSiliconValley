@@ -1,8 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import type { Availability } from '@/types';
 
 interface ProfileHeaderProps {
@@ -77,12 +75,6 @@ export function ProfileHeader({
         </p>
       </div>
 
-      {/* Edit button */}
-      <Link href="/talent/profile">
-        <Button variant="outline" size="sm">
-          {t('editProfile')}
-        </Button>
-      </Link>
     </div>
   );
 }
