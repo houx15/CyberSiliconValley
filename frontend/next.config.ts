@@ -10,6 +10,7 @@ function resolveApiBaseUrl() {
 }
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['csv.uni-robot.cn'],
   async rewrites() {
     return [
       {
