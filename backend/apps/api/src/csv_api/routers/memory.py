@@ -39,7 +39,7 @@ def _find_or_create(session: Session, owner_id: UUID, scope_type: str, scope_ref
     else:
         stmt = stmt.where(MemorySpace.scope_ref_id.is_(None))
 
-    space = session.execute(stmt).scalar_one_or_none()
+    space = session.execute(stmt.limit(1)).scalar_one_or_none()
     if space is None:
         space = MemorySpace(
             owner_id=owner_id,

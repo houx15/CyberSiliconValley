@@ -32,10 +32,12 @@ class ChatMessage(BaseModel):
 
 
 class CompanionRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     messages: list[ChatMessage] = Field(min_length=1)
     session_type: str = Field(default="general", alias="sessionType")
+    persona: str | None = None
+    function_mode: str | None = Field(default=None, alias="functionMode")
 
 
 class SimpleChatRequest(BaseModel):

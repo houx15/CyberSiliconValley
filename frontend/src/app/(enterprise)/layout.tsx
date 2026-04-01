@@ -6,6 +6,7 @@ export default async function EnterpriseLayout({ children }: { children: React.R
     { href: '/enterprise/dashboard', labelKey: 'workbench', icon: 'dashboard' },
     { href: '/enterprise/jobs', labelKey: 'jobs', icon: 'briefcase' },
     { href: '/enterprise/talent', labelKey: 'talentMarket', icon: 'users' },
+    { href: '/enterprise/conversations', labelKey: 'conversations', icon: 'message-square' },
     { href: '/enterprise/ai-hr', labelKey: 'aiHr', icon: 'bot' },
   ];
 

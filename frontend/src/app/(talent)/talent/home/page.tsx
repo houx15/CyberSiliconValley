@@ -1,6 +1,6 @@
 import { PageTransition } from '@/components/animations/page-transition';
 import { BuddyReport } from '@/components/talent/buddy-report';
-import { ResumeEditor } from '@/components/talent/resume-editor';
+import { ResumeSection } from '@/components/talent/resume-section';
 import { ProfileHeader } from '@/components/talent/profile-header';
 import { getTranslations } from 'next-intl/server';
 import { MOCK_TALENT_PROFILE, MOCK_TALENT_HOME_STATS } from '@/lib/mock-data';
@@ -59,12 +59,7 @@ export default async function TalentHomePage() {
 
       <BuddyReport stats={homeStats} displayName={profile.displayName || '你'} />
 
-      <section>
-        <h2 className="mb-4 text-base font-semibold text-foreground">
-          编辑简历
-        </h2>
-        <ResumeEditor profile={editorProfile} />
-      </section>
+      <ResumeSection profile={editorProfile} />
     </PageTransition>
   );
 }

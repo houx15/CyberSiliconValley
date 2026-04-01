@@ -6,6 +6,7 @@ export default async function TalentLayout({ children }: { children: React.React
     { href: '/talent/home', labelKey: 'home', icon: 'home' },
     { href: '/talent/buddy', labelKey: 'buddy', icon: 'user-round' },
     { href: '/talent/coach', labelKey: 'coach', icon: 'sparkles' },
+    { href: '/talent/conversations', labelKey: 'conversations', icon: 'message-square' },
     { href: '/talent/fair', labelKey: 'fair', icon: 'store' },
   ];
 
