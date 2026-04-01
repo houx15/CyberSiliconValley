@@ -14,6 +14,7 @@ import {
   UserRound,
   Bot,
   MessageSquare,
+  Building2,
   Settings,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -30,6 +31,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   'user-round': UserRound,
   bot: Bot,
   'message-square': MessageSquare,
+  building: Building2,
   settings: Settings,
 };
 
