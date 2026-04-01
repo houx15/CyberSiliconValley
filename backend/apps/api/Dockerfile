@@ -31,4 +31,4 @@ RUN uv sync --frozen --no-dev --package csv-api
 
 EXPOSE 8000
 
-CMD ["sh", "-lc", "uv run uvicorn csv_api.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-lc", "uv run uvicorn apps.api.app.main:app --host 0.0.0.0 --port 8000"]

@@ -31,4 +31,4 @@ COPY apps/worker/src apps/worker/src
 
 RUN uv sync --frozen --no-dev --package csv-worker
 
-CMD ["sh", "-lc", "uv run python -m csv_worker.main"]
+CMD ["sh", "-lc", "uv run python -m apps.worker.app.main"]

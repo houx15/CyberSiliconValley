@@ -13,7 +13,7 @@ module.exports = {
       name: 'csv-api',
       cwd: './backend',
       script: 'uv',
-      args: 'run uvicorn csv_api.main:app --host 0.0.0.0 --port 8000',
+      args: 'run uvicorn apps.api.app.main:app --host 0.0.0.0 --port 8000',
       env: {
         APP_ENV: 'production',
       },
@@ -22,7 +22,7 @@ module.exports = {
       name: 'csv-worker',
       cwd: './backend',
       script: 'uv',
-      args: 'run python -m csv_worker.main',
+      args: 'run python -m apps.worker.app.main',
       env: {
         APP_ENV: 'production',
       },

@@ -18,13 +18,13 @@ uv sync
 ## Run the API
 
 ```bash
-uv run uvicorn csv_api.main:app --reload --host 0.0.0.0 --port 8000
+uv run uvicorn apps.api.app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ## Run the worker
 
 ```bash
-uv run python -m csv_worker.main
+uv run python -m apps.worker.app.main
 ```
 
 ## Database

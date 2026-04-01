@@ -47,14 +47,14 @@ cd backend
 cp .env.example .env
 uv sync
 uv run alembic upgrade head
-uv run uvicorn csv_api.main:app --reload --host 0.0.0.0 --port 8000
+uv run uvicorn apps.api.app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 In another shell:
 
 ```bash
 cd backend
-uv run python -m csv_worker.main
+uv run python -m apps.worker.app.main
 ```
 
 Then seed demo data if you want a populated local stack:
