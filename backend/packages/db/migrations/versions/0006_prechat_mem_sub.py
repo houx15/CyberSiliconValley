@@ -5,7 +5,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 
-revision = "0006_create_prechat_memory_subscription"
+revision = "0006_prechat_mem_sub"
 down_revision = "0005_create_chat_tables"
 branch_labels = None
 depends_on = None
