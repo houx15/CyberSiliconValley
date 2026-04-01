@@ -96,7 +96,7 @@ export function JobDetailContent({
 
       {/* Description */}
       <section className="space-y-2">
-        <h3 className="text-sm font-medium text-foreground">职位描述</h3>
+        <h3 className="text-sm font-medium text-foreground">机会描述</h3>
         <p className="whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
           {detail.description}
         </p>
@@ -193,7 +193,7 @@ export function JobDetailErrorState({
   return (
     <div className="space-y-4 px-1 pt-8">
       <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-sm text-rose-100">
-        <p className="font-medium">无法加载职位详情</p>
+        <p className="font-medium">无法加载机会详情</p>
         <p className="mt-1 text-rose-100/80">{error}</p>
       </div>
       <Button variant="outline" className="w-full" onClick={onRetry}>
@@ -270,7 +270,7 @@ export default function JobDetailSheet({
 
         console.error('Failed to load job detail:', err);
         setDetail(null);
-        setError('加载职位详情失败');
+        setError('加载机会详情失败');
       } finally {
         if (!controller.signal.aborted) {
           setLoading(false);
@@ -303,7 +303,7 @@ export default function JobDetailSheet({
           <JobDetailContent detail={detail} keyword={keyword} />
         ) : (
           <div className="px-1 pt-8 text-sm text-muted-foreground">
-            选择一个职位查看详情
+            选择一个机会查看详情
           </div>
         )}
       </SheetContent>

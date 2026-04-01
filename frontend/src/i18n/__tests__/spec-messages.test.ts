@@ -80,8 +80,8 @@ describe('i18n messages — Specs 1-3 keys', () => {
 
     it('en has enterprise dashboard section', () => {
       expect(en.enterprise.dashboard.title).toBeTruthy();
-      expect(en.enterprise.dashboard.activeJobs).toBeTruthy();
-      expect(en.enterprise.dashboard.postNewJob).toBeTruthy();
+      expect(en.enterprise.dashboard.activeOpportunities).toBeTruthy();
+      expect(en.enterprise.dashboard.postNewOpportunity).toBeTruthy();
     });
 
     it('en has enterprise jobs section', () => {

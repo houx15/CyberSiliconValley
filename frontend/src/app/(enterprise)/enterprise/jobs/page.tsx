@@ -17,15 +17,16 @@ export default async function JobsPage() {
       createdAt: job.createdAt.toISOString(),
       matchCount: MOCK_JOB_MATCH_COUNTS[job.id]?.matchCount ?? 0,
       shortlistedCount: MOCK_JOB_MATCH_COUNTS[job.id]?.shortlistedCount ?? 0,
+      opportunityType: job.opportunityType,
     }));
   }
 
   return (
     <PageTransition className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground">Jobs</h1>
+        <h1 className="text-2xl font-semibold text-foreground">机会管理</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Review the roles currently open across your hiring pipeline.
+          管理你发布的所有机会——全职、实习、项目合作等。
         </p>
       </div>
       {jobs.length === 0 ? <EmptyJobs /> : <JobList jobs={jobs} />}

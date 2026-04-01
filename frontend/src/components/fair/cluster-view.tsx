@@ -69,7 +69,7 @@ export default function ClusterView({ keyword, onBack, onJobClick }: ClusterView
               Cluster View
             </p>
             <h2 className="text-2xl font-semibold text-foreground">
-              Jobs matching <span className="text-sky-300">“{keyword}”</span>
+              Opportunities matching <span className="text-sky-300">{`"${keyword}"`}</span>
             </h2>
           </div>
 
@@ -89,7 +89,7 @@ export default function ClusterView({ keyword, onBack, onJobClick }: ClusterView
 
         {!loading && error && (
           <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-6 text-rose-200">
-            <p className="font-medium">Unable to load jobs.</p>
+            <p className="font-medium">无法加载机会列表。</p>
             <p className="mt-1 text-sm text-rose-200/80">{error}</p>
             <Button variant="outline" className="mt-4" onClick={onBack}>
               Back to graph
@@ -99,8 +99,8 @@ export default function ClusterView({ keyword, onBack, onJobClick }: ClusterView
 
         {!loading && !error && jobs.length === 0 && (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-muted-foreground">
-            <p className="text-lg font-medium text-foreground">No open jobs found.</p>
-            <p className="mt-2">Try another keyword or come back after more jobs are seeded.</p>
+            <p className="text-lg font-medium text-foreground">暂无开放机会。</p>
+            <p className="mt-2">换个关键词试试，或等待更多机会发布。</p>
           </div>
         )}
 

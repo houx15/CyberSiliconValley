@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import type { JobStatus } from '@/types';
+import type { JobStatus, OpportunityType } from '@/types';
+import { OPPORTUNITY_TYPE_LABELS } from '@/types';
 
 interface JobItem {
   id: string;
@@ -12,6 +13,7 @@ interface JobItem {
   createdAt: string;
   matchCount: number;
   shortlistedCount: number;
+  opportunityType?: OpportunityType;
 }
 
 interface JobListProps {
@@ -41,12 +43,12 @@ export function JobList({ jobs }: JobListProps) {
     return (
       <Card className="border-dashed border-border/50">
         <CardContent className="py-12 text-center">
-          <p className="text-sm text-muted-foreground">No jobs posted yet.</p>
+          <p className="text-sm text-muted-foreground">还没有发布机会。</p>
           <Link
             href="/enterprise/jobs/new"
             className="mt-3 inline-block text-sm text-primary underline underline-offset-2"
           >
-            Post your first job
+            发布第一个机会
           </Link>
         </CardContent>
       </Card>
@@ -62,9 +64,16 @@ export function JobList({ jobs }: JobListProps) {
             <Card className="transition-colors hover:border-primary/30 hover:bg-accent/30">
               <CardContent className="flex items-center justify-between py-4">
                 <div className="flex flex-col gap-1">
-                  <span className="text-sm font-medium text-foreground">{job.title}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-foreground">{job.title}</span>
+                    {job.opportunityType && (
+                      <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${OPPORTUNITY_TYPE_LABELS[job.opportunityType].color}`}>
+                        {OPPORTUNITY_TYPE_LABELS[job.opportunityType].zh}
+                      </Badge>
+                    )}
+                  </div>
                   <span className="text-xs text-muted-foreground">
-                    Posted {formatDate(job.createdAt)}
+                    发布于 {formatDate(job.createdAt)}
                   </span>
                 </div>
 

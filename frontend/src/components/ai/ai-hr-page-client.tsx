@@ -70,21 +70,21 @@ interface JobGroup {
 /* ─── Constants ─── */
 
 const FUNCTIONS: { mode: FunctionMode; icon: typeof MessageSquare; title: string; desc: string }[] = [
-  { mode: 'needs', icon: MessageSquare, title: '沟通企业需求', desc: '了解需求、更新企业描述、发布新职位' },
-  { mode: 'report', icon: ClipboardList, title: '昨日招聘汇报', desc: '招聘进展、候选人动态和市场变化' },
-  { mode: 'job-chat', icon: Briefcase, title: '针对职位聊天', desc: '选择职位深入讨论需求和招聘反馈' },
+  { mode: 'needs', icon: MessageSquare, title: '沟通人才需求', desc: '了解需求、更新企业描述、发布新机会' },
+  { mode: 'report', icon: ClipboardList, title: '昨日匹配汇报', desc: '匹配进展、候选人动态和市场变化' },
+  { mode: 'job-chat', icon: Briefcase, title: '针对机会聊天', desc: '选择具体机会深入讨论需求和反馈' },
 ];
 
 const QUICK_PROMPTS: Record<FunctionMode, string[]> = {
-  needs: ['我们需要招一个高级后端工程师', '更新公司介绍', '发布一个新的产品经理职位'],
+  needs: ['我需要一个高级后端工程师', '有个3个月的项目需要人', '招一个 AI 方向的实习生'],
   report: ['昨天有什么新进展', '这周面试了多少人', '有哪些候选人进入终面'],
-  'job-chat': ['高级后端工程师这个岗位进展如何', '最近收到的简历质量怎么样', '调整一下职位要求'],
+  'job-chat': ['高级后端工程师这个机会进展如何', '最近收到的人才质量怎么样', '调整一下机会要求'],
 };
 
 const MOCK_SESSIONS: Session[] = [
   { id: 'es1', title: '后端工程师需求讨论', mode: 'needs', updatedAt: '2 小时前' },
-  { id: 'es2', title: '昨日招聘进展', mode: 'report', updatedAt: '今天' },
-  { id: 'es3', title: 'LLM 架构师岗位反馈', mode: 'job-chat', updatedAt: '昨天' },
+  { id: 'es2', title: '昨日匹配进展', mode: 'report', updatedAt: '今天' },
+  { id: 'es3', title: 'LLM 架构项目反馈', mode: 'job-chat', updatedAt: '昨天' },
 ];
 
 const MOCK_JOB_GROUPS: JobGroup[] = [

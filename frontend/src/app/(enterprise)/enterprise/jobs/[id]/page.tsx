@@ -154,7 +154,7 @@ export default function JobDetailPage() {
   if (!job) {
     return (
       <div className="flex h-[50vh] items-center justify-center text-muted-foreground">
-        Job not found.
+        未找到该机会。
       </div>
     );
   }
@@ -170,7 +170,7 @@ export default function JobDetailPage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-serif text-2xl font-bold">
-            {job.title ?? 'Untitled Job'}
+            {job.title ?? '未命名机会'}
           </h1>
           <div className="mt-1 flex items-center gap-3 text-sm text-muted-foreground">
             <span>
@@ -215,9 +215,9 @@ export default function JobDetailPage() {
       ) : (
         <div className="flex h-[300px] items-center justify-center rounded-lg border border-zinc-800 text-muted-foreground">
           <div className="text-center">
-            <div className="mb-2 text-lg">No matches yet</div>
+            <div className="mb-2 text-lg">暂无匹配</div>
             <p className="mb-4 text-sm">
-              Your AI is scanning the talent pool for this position.
+              AI 正在为这个机会扫描人才库。
             </p>
             <Button onClick={handleScanMatches} disabled={scanning}>
               {scanning ? 'Scanning...' : 'Scan Now'}

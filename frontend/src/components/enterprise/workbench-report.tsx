@@ -44,12 +44,12 @@ export function WorkbenchReport({ stats }: WorkbenchReportProps) {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10">
                 <FileSearch className="h-4 w-4 text-emerald-500" />
               </div>
-              <CardTitle className="text-sm font-semibold">AI HR 招聘报告</CardTitle>
+              <CardTitle className="text-sm font-semibold">AI HR 人才匹配报告</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm leading-relaxed text-foreground/80">
-              主动扫描简历
+              主动扫描人才
               <StatLink value={stats.resumesScanned} label="份" />
               ，初步匹配
               <StatLink value={stats.preliminaryMatches} label="份" href="/enterprise/talent" />
@@ -87,8 +87,8 @@ export function WorkbenchReport({ stats }: WorkbenchReportProps) {
               <div className="flex items-center gap-3 rounded-lg border border-border/30 px-3 py-2.5">
                 <Briefcase className="h-4 w-4 text-muted-foreground" />
                 <div>
-                  <p className="text-lg font-bold text-foreground">{stats.activeJobs}</p>
-                  <p className="text-xs text-muted-foreground">活跃职位</p>
+                  <p className="text-lg font-bold text-foreground">{stats.activeOpportunities}</p>
+                  <p className="text-xs text-muted-foreground">进行中的机会</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 rounded-lg border border-border/30 px-3 py-2.5">

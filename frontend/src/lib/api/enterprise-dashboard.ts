@@ -7,7 +7,7 @@ export interface WorkbenchStats {
   invitesSent: number;
   invitesAccepted: number;
   interviewsScheduled: number;
-  activeJobs: number;
+  activeOpportunities: number;
   talentPoolSize: number;
 }
 

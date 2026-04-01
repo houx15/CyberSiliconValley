@@ -95,7 +95,7 @@ export default function NewJobPage() {
         }
       );
     } catch (error) {
-      const content = error instanceof Error ? error.message : 'Unable to structure this job right now.';
+      const content = error instanceof Error ? error.message : '暂时无法解析，请重试。';
       setMessages((prev) =>
         prev.map((message) => (message.id === assistantId ? { ...message, content } : message))
       );
@@ -126,7 +126,7 @@ export default function NewJobPage() {
     return (
       <div className="mx-auto max-w-3xl space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-medium">Review & Publish Job</h1>
+          <h1 className="text-lg font-medium">审核并发布机会</h1>
           <Button variant="ghost" size="sm" onClick={() => setStructured(null)}>
             Start Over
           </Button>
@@ -138,21 +138,21 @@ export default function NewJobPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <h1 className="text-lg font-medium">Post a New Job</h1>
+      <h1 className="text-lg font-medium">发布新机会</h1>
 
       <Tabs defaultValue="paste">
         <TabsList>
-          <TabsTrigger value="paste">Paste JD</TabsTrigger>
-          <TabsTrigger value="link">Link URL</TabsTrigger>
-          <TabsTrigger value="chat">Describe in Chat</TabsTrigger>
-          <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+          <TabsTrigger value="paste">粘贴描述</TabsTrigger>
+          <TabsTrigger value="link">链接 URL</TabsTrigger>
+          <TabsTrigger value="chat">对话描述</TabsTrigger>
+          <TabsTrigger value="manual">手动填写</TabsTrigger>
         </TabsList>
 
         {/* Paste JD Tab */}
         <TabsContent value="paste" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">Paste Job Description</CardTitle>
+              <CardTitle className="text-sm">粘贴机会描述</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <textarea
@@ -160,7 +160,7 @@ export default function NewJobPage() {
                 onChange={(e) => setPasteText(e.target.value)}
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 rows={10}
-                placeholder="Paste your full job description here..."
+                placeholder="在此粘贴完整的机会描述（全职、实习、项目等均可）..."
               />
               <div className="flex justify-end">
                 <Button onClick={handlePasteSubmit} disabled={!pasteText.trim() || isLoading}>
@@ -175,16 +175,16 @@ export default function NewJobPage() {
         <TabsContent value="link" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">Link a Job Posting</CardTitle>
+              <CardTitle className="text-sm">链接已有发布</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Input
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
-                placeholder="https://example.com/job-posting"
+                placeholder="https://example.com/opportunity"
               />
               <p className="text-xs text-muted-foreground">
-                Paste a URL and we will try to extract the job details.
+                粘贴 URL，我们会尝试提取机会详情。
               </p>
               <div className="flex justify-end">
                 <Button onClick={handleLinkSubmit} disabled={!linkUrl.trim() || isLoading}>
@@ -199,15 +199,14 @@ export default function NewJobPage() {
         <TabsContent value="chat" className="space-y-4">
           <Card className="flex h-[500px] flex-col">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Describe Your Requirements</CardTitle>
+              <CardTitle className="text-sm">描述你的需求</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-1 flex-col overflow-hidden">
               <ScrollArea className="flex-1">
                 <div className="space-y-3 py-2">
                   {messages.length === 0 && (
                     <p className="text-sm text-muted-foreground">
-                      Tell me about the role or project you are hiring for, and I will structure it
-                      into a job posting.
+                      告诉我你在寻找什么样的人才——可以是全职、实习、项目合作、顾问等任何形式。
                     </p>
                   )}
                   <AnimatePresence mode="popLayout">
@@ -255,7 +254,7 @@ export default function NewJobPage() {
                 <Input
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Describe the role..."
+                  placeholder="描述你需要什么样的人才..."
                   disabled={isLoading}
                   className="flex-1"
                 />

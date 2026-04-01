@@ -119,7 +119,7 @@ export function TierComparison({ role, currentTierId }: TierComparisonProps) {
         { key: 'coachSessionsPerDay' as const, label: '每日教练对话数' },
       ]
     : [
-        { key: 'jobPostings' as const, label: '职位发布数' },
+        { key: 'jobPostings' as const, label: '机会发布数' },
         { key: 'resumeScansPerDay' as const, label: '每日简历扫描数' },
         { key: 'preChatsPerDay' as const, label: '每日预沟通数' },
       ];

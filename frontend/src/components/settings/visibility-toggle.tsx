@@ -17,7 +17,7 @@ export function VisibilityToggle({ initialVisible, variant }: VisibilityTogglePr
   const label = variant === 'talent' ? '对企业可见' : '对人才可见';
   const description = variant === 'talent'
     ? '开启后，你的个人资料将出现在企业的人才搜索结果中。'
-    : '开启后，你的企业信息和职位将对人才可见。';
+    : '开启后，你的企业信息和发布的机会将对人才可见。';
 
   function handleToggle() {
     const next = !visible;

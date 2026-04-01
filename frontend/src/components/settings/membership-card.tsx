@@ -36,7 +36,7 @@ export function MembershipCard({ tier, variant }: MembershipCardProps) {
               <Badge className={tierInfo.color}>{tierInfo.label}</Badge>
             </div>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {variant === 'talent' ? '升级解锁更多匹配和教练功能' : '升级解锁更多招聘和筛选功能'}
+              {variant === 'talent' ? '升级解锁更多匹配和教练功能' : '升级解锁更多人才匹配和筛选功能'}
             </p>
           </div>
           <button className="rounded-md border border-border/50 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent/50">

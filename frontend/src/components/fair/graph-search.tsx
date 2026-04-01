@@ -101,7 +101,7 @@ export default function GraphSearch({ nodes, onSearch }: GraphSearchProps) {
               }}
             >
               <span>{node.keyword}</span>
-              <span className="text-xs text-muted-foreground">{node.jobCount} jobs</span>
+              <span className="text-xs text-muted-foreground">{node.jobCount} 个机会</span>
             </button>
           ))}
         </div>

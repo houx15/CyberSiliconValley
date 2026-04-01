@@ -37,8 +37,8 @@ export function PreChatOptIn({
   }
 
   const description = variant === 'talent'
-    ? `${companyName} 对你的 "${jobTitle}" 岗位发起了 AI 预沟通。你的 AI 伙伴将代表你与企业的 AI HR 进行初步交流，了解双方的匹配度。`
-    : `系统已为 "${jobTitle}" 岗位匹配到候选人。AI HR 将代表你与候选人的 AI 伙伴进行初步交流，评估匹配度。`;
+    ? `${companyName} 就 "${jobTitle}" 机会发起了 AI 预沟通。你的 AI 伙伴将代表你与企业的 AI HR 进行初步交流，了解双方的匹配度。`
+    : `系统已为 "${jobTitle}" 机会匹配到候选人。AI HR 将代表你与候选人的 AI 伙伴进行初步交流，评估匹配度。`;
 
   return (
     <Card className="border-primary/20 bg-primary/5">

@@ -16,13 +16,13 @@ export function EmptyJobs() {
       <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-border/70 bg-background shadow-sm">
         <BriefcaseBusiness className="h-7 w-7 text-muted-foreground" />
       </div>
-      <h3 className="text-lg font-semibold text-foreground">还没有发布职位</h3>
+      <h3 className="text-lg font-semibold text-foreground">还没有发布机会</h3>
       <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
-        Post your first role and the platform will begin scanning for talent,
-        generating match scores, and opening the AI-assisted screening flow.
+        发布你的第一个机会——可以是全职岗位、项目合作、实习或顾问需求。
+        平台会自动开始匹配人才、计算匹配分数。
       </p>
       <Link href="/enterprise/jobs/new" className="mt-6">
-        <Button>Post a Job</Button>
+        <Button>发布机会</Button>
       </Link>
     </motion.div>
   );

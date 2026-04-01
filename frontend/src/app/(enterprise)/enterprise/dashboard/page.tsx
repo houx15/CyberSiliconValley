@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bot, ArrowRight, Briefcase, Users } from 'lucide-react';
 import { MOCK_ENTERPRISE_PROFILE, MOCK_JOBS, MOCK_JOB_MATCH_COUNTS, MOCK_WORKBENCH_STATS } from '@/lib/mock-data';
+import type { OpportunityType } from '@/types';
 import { listEnterpriseJobs } from '@/lib/api/jobs';
 import { getCurrentEnterpriseProfile } from '@/lib/api/profile';
 import { getWorkbenchStats } from '@/lib/api/enterprise-dashboard';
@@ -24,6 +25,7 @@ type DashboardJob = {
   createdAt: string;
   matchCount: number;
   shortlistedCount: number;
+  opportunityType?: OpportunityType;
 };
 
 export default async function DashboardPage() {
@@ -34,6 +36,7 @@ export default async function DashboardPage() {
     createdAt: job.createdAt.toISOString(),
     matchCount: MOCK_JOB_MATCH_COUNTS[job.id]?.matchCount ?? 0,
     shortlistedCount: MOCK_JOB_MATCH_COUNTS[job.id]?.shortlistedCount ?? 0,
+    opportunityType: job.opportunityType,
   }));
 
   let profile: DashboardProfile = {
@@ -78,7 +81,7 @@ export default async function DashboardPage() {
           你好，{profile.companyName}
         </h1>
         <p className="text-sm text-muted-foreground">
-          AI HR 正在为你工作。以下是最新进展。
+          AI 正在��你匹配合适的人才。以下是最新进展。
         </p>
       </div>
 
@@ -95,7 +98,7 @@ export default async function DashboardPage() {
         </div>
         <div className="flex-1">
           <p className="text-sm font-medium text-foreground">查看 AI HR 详细工作记录</p>
-          <p className="text-xs text-muted-foreground">具体人才、沟通记录、按职位归类查看</p>
+          <p className="text-xs text-muted-foreground">具体人才、沟通记录、按机会归类查看</p>
         </div>
         <ArrowRight className="h-4 w-4 text-emerald-400" />
       </Link>
@@ -105,7 +108,7 @@ export default async function DashboardPage() {
         <Link href="/enterprise/jobs/new">
           <Button variant="default" size="sm" className="gap-1.5">
             <Briefcase className="h-3.5 w-3.5" />
-            发布新职位
+            发布新机会
           </Button>
         </Link>
         <Link href="/enterprise/talent">
@@ -117,13 +120,13 @@ export default async function DashboardPage() {
       </div>
 
       {/* Active Jobs */}
-      <section id="active-jobs">
+      <section id="active-opportunities">
         <Card className="border-border/50">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">活跃职位</CardTitle>
+              <CardTitle className="text-base">进行中的机会</CardTitle>
               <span className="text-xs text-muted-foreground">
-                {jobsWithCounts.length} 个职位
+                {jobsWithCounts.length} 个机会
               </span>
             </div>
           </CardHeader>

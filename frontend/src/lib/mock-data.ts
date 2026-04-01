@@ -1,4 +1,4 @@
-import type { Skill, Experience } from '@/types';
+import type { Skill, Experience, OpportunityType } from '@/types';
 
 export const MOCK_TALENT_PROFILE = {
   id: 'mock-talent-profile-1',
@@ -93,6 +93,7 @@ export const MOCK_JOBS = [
     enterpriseId: 'mock-enterprise-profile-1',
     title: '高级 RAG 工程师',
     description: '负责设计和实现企业级RAG系统，支撑公司核心AI产品。',
+    opportunityType: 'fulltime' as OpportunityType,
     structured: {
       skills: [
         { name: 'RAG Pipeline', level: 'expert', required: true },
@@ -116,8 +117,9 @@ export const MOCK_JOBS = [
   {
     id: 'mock-job-2',
     enterpriseId: 'mock-enterprise-profile-1',
-    title: 'AI Agent 开发工程师',
-    description: '构建面向客户服务场景的AI Agent系统，具备多轮对话和工具调用能力。',
+    title: 'AI Agent 系统搭建',
+    description: '构建面向客户服务场景的AI Agent系统，具备多轮对话和工具调用能力。项目周期6个月。',
+    opportunityType: 'project' as OpportunityType,
     structured: {
       skills: [
         { name: 'LLM Application', level: 'advanced', required: true },
@@ -140,18 +142,19 @@ export const MOCK_JOBS = [
   {
     id: 'mock-job-3',
     enterpriseId: 'mock-enterprise-profile-1',
-    title: '数据标注平台产品经理',
-    description: '负责AI数据标注平台的产品规划和迭代，提升标注效率和质量。',
+    title: 'AI 数据标注平台产品实习',
+    description: '参与AI数据标注平台的产品规划和迭代，提升标注效率和质量。实习期3-6个月。',
+    opportunityType: 'internship' as OpportunityType,
     structured: {
       skills: [
         { name: 'Product Management', level: 'advanced', required: true },
         { name: 'AI/ML Understanding', level: 'intermediate', required: true },
         { name: 'Data Annotation', level: 'intermediate', required: false },
       ],
-      seniority: 'Senior',
-      timeline: '2026年4月, 长期',
+      seniority: 'Intern',
+      timeline: '2026年4月, 3-6个月',
       deliverables: ['产品路线图', '需求文档', '用户研究报告'],
-      budget: { min: 35000, max: 55000, currency: 'CNY' },
+      budget: { min: 5000, max: 8000, currency: 'CNY' },
       workMode: 'onsite' as const,
     },
     status: 'open',
@@ -183,7 +186,7 @@ export const MOCK_WORKBENCH_STATS = {
   invitesSent: 15,
   invitesAccepted: 9,
   interviewsScheduled: 5,
-  activeJobs: 3,
+  activeOpportunities: 3,
   talentPoolSize: 342,
 };
 
@@ -215,7 +218,7 @@ export const MOCK_SEEKING_REPORT = {
         { skill: 'Docker', matched: true, level: 'nice-to-have' },
       ],
       aiAssessment:
-        '你在企业级 RAG 架构和检索优化上的实战经验，与这个岗位的核心要求高度重合。唯一需要提前说明的是你的 Go 经验不是主打优势，但这不会影响你在检索与系统设计上的竞争力。',
+        '你在企业级 RAG 架构和检索优化上的实战经验，与这个机会的核心要求高度重合。唯一需要提前说明的是你的 Go 经验不是主打优势，但这不会影响你在检索与系统设计上的竞争力。',
     },
     {
       matchId: 'mock-match-2',
@@ -232,7 +235,7 @@ export const MOCK_SEEKING_REPORT = {
         { skill: 'React', matched: false, level: 'nice-to-have' },
       ],
       aiAssessment:
-        '你的 Prompt Engineering 与应用层交付经验很匹配这个 Agent 岗位。需要补强的是工具调用和前端协作案例，建议在申请时突出你如何把 LLM 能力落到真实业务流程里。',
+        '你的 Prompt Engineering 与应用层交付经验很匹配这个项目机会。需要补强的是工具调用和前端协作案例，建议在申请时突出你如何把 LLM 能力落到真实业务流程里。',
     },
   ],
   preChatActivity: [
@@ -261,7 +264,7 @@ export const MOCK_TALENT_INBOX_ITEMS = [
   {
     id: 'mock-inbox-1',
     itemType: 'invite',
-    title: '星辰智能科技邀请你查看高级 RAG 工程师职位',
+    title: '星辰智能科技邀请你了解高级 RAG 工程师机会',
     content: {
       companyName: '星辰智能科技',
       jobTitle: '高级 RAG 工程师',
@@ -332,7 +335,7 @@ export const MOCK_ENTERPRISE_INBOX_ITEMS = [
       jobId: 'mock-job-1',
       matchScore: 92,
       summary:
-        '候选人的求职目标与职位方向高度一致，预计对进入下一轮沟通持积极态度。',
+        '候选人的求职目标与机会方向高度一致，预计对进入下一轮沟通持积极态度。',
     },
     read: true,
     createdAt: '2026-03-31T06:50:00.000Z',

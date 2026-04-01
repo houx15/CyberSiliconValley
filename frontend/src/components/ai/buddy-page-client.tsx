@@ -50,10 +50,13 @@ interface Session {
   updatedAt: string;
 }
 
+type OpportunityCategory = 'fulltime' | 'project' | 'internship' | 'consulting' | 'task';
+
 interface OpportunityRecord {
   id: string;
   companyName: string;
   jobTitle: string;
+  opportunityType: OpportunityCategory;
   location: string;
   workMode: string;
   matchScore: number;
@@ -66,6 +69,14 @@ interface OpportunityRecord {
 }
 
 /* ─── Constants ─── */
+
+const OPP_TYPE_LABELS: Record<OpportunityCategory, { label: string; color: string }> = {
+  fulltime:   { label: '全职', color: 'border-blue-500/30 text-blue-400' },
+  project:    { label: '项目', color: 'border-purple-500/30 text-purple-400' },
+  internship: { label: '实习', color: 'border-amber-500/30 text-amber-400' },
+  consulting: { label: '顾问', color: 'border-teal-500/30 text-teal-400' },
+  task:       { label: '短期', color: 'border-orange-500/30 text-orange-400' },
+};
 
 const FUNCTIONS: { mode: FunctionMode; icon: typeof FileEdit; title: string; desc: string }[] = [
   { mode: 'profile', icon: FileEdit, title: '更新 Profile', desc: '用对话方式更新你的能力画像和简历' },
@@ -89,9 +100,10 @@ const MOCK_SESSIONS: Session[] = [
 const MOCK_OPPORTUNITIES: OpportunityRecord[] = [
   {
     id: 'o1', companyName: 'ByteDance', jobTitle: '高级后端工程师',
+    opportunityType: 'fulltime' as OpportunityCategory,
     location: '北京', workMode: '混合',
     matchScore: 92, status: 'action_needed',
-    aiAssessment: '技术栈高度匹配。候选人在分布式系统和 Go 微服务方面的经验与该岗位要求完美契合。建议尽快进入面试流程。',
+    aiAssessment: '技术栈高度匹配。你在分布式系统和 Go 微服务方面的经验与该机会要求完美契合。建议尽快进入面试流程。',
     skills: [{ name: 'Go', matched: true }, { name: 'Kubernetes', matched: true }, { name: '分布式系统', matched: true }, { name: 'gRPC', matched: true }, { name: 'Java', matched: false }],
     preChatSummary: 'AI HR 确认了团队规模和技术方向，双方技术栈高度一致。企业对候选人的系统设计能力印象深刻。',
     preChatMessages: [
@@ -102,7 +114,8 @@ const MOCK_OPPORTUNITIES: OpportunityRecord[] = [
     updatedAt: '1 小时前',
   },
   {
-    id: 'o2', companyName: 'Moonshot AI', jobTitle: 'LLM 应用架构师',
+    id: 'o2', companyName: 'Moonshot AI', jobTitle: 'RAG 平台搭建（项目合作）',
+    opportunityType: 'project' as OpportunityCategory,
     location: '杭州', workMode: '远程',
     matchScore: 87, status: 'pre_chat_done',
     aiAssessment: 'RAG 架构经验是核心优势。候选人有多个生产级 LLM 应用项目，但在模型微调方面经验偏少。整体匹配度高。',
@@ -117,15 +130,17 @@ const MOCK_OPPORTUNITIES: OpportunityRecord[] = [
     updatedAt: '3 小时前',
   },
   {
-    id: 'o3', companyName: 'Ant Group', jobTitle: 'AI 平台工程师',
+    id: 'o3', companyName: 'Ant Group', jobTitle: 'AI 平台工程实习',
+    opportunityType: 'internship' as OpportunityCategory,
     location: '杭州', workMode: '现场',
     matchScore: 78, status: 'pre_chat',
-    aiAssessment: '模型部署和 MLOps 方面有基础，但与岗位要求的深度有一定差距。平台工程经验是加分项。',
+    aiAssessment: '模型部署和 MLOps 方面有基础，但与该实习要求的深度有一定差距。平台工程经验是加分项。',
     skills: [{ name: 'Python', matched: true }, { name: 'Docker', matched: true }, { name: 'MLOps', matched: false }, { name: 'PyTorch', matched: true }],
     updatedAt: '今天',
   },
   {
     id: 'o4', companyName: 'PingCAP', jobTitle: '分布式存储研发',
+    opportunityType: 'fulltime' as OpportunityCategory,
     location: '北京', workMode: '混合',
     matchScore: 73, status: 'screened',
     aiAssessment: '分布式系统基础扎实，但在存储引擎层面的经验偏少。可以作为备选考虑。',
@@ -133,16 +148,18 @@ const MOCK_OPPORTUNITIES: OpportunityRecord[] = [
     updatedAt: '昨天',
   },
   {
-    id: 'o5', companyName: 'Meituan', jobTitle: '搜索推荐工程师',
-    location: '北京', workMode: '现场',
+    id: 'o5', companyName: 'Meituan', jobTitle: '搜索推荐技术顾问',
+    opportunityType: 'consulting' as OpportunityCategory,
+    location: '北京', workMode: '远程',
     matchScore: 68, status: 'enterprise_inquiry',
     aiAssessment: '企业主动发来询问。虽然搜索推荐不是核心方向，但候选人的数据处理和系统架构能力被认可。',
     skills: [{ name: 'Python', matched: true }, { name: 'Elasticsearch', matched: false }, { name: '推荐系统', matched: false }],
     updatedAt: '2 天前',
   },
   {
-    id: 'o6', companyName: 'Xiaomi', jobTitle: 'IoT 后端架构师',
-    location: '北京', workMode: '现场',
+    id: 'o6', companyName: 'Xiaomi', jobTitle: 'IoT 数据采集脚本（2周）',
+    opportunityType: 'task' as OpportunityCategory,
+    location: '北京', workMode: '远程',
     matchScore: 65, status: 'screened',
     aiAssessment: '后端架构经验匹配，但 IoT 领域经验空白。建议关注但不优先。',
     skills: [{ name: 'Go', matched: true }, { name: '微服务', matched: true }, { name: 'MQTT', matched: false }, { name: 'IoT', matched: false }],
@@ -550,7 +567,7 @@ export function BuddyPageClient() {
                   <p className="text-sm text-foreground/80">
                     今日总共浏览了{' '}
                     <span className="font-semibold text-foreground">1,247</span>{' '}
-                    个职位，发现：
+                    个机会，发现：
                   </p>
                 </div>
 
@@ -631,6 +648,9 @@ export function BuddyPageClient() {
                                 <div className="min-w-0 flex-1">
                                   <div className="flex items-center gap-2">
                                     <span className="text-sm font-medium text-foreground">{opp.jobTitle}</span>
+                                    <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${OPP_TYPE_LABELS[opp.opportunityType].color}`}>
+                                      {OPP_TYPE_LABELS[opp.opportunityType].label}
+                                    </Badge>
                                   </div>
                                   <p className="text-xs text-muted-foreground">
                                     {opp.companyName} · {opp.location} · {opp.workMode}

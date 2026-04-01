@@ -85,7 +85,7 @@ export function TalentMarketList() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="搜索人才：姓名、职位或技能..."
+            placeholder="搜索人才：姓名、方向或技能..."
             className="pl-9"
           />
         </div>
