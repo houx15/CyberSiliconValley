@@ -3,6 +3,10 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+from apps._runtime_env import load_backend_env
+
+
+load_backend_env()
 
 BACKEND_ROOT = Path(__file__).resolve().parents[3]
 SRC_DIRS = [
