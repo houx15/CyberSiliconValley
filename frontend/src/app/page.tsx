@@ -5,7 +5,7 @@ import { HowItWorks } from '@/components/landing/how-it-works';
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-950">
+    <main className="min-h-screen bg-background text-foreground">
       <HeroSection />
       <HowItWorks />
       <FeatureHighlights />
