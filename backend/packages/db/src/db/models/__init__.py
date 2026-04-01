@@ -9,7 +9,10 @@ from db.models.job import Job
 from db.models.keyword_edge import KeywordEdge
 from db.models.keyword_node import KeywordNode
 from db.models.match import Match
+from db.models.memory_space import MemorySpace
+from db.models.pre_chat import PreChat, PreChatMessage
 from db.models.seeking_report import SeekingReport
+from db.models.subscription import SubscriptionTier, UserSubscription
 from db.models.talent_profile import TalentProfile
 from db.models.user import User
 
@@ -24,7 +27,12 @@ __all__ = [
     "KeywordEdge",
     "KeywordNode",
     "Match",
+    "MemorySpace",
+    "PreChat",
+    "PreChatMessage",
     "SeekingReport",
+    "SubscriptionTier",
     "TalentProfile",
     "User",
+    "UserSubscription",
 ]

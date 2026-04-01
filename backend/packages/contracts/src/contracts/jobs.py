@@ -34,6 +34,8 @@ class StructuredJobPayload(BaseModel):
     deliverables: list[str]
     budget: StructuredJobBudget
     work_mode: WorkMode = Field(alias="workMode")
+    location: str | None = None
+    focus_category: str | None = Field(default=None, alias="focusCategory")
 
 
 class JobCreateRequest(BaseModel):

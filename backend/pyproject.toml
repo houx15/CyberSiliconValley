@@ -16,6 +16,7 @@ dependencies = [
   "arq",
   "httpx",
   "anyio",
+  "python-multipart",
 ]
 
 [dependency-groups]

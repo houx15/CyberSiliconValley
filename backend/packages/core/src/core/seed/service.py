@@ -37,6 +37,7 @@ from db.models.keyword_edge import KeywordEdge
 from db.models.keyword_node import KeywordNode
 from db.models.match import Match
 from db.models.seeking_report import SeekingReport
+from db.models.subscription import SubscriptionTier
 from db.models.talent_profile import TalentProfile
 from db.models.user import User
 from db.session import session_scope
@@ -83,6 +84,7 @@ class SeedService:
             keyword_nodes, keyword_edges = self._seed_keyword_graph(session, jobs)
             inbox_items = self._seed_inbox_items(session, jobs)
             reports = self._seed_seeking_reports(session, jobs)
+            self._seed_subscription_tiers(session)
             users = session.execute(select(User)).scalars().all()
 
         return SeedSummary(
@@ -512,6 +514,25 @@ class SeedService:
             reports.append(report)
 
         return reports
+
+    def _seed_subscription_tiers(self, session: Session) -> None:
+        existing = session.execute(select(SubscriptionTier).limit(1)).scalar_one_or_none()
+        if existing is not None:
+            return
+
+        tiers = [
+            # Enterprise tiers
+            SubscriptionTier(name="Basic", role="enterprise", price_cents=20000, currency="CNY", limits={"matchesPerDay": 10, "preChatsPerDay": 3, "jobPostings": 2}),
+            SubscriptionTier(name="Plus", role="enterprise", price_cents=50000, currency="CNY", limits={"matchesPerDay": 30, "preChatsPerDay": 10, "jobPostings": 5}),
+            SubscriptionTier(name="AI HR Pro", role="enterprise", price_cents=200000, currency="CNY", limits={"matchesPerDay": 100, "preChatsPerDay": 50, "jobPostings": 20}),
+            SubscriptionTier(name="Max", role="enterprise", price_cents=500000, currency="CNY", limits={"matchesPerDay": 999, "preChatsPerDay": 999, "jobPostings": 100}),
+            # Talent tiers
+            SubscriptionTier(name="Basic", role="talent", price_cents=1000, currency="CNY", limits={"matchesPerDay": 5, "coachSessionsPerDay": 3}),
+            SubscriptionTier(name="Mid", role="talent", price_cents=5000, currency="CNY", limits={"matchesPerDay": 20, "coachSessionsPerDay": 10}),
+            SubscriptionTier(name="Pro", role="talent", price_cents=20000, currency="CNY", limits={"matchesPerDay": 100, "coachSessionsPerDay": 50}),
+        ]
+        session.add_all(tiers)
+        session.flush()
 
     def _get_or_create_user(self, session: Session, *, email: str, role: str, password_hash: str) -> User:
         existing = session.execute(select(User).where(User.email == email)).scalar_one_or_none()
