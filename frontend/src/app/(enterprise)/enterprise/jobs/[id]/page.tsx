@@ -55,10 +55,18 @@ export default function JobDetailPage() {
     useState<CandidateRow | null>(null);
   const [sortBy, setSortBy] = useState('score');
 
+  const [error, setError] = useState<string | null>(null);
+
   const fetchData = useCallback(async () => {
+    setError(null);
     try {
-      const res = await fetch(`/api/v1/jobs/${jobId}`);
-      if (!res.ok) throw new Error('Failed to fetch job');
+      const res = await fetch(`/api/v1/jobs/${jobId}`, { credentials: 'include' });
+      if (!res.ok) {
+        if (res.status === 401) throw new Error('请先登录');
+        if (res.status === 403) throw new Error('没有访问权限');
+        if (res.status === 404) throw new Error('未找到该机会');
+        throw new Error('加载失败');
+      }
       const data = await res.json();
 
       setJob(data.job);
@@ -76,8 +84,9 @@ export default function JobDetailPage() {
           aiReasoning: m.aiReasoning,
         }))
       );
-    } catch (error) {
-      console.error('Failed to load job:', error);
+    } catch (err) {
+      console.error('Failed to load job:', err);
+      setError(err instanceof Error ? err.message : '加载失败');
     } finally {
       setLoading(false);
     }
@@ -153,8 +162,11 @@ export default function JobDetailPage() {
 
   if (!job) {
     return (
-      <div className="flex h-[50vh] items-center justify-center text-muted-foreground">
-        未找到该机会。
+      <div className="flex h-[50vh] flex-col items-center justify-center gap-4">
+        <p className="text-sm text-muted-foreground">{error || '未找到该机会'}</p>
+        <Button variant="outline" onClick={() => router.push('/enterprise/jobs')}>
+          返回机会列表
+        </Button>
       </div>
     );
   }
