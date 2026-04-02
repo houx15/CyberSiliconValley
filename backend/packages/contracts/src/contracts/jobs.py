@@ -54,6 +54,17 @@ class JobParseRequest(BaseModel):
     message: str = Field(min_length=1)
 
 
+class JobUpdateRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    title: str | None = None
+    description: str | None = None
+    structured: dict[str, Any] | None = None
+    status: JobStatus | None = None
+    auto_match: bool | None = Field(default=None, alias="autoMatch")
+    auto_prechat: bool | None = Field(default=None, alias="autoPrechat")
+
+
 class JobRecord(BaseModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 

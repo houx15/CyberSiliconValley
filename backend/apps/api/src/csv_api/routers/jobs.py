@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
@@ -12,11 +14,16 @@ from contracts.jobs import (
     JobDetailResponse,
     JobListResponse,
     JobParseRequest,
+    JobUpdateRequest,
 )
 from core.jobs.service import create_enterprise_job, get_enterprise_job_detail, list_enterprise_jobs
 from csv_api.config import Settings, get_settings
-from csv_api.dependencies import get_current_user, get_db_session
-from ai.streaming.sse import stream_events_as_sse
+from csv_api.dependencies import get_ai_provider_router, get_current_user, get_db_session
+from ai.prompts.job_parse import JOB_PARSE_SYSTEM_PROMPT, JOB_PARSE_TOOLS
+from ai.providers.router import AICompletionRequest, ProviderRouter
+from ai.streaming.sse import stream_async_events_as_sse
+from db.repositories.jobs import get_job_by_id_for_enterprise
+from db.repositories.profiles import get_enterprise_profile_by_user_id
 from redis_layer.queue import enqueue_match_scan_job
 
 
@@ -96,85 +103,83 @@ def read_job_detail(
 
 
 @router.post("/parse")
-def parse_job(
+async def parse_job(
     payload: JobParseRequest,
+    current_user: AuthUser = Depends(get_current_user),
+    provider_router: ProviderRouter = Depends(get_ai_provider_router),
+):
+    if current_user.role != "enterprise":
+        return _forbidden_response()
+
+    request = AICompletionRequest(
+        surface="jobs.parse",
+        system_prompt=JOB_PARSE_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": payload.message}],
+        metadata={"tools": JOB_PARSE_TOOLS},
+    )
+
+    async def generate():
+        yield StreamEvent(event="start", data={"surface": "jobs.parse"})
+        full_text = ""
+        async for event in provider_router.stream(request):
+            if event["event"] == "text":
+                full_text += event["data"]["delta"]
+                yield StreamEvent(event="text", data=event["data"])
+            elif event["event"] == "tool":
+                yield StreamEvent(event="tool", data=event["data"])
+        yield StreamEvent(event="done", data={"message": full_text})
+
+    return stream_async_events_as_sse(generate())
+
+
+@router.patch("/{job_id}")
+def update_job(
+    job_id: str,
+    payload: JobUpdateRequest,
+    session: Session = Depends(get_db_session),
     current_user: AuthUser = Depends(get_current_user),
 ):
     if current_user.role != "enterprise":
         return _forbidden_response()
 
-    structured = _build_structured_job(payload.message)
-    events = [
-        StreamEvent(event="start", data={"surface": "jobs.parse"}),
-        StreamEvent(event="tool", data={"name": "structure_job", "structured": structured}),
-        StreamEvent(
-            event="text",
-            data={"delta": f'I structured this role as "{structured["title"]}". Review the draft before publishing.'},
-        ),
-        StreamEvent(
-            event="done",
-            data={"message": f'I structured this role as "{structured["title"]}". Review the draft before publishing.'},
-        ),
-    ]
-    return stream_events_as_sse(events)
+    profile = get_enterprise_profile_by_user_id(session, UUID(current_user.id))
+    if profile is None:
+        return _missing_profile_response()
+
+    job = get_job_by_id_for_enterprise(session, UUID(job_id), profile.id)
+    if job is None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"error": "NOT_FOUND", "message": "Job not found"},
+        )
+
+    updates = payload.model_dump(exclude_none=True)
+    for field, value in updates.items():
+        setattr(job, field, value)
+    session.commit()
+
+    return {"job": {"id": str(job.id), "title": job.title, "status": job.status}}
 
 
-def _build_structured_job(message: str) -> dict[str, object]:
-    normalized = message.strip()
-    lower = normalized.lower()
+@router.delete("/{job_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_job(
+    job_id: str,
+    session: Session = Depends(get_db_session),
+    current_user: AuthUser = Depends(get_current_user),
+):
+    if current_user.role != "enterprise":
+        return _forbidden_response()
 
-    title = "AI Product Builder"
-    if "rag" in lower:
-        title = "RAG Engineer"
-    elif "ml" in lower or "machine learning" in lower:
-        title = "Machine Learning Engineer"
-    elif "data" in lower:
-        title = "Data Platform Engineer"
-    elif "frontend" in lower:
-        title = "Frontend Engineer"
+    profile = get_enterprise_profile_by_user_id(session, UUID(current_user.id))
+    if profile is None:
+        return _missing_profile_response()
 
-    skills: list[dict[str, object]] = []
-    for skill_name in ("Python", "LLM", "RAG", "Evaluation", "TypeScript", "SQL"):
-        if skill_name.lower() in lower:
-            skills.append(
-                {
-                    "name": skill_name,
-                    "level": "advanced" if skill_name in {"Python", "TypeScript"} else "intermediate",
-                    "required": True,
-                }
-            )
+    job = get_job_by_id_for_enterprise(session, UUID(job_id), profile.id)
+    if job is None:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"error": "NOT_FOUND", "message": "Job not found"},
+        )
 
-    if not skills:
-        skills = [
-            {"name": "Python", "level": "advanced", "required": True},
-            {"name": "LLM Applications", "level": "intermediate", "required": True},
-            {"name": "System Design", "level": "intermediate", "required": False},
-        ]
-
-    work_mode = "remote"
-    if "hybrid" in lower:
-        work_mode = "hybrid"
-    elif "onsite" in lower or "on-site" in lower:
-        work_mode = "onsite"
-
-    seniority = "Mid"
-    if "lead" in lower or "staff" in lower:
-        seniority = "Lead"
-    elif "senior" in lower:
-        seniority = "Senior"
-    elif "junior" in lower:
-        seniority = "Junior"
-
-    return {
-        "title": title,
-        "description": normalized,
-        "skills": skills,
-        "seniority": seniority,
-        "timeline": "Open to discuss",
-        "deliverables": [
-            "Ship a production-ready pilot",
-            "Translate ambiguous business goals into scoped AI workstreams",
-        ],
-        "budget": {"currency": "USD"},
-        "workMode": work_mode,
-    }
+    session.delete(job)
+    session.commit()
