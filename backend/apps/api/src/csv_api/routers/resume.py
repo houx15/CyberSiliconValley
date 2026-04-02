@@ -34,9 +34,20 @@ async def generate_resume(
     if current_user.role == "talent" and str(profile.user_id) != current_user.id:
         return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"error": "Forbidden"})
 
+    if current_user.role == "enterprise":
+        # Enterprise can only generate resumes for jobs they own
+        from db.models.enterprise_profile import EnterpriseProfile
+        from db.repositories.profiles import get_enterprise_profile_by_user_id
+        enterprise = get_enterprise_profile_by_user_id(session, UUID(current_user.id))
+        if enterprise is None:
+            return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"error": "No enterprise profile"})
+
     job = get_job(session, UUID(payload.job_id))
     if job is None:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "Job not found"})
+
+    if current_user.role == "enterprise" and job.enterprise_id != enterprise.id:
+        return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"error": "Job does not belong to your enterprise"})
 
     company_name = get_enterprise_name(session, job.enterprise_id)
 

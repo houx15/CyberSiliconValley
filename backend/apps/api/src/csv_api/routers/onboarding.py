@@ -66,25 +66,26 @@ async def onboarding_chat(
     async def generate():
         full_text = ""
         tool_events: list[dict] = []
-        async for event in run_onboarding_workflow_streaming(
-            provider_router, messages=history
-        ):
-            if event.event == "text":
-                full_text += event.data.get("delta", "")
-            elif event.event == "tool":
-                tool_events.append(event.data)
-            yield event
+        try:
+            async for event in run_onboarding_workflow_streaming(
+                provider_router, messages=history
+            ):
+                if event.event == "text":
+                    full_text += event.data.get("delta", "")
+                elif event.event == "tool":
+                    tool_events.append(event.data)
+                yield event
+        finally:
+            # Persist even if client disconnects mid-stream
+            if full_text:
+                save_chat_message(session, session_id=chat_session.id, role="assistant", content=full_text)
 
-        # After streaming completes, save assistant response and apply profile updates
-        if full_text:
-            save_chat_message(session, session_id=chat_session.id, role="assistant", content=full_text)
+            profile_updates = _extract_profile_updates(tool_events)
+            complete = any(t.get("name") == "complete_onboarding" for t in tool_events)
+            if profile_updates or complete:
+                apply_onboarding_update(session, current_user, profile_updates, complete=complete)
 
-        profile_updates = _extract_profile_updates(tool_events)
-        complete = any(t.get("name") == "complete_onboarding" for t in tool_events)
-        if profile_updates or complete:
-            apply_onboarding_update(session, current_user, profile_updates, complete=complete)
-
-        session.commit()
+            session.commit()
 
     return stream_async_events_as_sse(generate())
 

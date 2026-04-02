@@ -98,6 +98,7 @@ class CoachService:
                 },
             },
         )
+        self.session.commit()
         return events
 
 

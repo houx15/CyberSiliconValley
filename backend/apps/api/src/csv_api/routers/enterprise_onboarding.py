@@ -46,22 +46,20 @@ async def enterprise_onboarding_chat(
     async def generate():
         full_text = ""
         tool_events: list[dict] = []
-        async for event in run_enterprise_onboarding_streaming(
-            provider_router, messages=history
-        ):
-            if event.event == "text":
-                full_text += event.data.get("delta", "")
-            elif event.event == "tool":
-                tool_events.append(event.data)
-            yield event
-
-        # Save assistant response
-        if full_text:
-            save_chat_message(session, session_id=chat_session.id, role="assistant", content=full_text)
-
-        # Apply tool events
-        _apply_tool_events(session, current_user, user_id, tool_events)
-        session.commit()
+        try:
+            async for event in run_enterprise_onboarding_streaming(
+                provider_router, messages=history
+            ):
+                if event.event == "text":
+                    full_text += event.data.get("delta", "")
+                elif event.event == "tool":
+                    tool_events.append(event.data)
+                yield event
+        finally:
+            if full_text:
+                save_chat_message(session, session_id=chat_session.id, role="assistant", content=full_text)
+            _apply_tool_events(session, current_user, user_id, tool_events)
+            session.commit()
 
     return stream_async_events_as_sse(generate())
 

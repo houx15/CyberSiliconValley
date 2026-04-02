@@ -77,7 +77,11 @@ class OpenAICompatProvider:
         tool_events: list[dict[str, Any]] = []
         for call in choice.message.tool_calls or []:
             if call.type == "function":
-                args = json.loads(call.function.arguments or "{}")
+                try:
+                    args = json.loads(call.function.arguments or "{}")
+                except json.JSONDecodeError:
+                    logger.warning("Malformed tool call arguments: %s", call.function.arguments)
+                    args = {}
                 tool_events.append({"id": call.id, "name": call.function.name, **args})
 
         return AICompletionResult(text=text, tool_events=tool_events)

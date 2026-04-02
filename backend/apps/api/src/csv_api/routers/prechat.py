@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from contracts.auth import AuthUser
@@ -18,7 +18,9 @@ from contracts.prechat import (
 )
 from csv_api.dependencies import get_current_user, get_db_session
 from db.models.enterprise_profile import EnterpriseProfile
+from db.models.job import Job
 from db.models.pre_chat import PreChat, PreChatMessage
+from db.models.talent_profile import TalentProfile
 
 
 router = APIRouter(prefix="/api/v1/prechat", tags=["prechat"])
@@ -52,6 +54,34 @@ def _message_to_record(msg: PreChatMessage) -> PreChatMessageRecord:
     )
 
 
+def _verify_prechat_access(pc: PreChat, current_user: AuthUser, session: Session) -> None:
+    """Verify the current user is a participant in this pre-chat."""
+    if current_user.role == "talent":
+        talent = session.execute(
+            select(TalentProfile.id).where(TalentProfile.user_id == UUID(current_user.id))
+        ).scalar_one_or_none()
+        if talent is None or talent != pc.talent_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not a participant")
+    elif current_user.role == "enterprise":
+        enterprise = session.execute(
+            select(EnterpriseProfile.id).where(EnterpriseProfile.user_id == UUID(current_user.id))
+        ).scalar_one_or_none()
+        if enterprise is None or enterprise != pc.enterprise_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not a participant")
+
+
+def _load_prechat(session: Session, prechat_id: str) -> PreChat:
+    """Load a PreChat by ID, raising 422 on bad UUID or 404 if missing."""
+    try:
+        pc_uuid = UUID(prechat_id)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Invalid prechat ID")
+    pc = session.get(PreChat, pc_uuid)
+    if pc is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="PreChat not found")
+    return pc
+
+
 @router.post("/initiate", response_model=PreChatRecord, status_code=status.HTTP_201_CREATED)
 def initiate_prechat(
     payload: PreChatInitiateRequest,
@@ -67,8 +97,15 @@ def initiate_prechat(
     if profile is None:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "NOT_FOUND"})
 
+    # Verify the job belongs to this enterprise
+    job = session.execute(
+        select(Job).where(Job.id == UUID(payload.job_id), Job.enterprise_id == profile.id)
+    ).scalar_one_or_none()
+    if job is None:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "JOB_NOT_FOUND"})
+
     pc = PreChat(
-        job_id=UUID(payload.job_id),
+        job_id=job.id,
         talent_id=UUID(payload.talent_id),
         enterprise_id=profile.id,
         status="pending_talent_opt_in",
@@ -84,23 +121,16 @@ def opt_in_prechat(
     prechat_id: str,
     session: Session = Depends(get_db_session),
     current_user: AuthUser = Depends(get_current_user),
-) -> PreChatRecord | JSONResponse:
-    pc = session.get(PreChat, UUID(prechat_id))
-    if pc is None:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "NOT_FOUND"})
+) -> PreChatRecord:
+    pc = _load_prechat(session, prechat_id)
+    _verify_prechat_access(pc, current_user, session)
 
     if current_user.role == "talent":
         pc.talent_opted_in = True
-        if pc.enterprise_opted_in:
-            pc.status = "active"
-        else:
-            pc.status = "pending_enterprise_opt_in"
+        pc.status = "active" if pc.enterprise_opted_in else "pending_enterprise_opt_in"
     elif current_user.role == "enterprise":
         pc.enterprise_opted_in = True
-        if pc.talent_opted_in:
-            pc.status = "active"
-        else:
-            pc.status = "pending_talent_opt_in"
+        pc.status = "active" if pc.talent_opted_in else "pending_talent_opt_in"
 
     session.commit()
     session.refresh(pc)
@@ -112,10 +142,9 @@ def get_prechat(
     prechat_id: str,
     session: Session = Depends(get_db_session),
     current_user: AuthUser = Depends(get_current_user),
-) -> PreChatWithMessages | JSONResponse:
-    pc = session.get(PreChat, UUID(prechat_id))
-    if pc is None:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "NOT_FOUND"})
+) -> PreChatWithMessages:
+    pc = _load_prechat(session, prechat_id)
+    _verify_prechat_access(pc, current_user, session)
 
     messages = (
         session.execute(
@@ -140,19 +169,25 @@ def human_reply(
     payload: PreChatHumanReplyRequest,
     session: Session = Depends(get_db_session),
     current_user: AuthUser = Depends(get_current_user),
-) -> PreChatMessageRecord | JSONResponse:
-    pc = session.get(PreChat, UUID(prechat_id))
-    if pc is None:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "NOT_FOUND"})
+) -> PreChatMessageRecord:
+    pc = _load_prechat(session, prechat_id)
+    _verify_prechat_access(pc, current_user, session)
 
     sender_type = "human_enterprise" if current_user.role == "enterprise" else "human_talent"
+
+    # Atomic round_count increment to avoid race conditions
+    session.execute(
+        update(PreChat).where(PreChat.id == pc.id).values(round_count=PreChat.round_count + 1)
+    )
+    session.flush()
+    session.refresh(pc)
+
     msg = PreChatMessage(
         pre_chat_id=pc.id,
         sender_type=sender_type,
         content=payload.content,
-        round_number=pc.round_count + 1,
+        round_number=pc.round_count,
     )
-    pc.round_count += 1
     session.add(msg)
     session.commit()
     session.refresh(msg)
@@ -164,10 +199,9 @@ def get_prechat_summary(
     prechat_id: str,
     session: Session = Depends(get_db_session),
     current_user: AuthUser = Depends(get_current_user),
-) -> PreChatSummaryResponse | JSONResponse:
-    pc = session.get(PreChat, UUID(prechat_id))
-    if pc is None:
-        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "NOT_FOUND"})
+) -> PreChatSummaryResponse:
+    pc = _load_prechat(session, prechat_id)
+    _verify_prechat_access(pc, current_user, session)
 
     summary = pc.ai_summary or "Pre-chat conversation summary is being generated."
     return PreChatSummaryResponse(summary=summary)

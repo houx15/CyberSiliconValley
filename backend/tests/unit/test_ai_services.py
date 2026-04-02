@@ -64,7 +64,7 @@ async def test_coach_service_persists_user_and_assistant_messages(monkeypatch: p
 
     monkeypatch.setattr(coach_module, "run_coach_workflow", fake_run_coach_workflow)
 
-    service = CoachService(session=object(), provider_router=ProviderRouter())
+    service = CoachService(session=SimpleNamespace(commit=lambda: None), provider_router=ProviderRouter())
     events = await service.stream(
         AuthUser(id=str(uuid4()), email="talent@csv.dev", role="talent"),
         CoachRequest(
@@ -118,7 +118,7 @@ async def test_screening_service_persists_user_and_assistant_messages(monkeypatc
 
     monkeypatch.setattr(screening_module, "run_screening_workflow", fake_run_screening_workflow)
 
-    service = ScreeningService(session=object(), provider_router=ProviderRouter())
+    service = ScreeningService(session=SimpleNamespace(commit=lambda: None), provider_router=ProviderRouter())
     events = await service.stream(
         AuthUser(id=str(uuid4()), email="enterprise@csv.dev", role="enterprise"),
         ScreeningRequest(message="Find ML engineers"),

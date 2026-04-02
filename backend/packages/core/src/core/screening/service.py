@@ -53,4 +53,5 @@ class ScreeningService:
             role="assistant",
             content=assistant_text,
         )
+        self.session.commit()
         return events

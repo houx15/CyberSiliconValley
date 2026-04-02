@@ -13,8 +13,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Download, Loader2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+function escapeHtml(text: string) {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function renderResumeHtml(markdown: string) {
-  return markdown
+  const escaped = escapeHtml(markdown);
+  return escaped
     .replace(/^### (.*)$/gm, '<h3>$1</h3>')
     .replace(/^## (.*)$/gm, '<h2>$1</h2>')
     .replace(/^# (.*)$/gm, '<h1>$1</h1>')

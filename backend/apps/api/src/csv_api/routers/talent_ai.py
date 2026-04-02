@@ -64,15 +64,16 @@ async def resume_ai_chat(
     async def generate():
         yield StreamEvent(event="start", data={"surface": "resume_ai"})
         full_text = ""
-        async for event in provider_router.stream(request):
-            if event["event"] == "text":
-                full_text += event["data"]["delta"]
-                yield StreamEvent(event="text", data=event["data"])
-        yield StreamEvent(event="done", data={"message": full_text})
-
-        if full_text:
-            save_chat_message(session, session_id=chat_session.id, role="assistant", content=full_text)
-            session.commit()
+        try:
+            async for event in provider_router.stream(request):
+                if event["event"] == "text":
+                    full_text += event["data"]["delta"]
+                    yield StreamEvent(event="text", data=event["data"])
+            yield StreamEvent(event="done", data={"message": full_text})
+        finally:
+            if full_text:
+                save_chat_message(session, session_id=chat_session.id, role="assistant", content=full_text)
+                session.commit()
 
     return stream_async_events_as_sse(generate())
 

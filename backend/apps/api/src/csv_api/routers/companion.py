@@ -40,8 +40,10 @@ async def companion_chat(
     provider_router: ProviderRouter = Depends(get_ai_provider_router),
 ):
     user_id = UUID(current_user.id)
+    is_ai_hr = payload.persona == "ai-hr" and current_user.role == "enterprise"
+    session_prefix = "ai-hr" if is_ai_hr else "companion"
     session_type = payload.session_type if payload.session_type in {"general", "home", "coach"} else "general"
-    chat_session = get_or_create_chat_session(session, user_id=user_id, session_type=f"companion:{session_type}")
+    chat_session = get_or_create_chat_session(session, user_id=user_id, session_type=f"{session_prefix}:{session_type}")
 
     # Extract latest user message
     latest_user_message = _extract_latest_user_message(payload)
@@ -49,12 +51,23 @@ async def companion_chat(
         save_chat_message(session, session_id=chat_session.id, role="user", content=latest_user_message)
         session.commit()
 
-    # Load profile
-    profile = get_talent_profile_by_user_id(session, user_id)
-    profile_json = _profile_to_json(profile) if profile else "{}"
+    # Load profile — enterprise for AI HR, talent for buddy
+    if is_ai_hr:
+        from db.repositories.profiles import get_enterprise_profile_by_user_id
+        ep = get_enterprise_profile_by_user_id(session, user_id)
+        profile_json = json.dumps({
+            "companyName": ep.company_name if ep else "",
+            "industry": ep.industry if ep else "",
+            "description": ep.description if ep else "",
+        }, ensure_ascii=False, default=str) if ep else "{}"
+        memory_scope = "enterprise_global"
+    else:
+        profile = get_talent_profile_by_user_id(session, user_id)
+        profile_json = _profile_to_json(profile) if profile else "{}"
+        memory_scope = "talent_global"
 
     # Load memory
-    memory_entries = _load_memory_entries(session, user_id)
+    memory_entries = _load_memory_entries(session, user_id, scope=memory_scope)
 
     # Load conversation history
     history = _load_history(session, chat_session.id)
@@ -62,20 +75,21 @@ async def companion_chat(
     # Stream real LLM response
     async def generate():
         full_text = ""
-        async for event in run_companion_workflow_streaming(
-            provider_router,
-            messages=history,
-            profile_json=profile_json,
-            memory_entries=memory_entries,
-            function_mode=payload.function_mode,
-        ):
-            if event.event == "text":
-                full_text += event.data.get("delta", "")
-            yield event
-
-        if full_text:
-            save_chat_message(session, session_id=chat_session.id, role="assistant", content=full_text)
-            session.commit()
+        try:
+            async for event in run_companion_workflow_streaming(
+                provider_router,
+                messages=history,
+                profile_json=profile_json,
+                memory_entries=memory_entries,
+                function_mode=payload.function_mode,
+            ):
+                if event.event == "text":
+                    full_text += event.data.get("delta", "")
+                yield event
+        finally:
+            if full_text:
+                save_chat_message(session, session_id=chat_session.id, role="assistant", content=full_text)
+                session.commit()
 
     return stream_async_events_as_sse(generate())
 
@@ -108,10 +122,10 @@ def _profile_to_json(profile) -> str:
     }, ensure_ascii=False, default=str)
 
 
-def _load_memory_entries(session: Session, user_id: UUID) -> list[dict]:
+def _load_memory_entries(session: Session, user_id: UUID, scope: str = "talent_global") -> list[dict]:
     stmt = select(MemorySpace).where(
         MemorySpace.owner_id == user_id,
-        MemorySpace.scope_type == "talent_global",
+        MemorySpace.scope_type == scope,
     ).limit(1)
     space = session.execute(stmt).scalar_one_or_none()
     if space is None:
