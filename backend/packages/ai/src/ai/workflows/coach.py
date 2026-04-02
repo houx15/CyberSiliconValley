@@ -1,10 +1,76 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from typing import Any
 
 from ai.prompts.coach import build_coach_system_prompt
 from ai.providers.router import AICompletionRequest, ProviderRouter
 from contracts.coach import CoachStreamEvent
+
+
+COACH_TOOLS = [
+    {
+        "name": "suggest_skill",
+        "description": "Suggest a skill for the user to develop based on their goals and gaps.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string", "description": "Skill name"},
+                "reason": {"type": "string", "description": "Why this skill matters for their goals"},
+            },
+            "required": ["name", "reason"],
+        },
+    },
+    {
+        "name": "rewrite_focus",
+        "description": "Suggest a before/after rewrite for resume or positioning text.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "before": {"type": "string", "description": "Current phrasing"},
+                "after": {"type": "string", "description": "Improved phrasing"},
+            },
+            "required": ["before", "after"],
+        },
+    },
+]
+
+
+async def run_coach_workflow_streaming(
+    provider_router: ProviderRouter,
+    *,
+    mode: str,
+    messages: list[dict[str, str]],
+    profile_json: str,
+    goals: str,
+    recent_matches_summary: str,
+) -> AsyncIterator[CoachStreamEvent]:
+    """Run coach conversation with real LLM, yielding SSE events."""
+    system_prompt = build_coach_system_prompt(
+        mode,
+        profile_json=profile_json,
+        goals=goals,
+        recent_matches_summary=recent_matches_summary,
+    )
+
+    request = AICompletionRequest(
+        surface="coach",
+        system_prompt=system_prompt,
+        messages=messages,
+        metadata={"tools": COACH_TOOLS},
+    )
+
+    yield CoachStreamEvent(event="start", data={"surface": "coach", "mode": mode})
+
+    full_text = ""
+    async for event in provider_router.stream(request):
+        if event["event"] == "text":
+            full_text += event["data"]["delta"]
+            yield CoachStreamEvent(event="text", data=event["data"])
+        elif event["event"] == "tool":
+            yield CoachStreamEvent(event="tool", data=event["data"])
+
+    yield CoachStreamEvent(event="done", data={"message": full_text})
 
 
 async def run_coach_workflow(
@@ -17,56 +83,18 @@ async def run_coach_workflow(
     recent_matches_summary: str,
     profile_name: str,
 ) -> tuple[str, list[CoachStreamEvent]]:
-    system_prompt = build_coach_system_prompt(
-        mode,
+    """Non-streaming version for backward compatibility."""
+    events: list[CoachStreamEvent] = []
+    full_text = ""
+    async for event in run_coach_workflow_streaming(
+        provider_router,
+        mode=mode,
+        messages=messages,
         profile_json=profile_json,
         goals=goals,
         recent_matches_summary=recent_matches_summary,
-    )
-    completion = await provider_router.complete(
-        AICompletionRequest(
-            surface="coach",
-            system_prompt=system_prompt,
-            messages=messages,
-            metadata={"mode": mode, "profile_name": profile_name},
-        )
-    )
-
-    events = [CoachStreamEvent(event="start", data={"surface": "coach", "mode": mode})]
-    for tool_event in completion.tool_events:
-        events.append(CoachStreamEvent(event="tool", data=tool_event))
-    for tool_event in _coach_tool_events(mode=mode, messages=messages):
-        events.append(CoachStreamEvent(event="tool", data=tool_event))
-    events.append(CoachStreamEvent(event="text", data={"delta": completion.text}))
-    events.append(CoachStreamEvent(event="done", data={"message": completion.text}))
-    return completion.text, events
-
-
-def _coach_tool_events(*, mode: str, messages: list[dict[str, str]]) -> list[dict[str, Any]]:
-    latest_user_message = ""
-    for message in reversed(messages):
-        if message.get("role") == "user":
-            latest_user_message = message.get("content", "")
-            break
-
-    if mode == "skill-gaps":
-        return [
-            {
-                "name": "suggest_skill",
-                "suggestion": {
-                    "name": "Evaluation Design",
-                    "reason": "Your target roles increasingly expect strong AI quality and evaluation loops.",
-                },
-            }
-        ]
-
-    if mode == "resume-review":
-        return [
-            {
-                "name": "rewrite_focus",
-                "before": latest_user_message or "General resume phrasing",
-                "after": "Lead with one quantified outcome, then the system you built to deliver it.",
-            }
-        ]
-
-    return []
+    ):
+        events.append(event)
+        if event.event == "done":
+            full_text = event.data.get("message", "")
+    return full_text, events
