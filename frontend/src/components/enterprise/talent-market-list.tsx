@@ -118,11 +118,11 @@ export function TalentMarketList() {
   }, []);
 
   const filtered = useMemo(() => {
-    let talents = talents;
+    let result = talents;
 
     if (search) {
       const q = search.toLowerCase();
-      talents = talents.filter(
+      result = result.filter(
         (t) =>
           t.name.includes(q) ||
           t.title.toLowerCase().includes(q) ||
@@ -133,19 +133,19 @@ export function TalentMarketList() {
     if (mode === 'manual') {
       if (filterLocation) {
         const loc = filterLocation.toLowerCase();
-        talents = talents.filter((t) => t.location.toLowerCase().includes(loc));
+        result = result.filter((t) => t.location.toLowerCase().includes(loc));
       }
       if (filterSkill) {
         const sk = filterSkill.toLowerCase();
-        talents = talents.filter((t) => t.skills.some((s) => s.toLowerCase().includes(sk)));
+        result = result.filter((t) => t.skills.some((s) => s.toLowerCase().includes(sk)));
       }
       if (filterStatus.length > 0) {
-        talents = talents.filter((t) => filterStatus.includes(t.status));
+        result = result.filter((t) => filterStatus.includes(t.status));
       }
     }
 
-    return talents;
-  }, [search, mode, filterLocation, filterSkill, filterStatus]);
+    return result;
+  }, [talents, search, mode, filterLocation, filterSkill, filterStatus]);
 
   const handleAiSearch = () => {
     if (!aiQuery.trim()) return;

@@ -67,7 +67,8 @@ async def generate_resume(
                 company_name=company_name,
             ))
         except Exception:
-            pass
+            import logging
+            logging.getLogger(__name__).exception("LLM resume generation failed, falling back to template")
 
     # Fallback to template-based resume
     result = build_fallback_resume(session, payload.talent_id, payload.job_id)

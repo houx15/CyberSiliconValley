@@ -90,45 +90,53 @@ def get_usage(
     from db.models.pre_chat import PreChat
     from db.models.chat_session import ChatSession
     from db.models.chat_message import ChatMessage
+    from db.models.talent_profile import TalentProfile
+    from db.models.enterprise_profile import EnterpriseProfile
+    from db.models.job import Job
 
     user_id = UUID(current_user.id)
     today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
 
-    # Count today's matches (via profile)
     matches_today = 0
     prechats_today = 0
     coach_today = 0
 
     try:
-        matches_today = session.execute(
-            select(func.count(Match.id)).where(Match.created_at >= today_start)
-        ).scalar_one() or 0
-    except Exception:
-        pass
-
-    try:
-        prechats_today = session.execute(
-            select(func.count(PreChat.id)).where(PreChat.created_at >= today_start)
-        ).scalar_one() or 0
-    except Exception:
-        pass
-
-    try:
-        # Count coach messages sent today by this user
-        coach_session = session.execute(
-            select(ChatSession.id).where(
-                ChatSession.user_id == user_id,
-                ChatSession.session_type == "coach",
-            )
-        ).scalar_one_or_none()
-        if coach_session:
-            coach_today = session.execute(
-                select(func.count(ChatMessage.id)).where(
-                    ChatMessage.session_id == coach_session,
-                    ChatMessage.role == "user",
-                    ChatMessage.created_at >= today_start,
-                )
-            ).scalar_one() or 0
+        if current_user.role == "talent":
+            profile_id = session.execute(
+                select(TalentProfile.id).where(TalentProfile.user_id == user_id)
+            ).scalar_one_or_none()
+            if profile_id:
+                matches_today = session.execute(
+                    select(func.count(Match.id)).where(
+                        Match.talent_id == profile_id,
+                        Match.created_at >= today_start,
+                    )
+                ).scalar_one() or 0
+                prechats_today = session.execute(
+                    select(func.count(PreChat.id)).where(
+                        PreChat.talent_id == profile_id,
+                        PreChat.created_at >= today_start,
+                    )
+                ).scalar_one() or 0
+        else:
+            profile_id = session.execute(
+                select(EnterpriseProfile.id).where(EnterpriseProfile.user_id == user_id)
+            ).scalar_one_or_none()
+            if profile_id:
+                enterprise_jobs = select(Job.id).where(Job.enterprise_id == profile_id)
+                matches_today = session.execute(
+                    select(func.count(Match.id)).where(
+                        Match.job_id.in_(enterprise_jobs),
+                        Match.created_at >= today_start,
+                    )
+                ).scalar_one() or 0
+                prechats_today = session.execute(
+                    select(func.count(PreChat.id)).where(
+                        PreChat.enterprise_id == profile_id,
+                        PreChat.created_at >= today_start,
+                    )
+                ).scalar_one() or 0
     except Exception:
         pass
 

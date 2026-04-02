@@ -111,6 +111,12 @@ async def parse_job(
     if current_user.role != "enterprise":
         return _forbidden_response()
 
+    if provider_router.provider is None:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"error": "AI_NOT_CONFIGURED", "message": "AI provider is not configured. Set AI_API_KEY."},
+        )
+
     request = AICompletionRequest(
         surface="jobs.parse",
         system_prompt=JOB_PARSE_SYSTEM_PROMPT,
@@ -142,11 +148,16 @@ def update_job(
     if current_user.role != "enterprise":
         return _forbidden_response()
 
+    try:
+        job_uuid = UUID(job_id)
+    except ValueError:
+        return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"error": "Invalid job ID"})
+
     profile = get_enterprise_profile_by_user_id(session, UUID(current_user.id))
     if profile is None:
         return _missing_profile_response()
 
-    job = get_job_by_id_for_enterprise(session, UUID(job_id), profile.id)
+    job = get_job_by_id_for_enterprise(session, job_uuid, profile.id)
     if job is None:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -170,11 +181,16 @@ def delete_job(
     if current_user.role != "enterprise":
         return _forbidden_response()
 
+    try:
+        job_uuid = UUID(job_id)
+    except ValueError:
+        return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content={"error": "Invalid job ID"})
+
     profile = get_enterprise_profile_by_user_id(session, UUID(current_user.id))
     if profile is None:
         return _missing_profile_response()
 
-    job = get_job_by_id_for_enterprise(session, UUID(job_id), profile.id)
+    job = get_job_by_id_for_enterprise(session, job_uuid, profile.id)
     if job is None:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
