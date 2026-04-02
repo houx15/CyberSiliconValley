@@ -44,6 +44,7 @@ async def run_coach_workflow_streaming(
     profile_json: str,
     goals: str,
     recent_matches_summary: str,
+    coach_id: str | None = None,
 ) -> AsyncIterator[CoachStreamEvent]:
     """Run coach conversation with real LLM, yielding SSE events."""
     system_prompt = build_coach_system_prompt(
@@ -51,6 +52,7 @@ async def run_coach_workflow_streaming(
         profile_json=profile_json,
         goals=goals,
         recent_matches_summary=recent_matches_summary,
+        coach_id=coach_id,
     )
 
     request = AICompletionRequest(
@@ -81,7 +83,8 @@ async def run_coach_workflow(
     profile_json: str,
     goals: str,
     recent_matches_summary: str,
-    profile_name: str,
+    profile_name: str = "",
+    coach_id: str | None = None,
 ) -> tuple[str, list[CoachStreamEvent]]:
     """Non-streaming version for backward compatibility."""
     events: list[CoachStreamEvent] = []
@@ -93,6 +96,7 @@ async def run_coach_workflow(
         profile_json=profile_json,
         goals=goals,
         recent_matches_summary=recent_matches_summary,
+        coach_id=coach_id,
     ):
         events.append(event)
         if event.event == "done":

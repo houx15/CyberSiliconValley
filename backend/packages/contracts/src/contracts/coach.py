@@ -34,10 +34,11 @@ class CoachMessage(BaseModel):
 
 
 class CoachRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
     messages: list[CoachMessage] = Field(min_length=1)
     mode: CoachMode = "chat"
+    coach_id: str | None = Field(default=None, alias="coachId")
 
 
 class CoachStreamEvent(BaseModel):

@@ -78,6 +78,7 @@ class CoachService:
             goals=str(profile.goals or {}),
             recent_matches_summary=_format_recent_match_summary(recent_matches),
             profile_name=profile.display_name or "Talent",
+            coach_id=payload.coach_id,
         )
 
         save_chat_message(
