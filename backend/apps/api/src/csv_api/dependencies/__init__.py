@@ -7,6 +7,8 @@ from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from ai.providers.claude import AnthropicProvider
+from ai.providers.openai_compat import OpenAICompatProvider
 from ai.providers.router import ProviderRouter
 from contracts.auth import AuthUser
 from core.auth.service import AuthService
@@ -38,7 +40,24 @@ def get_auth_service() -> AuthService:
 
 @lru_cache(maxsize=1)
 def get_ai_provider_router() -> ProviderRouter:
-    return ProviderRouter()
+    settings = get_settings()
+    if not settings.ai_api_key:
+        return ProviderRouter()  # Falls back to DeterministicProvider
+
+    if settings.ai_protocol == "anthropic":
+        provider = AnthropicProvider(
+            api_key=settings.ai_api_key,
+            model=settings.ai_model or "claude-sonnet-4-20250514",
+            base_url=settings.ai_base_url or None,
+        )
+    else:
+        # OpenAI-compatible: works with OpenAI, DeepSeek, Ollama, vLLM, Azure, etc.
+        provider = OpenAICompatProvider(
+            api_key=settings.ai_api_key,
+            model=settings.ai_model or "gpt-4o",
+            base_url=settings.ai_base_url or "https://api.openai.com/v1",
+        )
+    return ProviderRouter(provider=provider)
 
 
 def get_current_user(

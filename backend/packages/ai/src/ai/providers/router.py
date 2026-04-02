@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
@@ -20,6 +21,10 @@ class AICompletionResult:
 
 class AIProvider(Protocol):
     async def complete(self, request: AICompletionRequest) -> AICompletionResult: ...
+
+
+class StreamingAIProvider(AIProvider, Protocol):
+    async def stream(self, request: AICompletionRequest) -> AsyncIterator[dict[str, Any]]: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,3 +60,14 @@ class ProviderRouter:
     async def complete(self, request: AICompletionRequest) -> AICompletionResult:
         provider = self.provider or DeterministicProvider()
         return await provider.complete(request)
+
+    async def stream(self, request: AICompletionRequest) -> AsyncIterator[dict[str, Any]]:
+        provider = self.provider or DeterministicProvider()
+        if isinstance(provider, StreamingAIProvider) or hasattr(provider, "stream"):
+            async for event in provider.stream(request):  # type: ignore[union-attr]
+                yield event
+        else:
+            result = await provider.complete(request)
+            yield {"event": "text", "data": {"delta": result.text}}
+            for tool_event in result.tool_events:
+                yield {"event": "tool", "data": tool_event}
