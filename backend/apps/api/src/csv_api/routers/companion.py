@@ -15,7 +15,11 @@ from contracts.auth import AuthUser
 from contracts.chat import CompanionRequest, StreamEvent
 from csv_api.dependencies import get_ai_provider_router, get_current_user, get_db_session
 from db.models.chat_session import ChatSession
+from db.models.enterprise_profile import EnterpriseProfile
+from db.models.job import Job
+from db.models.match import Match
 from db.models.memory_space import MemorySpace
+from db.models.pre_chat import PreChat
 from db.repositories.chat import (
     get_or_create_chat_session,
     load_chat_history,
@@ -153,3 +157,89 @@ def _session_title(s: ChatSession) -> str:
         "analysis": "Opportunity Analysis",
     }
     return titles.get(mode, f"Chat ({mode})")
+
+
+@router.get("/opportunities")
+def list_opportunities(
+    session: Session = Depends(get_db_session),
+    current_user: AuthUser = Depends(get_current_user),
+):
+    """List matched opportunities for the talent's buddy report tab."""
+    user_id = UUID(current_user.id)
+    profile = get_talent_profile_by_user_id(session, user_id)
+    if profile is None:
+        return []
+
+    talent_skills = {s.get("name", "").lower() for s in (profile.skills or [])}
+
+    # Join matches with jobs and enterprise profiles
+    stmt = (
+        select(Match, Job, EnterpriseProfile)
+        .join(Job, Match.job_id == Job.id)
+        .join(EnterpriseProfile, Job.enterprise_id == EnterpriseProfile.id)
+        .where(Match.talent_id == profile.id)
+        .order_by(Match.score.desc())
+        .limit(50)
+    )
+    rows = session.execute(stmt).all()
+
+    results = []
+    for match, job, enterprise in rows:
+        # Determine opportunity status from match + prechat state
+        opp_status = _opportunity_status(session, match, profile.id)
+
+        # Build skill match info
+        job_skills = [s.get("name", "") for s in (job.structured or {}).get("skills", [])]
+        skills_matched = [
+            {"name": s, "matched": s.lower() in talent_skills}
+            for s in job_skills
+        ]
+
+        # Get prechat summary if exists
+        prechat_summary = None
+        prechat = session.execute(
+            select(PreChat).where(
+                PreChat.job_id == job.id,
+                PreChat.talent_id == profile.id,
+            ).limit(1)
+        ).scalar_one_or_none()
+        if prechat and prechat.ai_summary:
+            prechat_summary = prechat.ai_summary
+
+        results.append({
+            "id": str(match.id),
+            "companyName": enterprise.company_name or "",
+            "jobTitle": job.title,
+            "opportunityType": (job.structured or {}).get("focusCategory", "fulltime"),
+            "location": (job.structured or {}).get("location", ""),
+            "workMode": (job.structured or {}).get("workMode", "remote"),
+            "matchScore": round(match.score or 0),
+            "status": opp_status,
+            "aiAssessment": match.ai_reasoning or "",
+            "skills": skills_matched,
+            "preChatSummary": prechat_summary,
+            "updatedAt": match.created_at.isoformat() if match.created_at else "",
+        })
+
+    return results
+
+
+def _opportunity_status(session: Session, match: Match, talent_id) -> str:
+    """Derive opportunity status from match status + prechat state."""
+    if match.status == "invited":
+        return "action_needed"
+    if match.status in ("shortlisted", "applied"):
+        # Check if prechat exists
+        prechat = session.execute(
+            select(PreChat).where(
+                PreChat.job_id == match.job_id,
+                PreChat.talent_id == talent_id,
+            ).limit(1)
+        ).scalar_one_or_none()
+        if prechat:
+            if prechat.status == "completed":
+                return "pre_chat_done"
+            if prechat.status == "active":
+                return "pre_chat"
+        return "enterprise_inquiry"
+    return "screened"

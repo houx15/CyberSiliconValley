@@ -24,6 +24,7 @@ from csv_api.routers.seeking import router as seeking_router
 from csv_api.routers.subscription import router as subscription_router
 from csv_api.routers.talent_dashboard import router as talent_dashboard_router
 from csv_api.routers.talent_ai import router as talent_ai_router
+from csv_api.routers.talent_market import router as talent_market_router
 from csv_api.routers.upload import router as upload_router
 
 
@@ -57,6 +58,7 @@ def create_app() -> FastAPI:
     app.include_router(subscription_router)
     app.include_router(talent_ai_router)
     app.include_router(talent_dashboard_router)
+    app.include_router(talent_market_router)
     app.include_router(upload_router)
     app.state.settings = settings
     return app

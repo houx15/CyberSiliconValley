@@ -36,7 +36,7 @@ interface JobOption {
   title: string;
 }
 
-const MOCK_TALENTS: TalentItem[] = [
+const FALLBACK_TALENTS: TalentItem[] = [
   {
     id: 't1', name: '张伟', title: '高级后端工程师',
     location: '北京 · 远程优先', skills: ['Go', 'Kubernetes', '分布式系统', 'gRPC'],
@@ -89,6 +89,15 @@ export function TalentMarketList() {
   const [filterLocation, setFilterLocation] = useState('');
   const [filterSkill, setFilterSkill] = useState('');
   const [filterStatus, setFilterStatus] = useState<string[]>([]);
+  const [talents, setTalents] = useState<TalentItem[]>(FALLBACK_TALENTS);
+
+  // Load talent market data
+  useEffect(() => {
+    fetch('/api/v1/talent-market', { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (data?.talents?.length > 0) setTalents(data.talents); })
+      .catch(() => {});
+  }, []);
 
   // Load enterprise jobs for the selector
   useEffect(() => {
@@ -109,7 +118,7 @@ export function TalentMarketList() {
   }, []);
 
   const filtered = useMemo(() => {
-    let talents = MOCK_TALENTS;
+    let talents = talents;
 
     if (search) {
       const q = search.toLowerCase();

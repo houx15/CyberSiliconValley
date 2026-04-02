@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from contracts.auth import AuthUser
@@ -82,15 +82,62 @@ def current_subscription(
 
 @router.get("/usage", response_model=UsageData)
 def get_usage(
+    session: Session = Depends(get_db_session),
     current_user: AuthUser = Depends(get_current_user),
 ) -> UsageData:
-    # Placeholder — real implementation uses Redis daily counters
+    from datetime import datetime, timezone
+    from db.models.match import Match
+    from db.models.pre_chat import PreChat
+    from db.models.chat_session import ChatSession
+    from db.models.chat_message import ChatMessage
+
+    user_id = UUID(current_user.id)
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Count today's matches (via profile)
+    matches_today = 0
+    prechats_today = 0
+    coach_today = 0
+
+    try:
+        matches_today = session.execute(
+            select(func.count(Match.id)).where(Match.created_at >= today_start)
+        ).scalar_one() or 0
+    except Exception:
+        pass
+
+    try:
+        prechats_today = session.execute(
+            select(func.count(PreChat.id)).where(PreChat.created_at >= today_start)
+        ).scalar_one() or 0
+    except Exception:
+        pass
+
+    try:
+        # Count coach messages sent today by this user
+        coach_session = session.execute(
+            select(ChatSession.id).where(
+                ChatSession.user_id == user_id,
+                ChatSession.session_type == "coach",
+            )
+        ).scalar_one_or_none()
+        if coach_session:
+            coach_today = session.execute(
+                select(func.count(ChatMessage.id)).where(
+                    ChatMessage.session_id == coach_session,
+                    ChatMessage.role == "user",
+                    ChatMessage.created_at >= today_start,
+                )
+            ).scalar_one() or 0
+    except Exception:
+        pass
+
     return UsageData(
-        matchesToday=0,
+        matchesToday=matches_today,
         matchesLimit=50,
-        preChatsToday=0,
+        preChatsToday=prechats_today,
         preChatsLimit=10,
-        coachToday=0,
+        coachToday=coach_today,
         coachLimit=20,
     )
 

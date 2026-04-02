@@ -97,7 +97,7 @@ const FALLBACK_SESSIONS: Session[] = [
   { id: 's4', title: '技能标签调整', mode: 'profile', updatedAt: '上周' },
 ];
 
-const MOCK_OPPORTUNITIES: OpportunityRecord[] = [
+const FALLBACK_OPPORTUNITIES: OpportunityRecord[] = [
   {
     id: 'o1', companyName: 'ByteDance', jobTitle: '高级后端工程师',
     opportunityType: 'fulltime' as OpportunityCategory,
@@ -196,6 +196,7 @@ export function BuddyPageClient() {
   const [expandedOpp, setExpandedOpp] = useState<string | null>(null);
   const [showTranscript, setShowTranscript] = useState<string | null>(null);
   const [sessions, setSessions] = useState<Session[]>(FALLBACK_SESSIONS);
+  const [opportunities, setOpportunities] = useState<OpportunityRecord[]>(FALLBACK_OPPORTUNITIES);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -203,6 +204,10 @@ export function BuddyPageClient() {
     fetch('/api/v1/companion/sessions', { credentials: 'include' })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => { if (Array.isArray(data) && data.length > 0) setSessions(data); })
+      .catch(() => {});
+    fetch('/api/v1/companion/opportunities', { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (Array.isArray(data) && data.length > 0) setOpportunities(data); })
       .catch(() => {});
   }, []);
   const abortRef = useRef<AbortController | null>(null);
@@ -294,18 +299,18 @@ export function BuddyPageClient() {
   );
 
   // Report filtering
-  const filteredOpps = MOCK_OPPORTUNITIES.filter((o) => {
+  const filteredOpps = opportunities.filter((o) => {
     if (reportFilter === 'all') return true;
     if (reportFilter === 'action_needed') return o.status === 'action_needed' || o.status === 'enterprise_inquiry';
     return o.status === reportFilter;
   });
 
   const statusCounts = {
-    screened: MOCK_OPPORTUNITIES.filter((o) => o.status === 'screened').length,
-    pre_chat: MOCK_OPPORTUNITIES.filter((o) => o.status === 'pre_chat').length,
-    pre_chat_done: MOCK_OPPORTUNITIES.filter((o) => o.status === 'pre_chat_done').length,
-    enterprise_inquiry: MOCK_OPPORTUNITIES.filter((o) => o.status === 'enterprise_inquiry').length,
-    action_needed: MOCK_OPPORTUNITIES.filter((o) => o.status === 'action_needed' || o.status === 'enterprise_inquiry').length,
+    screened: opportunities.filter((o) => o.status === 'screened').length,
+    pre_chat: opportunities.filter((o) => o.status === 'pre_chat').length,
+    pre_chat_done: opportunities.filter((o) => o.status === 'pre_chat_done').length,
+    enterprise_inquiry: opportunities.filter((o) => o.status === 'enterprise_inquiry').length,
+    action_needed: opportunities.filter((o) => o.status === 'action_needed' || o.status === 'enterprise_inquiry').length,
   };
 
   const isChat = pageTab === 'chat';
