@@ -14,6 +14,17 @@ from db.repositories.profiles import (
 )
 
 
+TALENT_ALLOWED_FIELDS = frozenset({
+    "display_name", "headline", "bio", "skills", "experience",
+    "education", "goals", "availability", "salary_range",
+    "resume_url", "profile_data",
+})
+ENTERPRISE_ALLOWED_FIELDS = frozenset({
+    "company_name", "industry", "company_size", "website",
+    "description", "ai_maturity", "profile_data", "preferences",
+})
+
+
 def apply_onboarding_update(
     session,
     current_user: AuthUser,
@@ -22,7 +33,11 @@ def apply_onboarding_update(
     complete: bool = False,
 ) -> tuple[dict[str, Any], bool]:
     user_id = UUID(current_user.id)
-    updates = dict(profile_updates)
+
+    # Allowlist fields to prevent mass-assignment of protected columns (id, user_id, visible, etc.)
+    allowed = TALENT_ALLOWED_FIELDS if current_user.role == "talent" else ENTERPRISE_ALLOWED_FIELDS
+    updates = {k: v for k, v in profile_updates.items() if k in allowed}
+
     if complete:
         updates["onboarding_done"] = True
 

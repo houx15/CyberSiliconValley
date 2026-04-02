@@ -173,6 +173,23 @@ def human_reply(
     pc = _load_prechat(session, prechat_id)
     _verify_prechat_access(pc, current_user, session)
 
+    # Reject replies unless pre-chat is active
+    if pc.status != "active":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Pre-chat is '{pc.status}', not active",
+        )
+    if not pc.talent_opted_in or not pc.enterprise_opted_in:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Both parties must opt in before exchanging messages",
+        )
+    if pc.max_rounds and pc.round_count >= pc.max_rounds:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Maximum rounds reached for this pre-chat",
+        )
+
     sender_type = "human_enterprise" if current_user.role == "enterprise" else "human_talent"
 
     # Atomic round_count increment to avoid race conditions

@@ -24,10 +24,11 @@ router = APIRouter(prefix="/api/v1/subscription", tags=["subscription"])
 
 @router.get("/tiers", response_model=list[SubscriptionTierRecord])
 def list_tiers(
-    role: str = "talent",
     session: Session = Depends(get_db_session),
     current_user: AuthUser = Depends(get_current_user),
 ) -> list[SubscriptionTierRecord]:
+    # Always use authenticated user's role — never accept role from query params
+    role = current_user.role
     tiers = (
         session.execute(
             select(SubscriptionTier).where(
@@ -159,6 +160,10 @@ def upgrade_tier(
     tier = session.get(SubscriptionTier, UUID(payload.tier_id))
     if tier is None:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"error": "TIER_NOT_FOUND"})
+
+    # Prevent cross-role tier escalation
+    if tier.role != current_user.role:
+        return JSONResponse(status_code=status.HTTP_403_FORBIDDEN, content={"error": "TIER_ROLE_MISMATCH"})
 
     # Deactivate existing
     existing = session.execute(

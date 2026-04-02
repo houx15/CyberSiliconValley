@@ -83,8 +83,7 @@ export function ActivityStatus({ initial }: ActivityStatusProps) {
             found
           </span>
           <span>
-            <strong className="font-medium text-foreground">{data.preChatActive}</strong> pre-chats
-            active
+            <strong className="font-medium text-foreground">{data.preChatActive}</strong> shortlisted
           </span>
         </div>
       </div>

@@ -26,12 +26,14 @@ async function buildServerRequest(path: string, init: RequestInit, options: ApiF
   const [{ headers: nextHeaders, cookies }] = await Promise.all([import('next/headers')]);
   const headerStore = await nextHeaders();
   const cookieStore = await cookies();
-  const host = headerStore.get('x-forwarded-host') || headerStore.get('host');
-  const protocol = headerStore.get('x-forwarded-proto') || 'http';
-  const baseUrl =
-    host !== null
-      ? `${protocol}://${host}`
-      : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000').replace(/\/$/, '');
+  // Use a trusted server-side env var — never derive the backend origin from
+  // request headers (x-forwarded-host/host) as they can be attacker-controlled,
+  // which would send authenticated cookies to a malicious host.
+  const baseUrl = (
+    process.env.BACKEND_INTERNAL_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    'http://localhost:3000'
+  ).replace(/\/$/, '');
 
   const forwardedHeaders = new Headers(options.headers || init.headers || {});
   const cookieHeader = cookieStore.toString();

@@ -1,13 +1,20 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from uuid import UUID
 
-from ai.streaming.sse import stream_events_as_sse
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlalchemy.orm import Session
+
+from ai.providers.router import ProviderRouter
+from ai.streaming.sse import stream_async_events_as_sse
+from ai.workflows.screening import run_screening_workflow_streaming
 from contracts.auth import AuthUser
 from contracts.screening import ScreeningRequest
 from core.auth.service import AuthService, InvalidSessionError
-from core.screening.service import ScreeningService
-from csv_api.dependencies import get_auth_service, get_screening_service
+from csv_api.dependencies import get_ai_provider_router, get_auth_service, get_db_session
+from db.repositories.chat import get_or_create_chat_session, load_chat_history, save_chat_message
+from db.repositories.jobs import list_jobs_for_enterprise
+from db.repositories.profiles import get_enterprise_profile_by_user_id
 
 
 router = APIRouter(prefix="/api/v1/screening", tags=["screening"])
@@ -31,7 +38,41 @@ def get_screening_user(request: Request, auth_service: AuthService = Depends(get
 async def screening_chat(
     payload: ScreeningRequest,
     user: AuthUser = Depends(get_screening_user),
-    screening_service: ScreeningService = Depends(get_screening_service),
+    session: Session = Depends(get_db_session),
+    provider_router: ProviderRouter = Depends(get_ai_provider_router),
 ):
-    events = await screening_service.stream(user, payload)
-    return stream_events_as_sse(events)
+    profile = get_enterprise_profile_by_user_id(session, UUID(user.id))
+    company_name = profile.company_name if profile and profile.company_name else "Your Company"
+
+    jobs = [
+        {"id": str(job.id), "title": job.title}
+        for job, _, _ in list_jobs_for_enterprise(session, profile.id)
+    ] if profile is not None else []
+
+    chat_session = get_or_create_chat_session(session, user_id=UUID(user.id), session_type="screening")
+    history = [
+        {"role": message.role, "content": message.content}
+        for message in load_chat_history(session, session_id=chat_session.id)
+    ]
+
+    save_chat_message(session, session_id=chat_session.id, role="user", content=payload.message)
+
+    async def generate():
+        full_text = ""
+        try:
+            async for event in run_screening_workflow_streaming(
+                provider_router,
+                message=payload.message,
+                company_name=company_name,
+                active_jobs=jobs,
+                history=history,
+            ):
+                if event.event == "text":
+                    full_text += event.data.get("delta", "")
+                yield event
+        finally:
+            if full_text:
+                save_chat_message(session, session_id=chat_session.id, role="assistant", content=full_text)
+            session.commit()
+
+    return stream_async_events_as_sse(generate())

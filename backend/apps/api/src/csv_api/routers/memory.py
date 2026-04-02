@@ -39,7 +39,8 @@ def _find_or_create(session: Session, owner_id: UUID, scope_type: str, scope_ref
     else:
         stmt = stmt.where(MemorySpace.scope_ref_id.is_(None))
 
-    space = session.execute(stmt.limit(1)).scalar_one_or_none()
+    # Use row lock to prevent race condition on concurrent find-or-create
+    space = session.execute(stmt.limit(1).with_for_update()).scalar_one_or_none()
     if space is None:
         space = MemorySpace(
             owner_id=owner_id,
@@ -48,7 +49,7 @@ def _find_or_create(session: Session, owner_id: UUID, scope_type: str, scope_ref
             entries=[],
         )
         session.add(space)
-        session.commit()
+        session.flush()
         session.refresh(space)
     return space
 
