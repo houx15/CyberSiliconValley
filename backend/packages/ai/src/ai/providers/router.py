@@ -63,7 +63,7 @@ class ProviderRouter:
 
     async def stream(self, request: AICompletionRequest) -> AsyncIterator[dict[str, Any]]:
         provider = self.provider or DeterministicProvider()
-        if isinstance(provider, StreamingAIProvider) or hasattr(provider, "stream"):
+        if hasattr(provider, "stream"):
             async for event in provider.stream(request):  # type: ignore[union-attr]
                 yield event
         else:
