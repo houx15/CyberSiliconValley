@@ -90,7 +90,7 @@ const QUICK_PROMPTS: Record<FunctionMode, string[]> = {
   analysis: ['最近有哪些适合我的机会', '帮我分析这周的匹配趋势', '与上周相比有什么变化'],
 };
 
-const MOCK_SESSIONS: Session[] = [
+const FALLBACK_SESSIONS: Session[] = [
   { id: 's1', title: '优化简历工作经历', mode: 'profile', updatedAt: '2 小时前' },
   { id: 's2', title: '远程工作机会分析', mode: 'analysis', updatedAt: '昨天' },
   { id: 's3', title: '面试准备建议', mode: 'questions', updatedAt: '3 天前' },
@@ -195,8 +195,16 @@ export function BuddyPageClient() {
   const [reportFilter, setReportFilter] = useState<ReportFilter>('all');
   const [expandedOpp, setExpandedOpp] = useState<string | null>(null);
   const [showTranscript, setShowTranscript] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<Session[]>(FALLBACK_SESSIONS);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    fetch('/api/v1/companion/sessions', { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (Array.isArray(data) && data.length > 0) setSessions(data); })
+      .catch(() => {});
+  }, []);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -324,7 +332,7 @@ export function BuddyPageClient() {
 
           <ScrollArea className="flex-1 px-2">
             <div className="space-y-0.5 py-1">
-              {MOCK_SESSIONS.map((session) => {
+              {sessions.map((session) => {
                 const fn = FUNCTIONS.find((f) => f.mode === session.mode);
                 const Icon = fn?.icon ?? MessageSquare;
                 return (
