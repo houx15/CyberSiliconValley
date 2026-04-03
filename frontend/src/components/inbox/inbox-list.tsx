@@ -22,6 +22,7 @@ function filterItems(items: InboxItemRowData[], activeFilter: InboxFilter) {
     invites: 'invite',
     prechats: 'prechat_summary',
     matches: 'match_notification',
+    messages: 'new_message',
     system: 'system',
   } as const;
 
