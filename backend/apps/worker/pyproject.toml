@@ -5,6 +5,9 @@ requires-python = ">=3.12"
 dependencies = [
   "arq",
   "redis",
+  "csv-ai",
+  "csv-contracts",
+  "csv-db",
   "csv-redis-layer",
 ]
 

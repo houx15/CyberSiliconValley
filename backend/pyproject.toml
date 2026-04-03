@@ -17,6 +17,11 @@ dependencies = [
   "httpx",
   "anyio",
   "python-multipart",
+  "csv-ai",
+  "csv-contracts",
+  "csv-core",
+  "csv-db",
+  "csv-redis-layer",
 ]
 
 [dependency-groups]
