@@ -7,6 +7,7 @@ from csv_api.config import get_settings
 from csv_api.routers.auth import router as auth_router
 from csv_api.routers.coach import router as coach_router
 from csv_api.routers.companion import router as companion_router
+from csv_api.routers.conversations import router as conversations_router
 from csv_api.routers.enterprise_dashboard import router as enterprise_dashboard_router
 from csv_api.routers.enterprise_onboarding import router as enterprise_onboarding_router
 from csv_api.routers.graph import router as graph_router
@@ -42,6 +43,7 @@ def create_app() -> FastAPI:
     app.include_router(auth_router)
     app.include_router(coach_router)
     app.include_router(companion_router)
+    app.include_router(conversations_router)
     app.include_router(profile_router)
     app.include_router(onboarding_router)
     app.include_router(enterprise_onboarding_router)

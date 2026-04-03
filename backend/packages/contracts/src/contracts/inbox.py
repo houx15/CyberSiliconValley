@@ -4,8 +4,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-InboxItemType = Literal["match_notification", "invite", "prechat_summary", "system"]
-InboxFilter = Literal["all", "invites", "prechats", "matches", "system"]
+InboxItemType = Literal["match_notification", "invite", "prechat_summary", "new_message", "system"]
+InboxFilter = Literal["all", "invites", "prechats", "matches", "messages", "system"]
 
 
 class InboxItemRecord(BaseModel):

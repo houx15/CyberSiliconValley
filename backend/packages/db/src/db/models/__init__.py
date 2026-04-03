@@ -3,6 +3,7 @@ from __future__ import annotations
 from db.base import Base
 from db.models.chat_message import ChatMessage
 from db.models.chat_session import ChatSession
+from db.models.conversation import Conversation, DirectMessage
 from db.models.enterprise_profile import EnterpriseProfile
 from db.models.inbox_item import InboxItem
 from db.models.job import Job
@@ -21,6 +22,8 @@ __all__ = [
     "Base",
     "ChatMessage",
     "ChatSession",
+    "Conversation",
+    "DirectMessage",
     "EnterpriseProfile",
     "InboxItem",
     "Job",

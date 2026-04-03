@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -77,6 +79,14 @@ export function InboxDetail({ item }: InboxDetailProps) {
           )}
 
           <div className="flex flex-wrap gap-2">
+            {typeof content.conversationId === 'string' && (
+              <Link href={`/enterprise/conversations?id=${content.conversationId}`}>
+                <Button size="sm" variant="default" className="gap-1.5">
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  查看对话
+                </Button>
+              </Link>
+            )}
             <Button size="sm" variant="outline">
               {content.jobId ? t('viewJob') : t('viewDetails')}
             </Button>

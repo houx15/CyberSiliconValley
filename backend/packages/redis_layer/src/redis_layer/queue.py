@@ -54,3 +54,15 @@ async def enqueue_graph_refresh_job(redis_url: str | None) -> object:
         return await enqueue_graph_refresh(queue)
     finally:
         await queue.close(close_connection_pool=True)
+
+
+async def enqueue_ai_prechat(queue: ArqRedis, pre_chat_id: str) -> object:
+    return await queue.enqueue_job("run_ai_prechat", {"pre_chat_id": pre_chat_id}, _queue_name=WORKER_QUEUE_NAME)
+
+
+async def enqueue_ai_prechat_job(redis_url: str | None, pre_chat_id: str) -> object:
+    queue = await create_queue(redis_url)
+    try:
+        return await enqueue_ai_prechat(queue, pre_chat_id)
+    finally:
+        await queue.close(close_connection_pool=True)

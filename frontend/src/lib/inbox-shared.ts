@@ -2,11 +2,12 @@ export const INBOX_ITEM_TYPES = [
   'match_notification',
   'invite',
   'prechat_summary',
+  'new_message',
   'system',
 ] as const;
 
 export type InboxItemType = (typeof INBOX_ITEM_TYPES)[number];
-export type InboxFilter = 'all' | 'invites' | 'prechats' | 'matches' | 'system';
+export type InboxFilter = 'all' | 'invites' | 'prechats' | 'matches' | 'messages' | 'system';
 
 export const INBOX_FILTER_TO_TYPES: Record<
   InboxFilter,
@@ -16,6 +17,7 @@ export const INBOX_FILTER_TO_TYPES: Record<
   invites: ['invite'],
   prechats: ['prechat_summary'],
   matches: ['match_notification'],
+  messages: ['new_message'],
   system: ['system'],
 };
 
@@ -24,6 +26,7 @@ export const INBOX_FILTER_TABS: Array<{ value: InboxFilter; labelKey: string }> 
   { value: 'invites', labelKey: 'filters.invites' },
   { value: 'prechats', labelKey: 'filters.prechats' },
   { value: 'matches', labelKey: 'filters.matches' },
+  { value: 'messages', labelKey: 'filters.messages' },
   { value: 'system', labelKey: 'filters.system' },
 ];
 

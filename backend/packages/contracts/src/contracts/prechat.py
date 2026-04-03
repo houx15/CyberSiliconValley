@@ -3,12 +3,14 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 PreChatStatus = Literal[
     "pending_talent_opt_in",
     "pending_enterprise_opt_in",
     "active",
+    "ai_screening",
+    "pending_talent_review",
     "completed",
     "declined",
 ]
@@ -58,8 +60,16 @@ class PreChatInitiateRequest(BaseModel):
 class PreChatHumanReplyRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    content: str = Field(min_length=1)
+    content: str = Field(min_length=1, max_length=10000)
+
+    @field_validator("content")
+    @classmethod
+    def content_not_whitespace_only(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Content must not be whitespace-only")
+        return v
 
 
 class PreChatSummaryResponse(BaseModel):
-    summary: str
+    summary: str | None = None
+    ready: bool = False

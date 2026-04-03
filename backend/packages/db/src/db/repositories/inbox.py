@@ -12,6 +12,7 @@ FILTER_TO_TYPES = {
     "invites": ["invite"],
     "prechats": ["prechat_summary"],
     "matches": ["match_notification"],
+    "messages": ["new_message"],
     "system": ["system"],
 }
 

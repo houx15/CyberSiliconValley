@@ -1,8 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FileText, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { FileText, CheckCircle, Clock, XCircle, MessageSquare } from 'lucide-react';
 import type { PreChatStatus } from '@/lib/api/prechat';
 
 interface PreChatSummaryCardProps {
@@ -12,6 +14,8 @@ interface PreChatSummaryCardProps {
   roundCount: number;
   maxRounds: number;
   summary: string | null;
+  conversationId?: string;
+  role?: 'talent' | 'enterprise';
   onViewTranscript?: () => void;
 }
 
@@ -30,6 +34,8 @@ export function PreChatSummaryCard({
   roundCount,
   maxRounds,
   summary,
+  conversationId,
+  role = 'talent',
   onViewTranscript,
 }: PreChatSummaryCardProps) {
   const statusConfig = STATUS_CONFIG[status];
@@ -70,14 +76,25 @@ export function PreChatSummaryCard({
           </div>
         )}
 
-        {onViewTranscript && (
-          <button
-            onClick={onViewTranscript}
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            查看完整对话记录 →
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {onViewTranscript && (
+            <button
+              onClick={onViewTranscript}
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              查看完整对话记录 →
+            </button>
+          )}
+
+          {conversationId && status === 'completed' && (
+            <Link href={`/${role}/conversations?id=${conversationId}`}>
+              <Button variant="outline" size="sm" className="h-7 gap-1.5 text-xs">
+                <MessageSquare className="h-3 w-3" />
+                继续对话
+              </Button>
+            </Link>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

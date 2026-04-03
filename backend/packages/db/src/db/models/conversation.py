@@ -1,39 +1,28 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Literal
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func, text
+from sqlalchemy import DateTime, ForeignKey, Index, String, Text, UniqueConstraint, func, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from db.base import Base
 
-PreChatStatus = Literal[
-    "pending_talent_opt_in",
-    "pending_enterprise_opt_in",
-    "active",
-    "ai_screening",
-    "pending_talent_review",
-    "completed",
-    "declined",
-]
 
-
-class PreChat(Base):
-    __tablename__ = "pre_chats"
+class Conversation(Base):
+    __tablename__ = "conversations"
+    __table_args__ = (
+        UniqueConstraint("pre_chat_id", name="uq_conversations_pre_chat_id"),
+        Index("ix_conversations_talent_status", "talent_id", "status"),
+        Index("ix_conversations_enterprise_status", "enterprise_id", "status"),
+    )
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
         primary_key=True,
         server_default=text("gen_random_uuid()"),
-    )
-    job_id: Mapped[UUID] = mapped_column(
-        PGUUID(as_uuid=True),
-        ForeignKey("jobs.id", ondelete="CASCADE"),
-        nullable=False,
     )
     talent_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
@@ -45,14 +34,20 @@ class PreChat(Base):
         ForeignKey("enterprise_profiles.id", ondelete="CASCADE"),
         nullable=False,
     )
-    status: Mapped[PreChatStatus] = mapped_column(
-        String(30), nullable=False, server_default=text("'pending_talent_opt_in'")
+    job_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("jobs.id", ondelete="SET NULL"),
+        nullable=True,
     )
-    talent_opted_in: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
-    enterprise_opted_in: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
-    ai_summary: Mapped[str | None] = mapped_column(Text)
-    round_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
-    max_rounds: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("10"))
+    pre_chat_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("pre_chats.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    status: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default=text("'active'")
+    )
+    last_message_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=False), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
@@ -62,20 +57,28 @@ class PreChat(Base):
     )
 
 
-class PreChatMessage(Base):
-    __tablename__ = "pre_chat_messages"
+class DirectMessage(Base):
+    __tablename__ = "direct_messages"
+    __table_args__ = (
+        Index("ix_direct_messages_conversation_created", "conversation_id", "created_at"),
+    )
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
         primary_key=True,
         server_default=text("gen_random_uuid()"),
     )
-    pre_chat_id: Mapped[UUID] = mapped_column(
+    conversation_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
-        ForeignKey("pre_chats.id", ondelete="CASCADE"),
+        ForeignKey("conversations.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    sender_user_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
     )
     sender_type: Mapped[str] = mapped_column(String(20), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    round_number: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
+    message_metadata: Mapped[dict | None] = mapped_column("metadata", JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False, server_default=func.now())
