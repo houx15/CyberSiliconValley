@@ -447,13 +447,17 @@
       "invites": "邀请",
       "prechats": "预沟通",
       "matches": "匹配",
+      "messages": "消息",
       "system": "系统"
     },
     "type": {
       "invite": "邀请",
       "prechat_summary": "预沟通",
       "match_notification": "匹配",
+      "new_message": "消息",
       "system": "系统"
-    }
+    },
+    "viewJob": "查看职位",
+    "markRead": "标记已读"
   }
 }

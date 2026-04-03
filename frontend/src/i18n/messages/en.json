@@ -447,13 +447,17 @@
       "invites": "Invites",
       "prechats": "Pre-chats",
       "matches": "Matches",
+      "messages": "Messages",
       "system": "System"
     },
     "type": {
       "invite": "Invite",
       "prechat_summary": "Pre-chat",
       "match_notification": "Match",
+      "new_message": "Message",
       "system": "System"
-    }
+    },
+    "viewJob": "View Job",
+    "markRead": "Mark Read"
   }
 }
